@@ -7,6 +7,9 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import MainGrid from './home';
+import TripCapsuleScreen from '../(embeddedScreens)/TripCapsuleScreen';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -28,6 +31,13 @@ export default function TabLayout() {
       }}>
       <Tabs.Screen
         name="index"
+        options={{
+          title: 'React Template',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="home"
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
