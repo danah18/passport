@@ -1,3 +1,4 @@
+import { AirplaneAnimation } from "@/components/AirplaneAnimation";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -18,18 +19,19 @@ export default function AllCapsulesScreen({ navigation }: { navigation: any }) {
     return (
          // Replace header with an animated component - could be nice to have gradient background like Partiful
       <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-          <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-          />
-      }>
+        headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+        headerImage={
+            <IconSymbol
+                size={310}
+                color="#808080"
+                name="chevron.left.forwardslash.chevron.right"
+                style={styles.headerImage}
+            />
+        }>
       <ThemedView style={styles.titleContainer}>
           <Text style={{ fontFamily: 'StudioPlace', fontSize: 35, color: "#FFFFFF" }}>[Your Name's] Capsules</Text>
-      </ThemedView>
+          <AirplaneAnimation/>
+     </ThemedView>
 
       {isMobile ? ( placeholderPlacesList.map((placeName, index) => (
             <TouchableOpacity 
