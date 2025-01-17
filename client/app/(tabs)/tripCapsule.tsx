@@ -1,10 +1,9 @@
-import { View, TextInput, Button, Text } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, TextInput, Button, Text, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
 
-export default function TripCapsule({ route }: { route: { params: { placeName: string } } }) {
-    // const { placeName } = route.params;
-    // ^^^ this works on web but not on mobile web
+export default function TripCapsule() {
+    const { placeName } = useLocalSearchParams();
 
     // TODO: add back button and header with place title
 
@@ -22,6 +21,14 @@ export default function TripCapsule({ route }: { route: { params: { placeName: s
 
     return (
         <View>
+        <TouchableOpacity
+            onPress={() => router.push({
+                pathname: '/(tabs)'
+            })
+        }>
+            <Text style={{fontSize: 30}}>👈</Text>
+        </TouchableOpacity>
+        <Text style={{fontSize: 30, color:"#FFFFFF"}}>{`${placeName} trip capsule`}</Text>
         <TextInput
             value={text}
             onChangeText={setText}

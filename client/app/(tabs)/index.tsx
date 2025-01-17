@@ -28,7 +28,10 @@ export default function Home() {
             <TouchableOpacity 
                 style={styles.mobileContainer}
                 key={index} 
-                onPress={() => router.push('/tripCapsule')}
+                onPress={() => router.push({
+                  pathname: '/tripCapsule',
+                  params: { placeName: placeName },
+                })}
             >
                 <Text style={styles.buttonText}>{placeName}</Text>
             </TouchableOpacity>
@@ -38,8 +41,10 @@ export default function Home() {
                 renderItem={({ item }) => (
                     <TouchableOpacity
                         style={styles.desktopContainerGridItem}
-                        onPress={() => router.push('/tripCapsule')
-                        //     placeName: item // Pass the placeName as a prop
+                        onPress={() => router.push({
+                          pathname: '/tripCapsule',
+                          params: { placeName: item },
+                        })
                     }>
                         <Text style={styles.buttonText}>{item}</Text>
                     </TouchableOpacity>
