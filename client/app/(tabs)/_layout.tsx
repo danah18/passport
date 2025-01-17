@@ -6,8 +6,6 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import Home from '.';
-import TripCapsule from '.';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -28,12 +26,12 @@ export default function TabLayout() {
         }),
     }}>
       <Tabs.Screen
-          name="test"//"index"
+          name="index"
           options={{
             title: 'Home',
             tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
           }}
-          />
+      />
       <Tabs.Screen
         name="explore"
         options={{
@@ -44,16 +42,3 @@ export default function TabLayout() {
     </Tabs>
   );
 }
-
-// i feel like i need to separate the components and routes more
-
-
-{/* <Tabs.Screen
-      // this should not be a tab. it should be stacked within the index page
-        name="tripCapsule"
-        options={{
-          title: 'Trip capsule',
-          headerShown: true,
-          href: null,
-        }}
-      /> */}
