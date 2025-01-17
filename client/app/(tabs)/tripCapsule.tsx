@@ -6,6 +6,8 @@ export default function TripCapsule({ route }: { route: { params: { placeName: s
     // const { placeName } = route.params;
     // ^^^ this works on web but not on mobile web
 
+    // TODO: add back button and header with place title
+
     const [text, setText] = useState('');
     const [isEditing, setIsEditing] = useState(false);
 
