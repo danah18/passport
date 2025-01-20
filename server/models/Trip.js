@@ -1,22 +1,26 @@
 // models/Trip.js
-
 const mongoose = require('mongoose');
 
 const TripSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
+    {
+        name: {
+            type: String,
+            required: true,
+        },
+        description: String,
+        places: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Place',
+            },
+        ],
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
     },
-    description: String,
-    places: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Place',
-      },
-    ],
-  },
-  { timestamps: true }
+    { timestamps: true }
 );
 
 module.exports = mongoose.model('Trip', TripSchema);
