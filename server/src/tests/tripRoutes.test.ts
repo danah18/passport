@@ -1,10 +1,10 @@
 // tests/tripRoutes.test.ts
 import request from 'supertest';
 import mongoose from 'mongoose';
-import app from '../src/app';
-import User from '../src/models/User';
-import Trip from '../src/models/Trip';
-import Place from '../src/models/Place';
+import app from '../app';
+import User from '../models/User';
+import Trip from '../models/Trip';
+import Place from '../models/Place';
 
 // import './setup'; // if not using global jest setup
 

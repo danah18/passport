@@ -1,7 +1,7 @@
 // tests/userRoutes.test.ts
 import request from 'supertest';
-import app from '../src/app';
-import User from '../src/models/User';
+import app from '../app';
+import User from '../models/User';
 
 // import './setup'; // if not using global jest setup
 
