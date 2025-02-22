@@ -11,5 +11,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     -- The timestamp when the profile was created.
     created_at timestamptz DEFAULT now() NOT NULL,
     -- The timestamp when the profile was last updated.
-    updated_at timestamptz
+    updated_at timestamptz,
+    -- Trip visibility: public (true) vs friends-only (false)
+    is_public boolean DEFAULT false
 );
