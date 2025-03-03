@@ -19,6 +19,7 @@ export default function MapScreen() {
   const mapsKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || '';
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showPanel, setShowPanel] = useState(false);
 
   // Function to fetch restaurants in view using the bounding box
   const fetchRestaurantsInView = useCallback(
@@ -75,16 +76,29 @@ export default function MapScreen() {
         defaultZoom={16}
         defaultCenter={defaultCenter}
         onCameraChanged={handleCameraChanged}
+        onClick={() => setShowPanel(false)}
       >
         {!loading &&
           restaurants.map((restaurant) => (
             <Marker
+              onClick={() => {
+                 setShowPanel(true)
+                 console.log('Show Panel:', showPanel)
+              }}
               key={restaurant.id}
               position={{ lat: restaurant.lat, lng: restaurant.long }}
               title={restaurant.name}
             />
           ))}
       </Map>
+
+      {showPanel && 
+          // unorthodox to be using safeareaview (react native component) in react app
+            <p style={{width: 100, height: 100, backgroundColor: 'blue', flexDirection: 'row'}}>
+             Hello World!
+            </p>
+            
+          }
     </APIProvider>
   );
 }
