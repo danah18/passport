@@ -7,6 +7,9 @@ import {
 } from '@vis.gl/react-google-maps';
 import throttle from 'lodash.throttle';
 import { getSupabaseClient } from '../../utils/supabase'; // adjust the import path as needed
+import { Dimensions } from 'react-native';
+import { BlurView } from 'expo-blur';
+import PlaceTab from '@/components/PlaceTab';
 
 interface Restaurant {
   id: number;
@@ -20,6 +23,9 @@ export default function MapScreen() {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
+
+  const { width, height } = Dimensions.get('window');
+  const isMobile = width < 768;
 
   // Function to fetch restaurants in view using the bounding box
   const fetchRestaurantsInView = useCallback(
@@ -93,10 +99,8 @@ export default function MapScreen() {
       </Map>
 
       {showPanel && 
-          // unorthodox to be using safeareaview (react native component) in react app
-            <p style={{width: 100, height: 100, backgroundColor: 'blue', flexDirection: 'row'}}>
-             Hello World!
-            </p>
+          // Play around with styling to not overlay on certain Maps components
+          <PlaceTab/>
             
           }
     </APIProvider>
