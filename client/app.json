@@ -9,13 +9,15 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.passport"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.passport"
     },
     "web": {
       "bundler": "metro",
@@ -36,7 +38,9 @@
       [
         "expo-font",
         {
-          "fonts": ["assets/fonts/Studio Place.otf"]
+          "fonts": [
+            "assets/fonts/Studio Place.otf"
+          ]
         }
       ]
     ],

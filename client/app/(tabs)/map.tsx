@@ -10,6 +10,7 @@ import { getSupabaseClient } from '../../utils/supabase'; // adjust the import p
 import { Dimensions } from 'react-native';
 import { BlurView } from 'expo-blur';
 import PlaceTab from '@/components/PlaceTab';
+import { fetchData } from '@/services/googlePlaces';
 
 interface Restaurant {
   id: number;
@@ -88,8 +89,14 @@ export default function MapScreen() {
           restaurants.map((restaurant) => (
             <Marker
               onClick={() => {
-                 setShowPanel(true)
-                 console.log('Show Panel:', showPanel)
+                setShowPanel(true)
+                 
+                // Example usage
+                fetchData("https://places.googleapis.com/v1/places/ChIJj61dQgK6j4AR4GeTYWZsKWw")
+                  .then((data) => console.log(data))
+                  .catch((error) => console.error(error));
+
+                  console.log('Show Panel:', showPanel)
               }}
               key={restaurant.id}
               position={{ lat: restaurant.lat, lng: restaurant.long }}
