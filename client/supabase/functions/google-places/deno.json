@@ -1,3 +1,5 @@
 {
-  "imports": {}
+  "imports": {
+    "googleplaces": "npm:@googlemaps/places@^1.10.0"
+  }
 }
