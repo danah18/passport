@@ -5,14 +5,21 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 
-// Import the PlacesClient using ES module syntax
-import { PlacesClient } from "googleplaces";
-
-// // Instantiates a client
-const placesClient = new PlacesClient();
-
 Deno.serve(async (req) => {
   try {
+    // Request header field access-control-allow-origin is not allowed by Access-Control-Allow-Headers in preflight response.
+    if (req.method === 'OPTIONS') {
+      return new Response('ok', {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type,x-client-info, Authorization, apikey,access-control-allow-origin',
+          "Access-Control-Allow-Credentials": "true",
+          "Vary": "Origin", // Helps browsers handle different origins properly
+        },
+      });
+    }
+
     const requestUrl = new URL(req.url);
     const placeId = requestUrl.searchParams.get("placeId");
     
@@ -22,7 +29,7 @@ Deno.serve(async (req) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "X-Goog-Api-Key": "AIzaSyCc3qVwBWVG5WUPkeLfcIV5NE9DdakgglQ",
+        "X-Goog-Api-Key": `${Deno.env.get('EXPO_PUBLIC_GOOGLE_MAPS_KEY')}`,
         "X-Goog-FieldMask": "displayName,formattedAddress,rating,userRatingCount,googleMapsUri,photos"//,reviews" 
       },
     });
@@ -35,7 +42,14 @@ Deno.serve(async (req) => {
 
       return new Response(
         JSON.stringify(data),
-        { headers: { "Content-Type": "application/json" } },
+        { headers: { 
+          "Content-Type": "application/json", 
+          "Access-Control-Allow-Origin": "*",  // CORS header for temp local development
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type,x-client-info, Authorization, apikey,access-control-allow-origin',
+          "Access-Control-Allow-Credentials": "true",
+          "Vary": "Origin", // Helps browsers handle different origins properly
+        } },
       )
   } catch (error) {
       console.error("Fetch error:", error);

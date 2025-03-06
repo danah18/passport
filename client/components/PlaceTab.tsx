@@ -1,8 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { Dimensions, FlatList, StatusBar, View, Text } from 'react-native';
 import { BlurView } from 'expo-blur';
+import PlaceInfo from './PlaceInfo.tsx';
 
-export default function PlaceTab() {
+type PlaceTabProps = {
+    placeId: string,
+}
+
+export default function PlaceTab(props: PlaceTabProps) {
   const { width, height } = Dimensions.get('window');
   const isMobile = width < 768;
 
@@ -43,6 +48,7 @@ export default function PlaceTab() {
         flexDirection: 'row',
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
       }}>
+        <PlaceInfo placeId={props.placeId}/>
         <FlatList
             data={DATA}
             renderItem={({item}) => <Item title={item.title} />}

@@ -90,13 +90,7 @@ export default function MapScreen() {
             <Marker
               onClick={() => {
                 setShowPanel(true)
-                 
-                // Example usage
-                fetchData("https://places.googleapis.com/v1/places/ChIJj61dQgK6j4AR4GeTYWZsKWw")
-                  .then((data) => console.log(data))
-                  .catch((error) => console.error(error));
-
-                  console.log('Show Panel:', showPanel)
+                console.log('Show Panel:', showPanel)
               }}
               key={restaurant.id}
               position={{ lat: restaurant.lat, lng: restaurant.long }}
@@ -107,7 +101,7 @@ export default function MapScreen() {
 
       {showPanel && 
           // Play around with styling to not overlay on certain Maps components
-          <PlaceTab/>
+          <PlaceTab placeId="IhoSGAoUChIJ0U6OoscfqokR6P225pApu2UQDQ"/>
             
           }
     </APIProvider>
