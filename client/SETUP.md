@@ -12,3 +12,8 @@
 ## Env variables
 
 Copy `.env.example` and rename to `.env.local` with populated values. For supabase values, these are outputted from `npx supabase start`.
+
+## Edge functions
+To deploy new functions to prod as well as edits to prod: `supabase functions deploy` 
+
+To serve the functions locally with env files populating: `supabase functions serve --debug  --env-file ../.env.local`
