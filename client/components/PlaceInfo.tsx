@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Dimensions, FlatList, StatusBar, View, Text, Button, TouchableOpacity, Linking } from 'react-native';
-import { BlurView } from 'expo-blur';
 import { getSupabaseClient } from '../utils/supabase.ts';
-import { mock } from 'node:test';
+import { StarRatingDisplay } from 'react-native-star-rating-widget'; 
+// https://github.com/bviebahn/react-native-star-rating-widget/tree/028b43da27ea70a792b208a2d518f7c14d66338d
 
 type PlaceInfoProps = {
     placeId: string,
@@ -73,8 +73,15 @@ export default function PlaceInfo(props: PlaceInfoProps) {
           style={{
             marginLeft: 5,
             marginBottom: 5
-          }}>{`${placeData.rating} (${placeData.userRatingCount})`}</Text>
-
+          }}>
+            {`${placeData.rating}`} 
+            <StarRatingDisplay
+              rating={placeData.rating}
+              starSize={20}
+              style={{}}
+            /> 
+            {`(${placeData.userRatingCount})`}
+          </Text>
         <Text
           style={{
             marginLeft: 5,
