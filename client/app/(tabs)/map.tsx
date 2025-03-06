@@ -101,7 +101,7 @@ export default function MapScreen() {
 
       {showPanel && 
           // Play around with styling to not overlay on certain Maps components
-          <PlaceTab placeId="IhoSGAoUChIJ0U6OoscfqokR6P225pApu2UQDQ"/>
+          <PlaceTab placeId="ChIJj61dQgK6j4AR4GeTYWZsKWw"/>
             
           }
     </APIProvider>

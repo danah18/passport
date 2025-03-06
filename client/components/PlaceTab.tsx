@@ -47,6 +47,7 @@ export default function PlaceTab(props: PlaceTabProps) {
         display: 'flex',
         flexDirection: 'row',
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+        borderRadius: '8px'
       }}>
         <PlaceInfo placeId={props.placeId}/>
         <FlatList
