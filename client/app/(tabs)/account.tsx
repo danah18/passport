@@ -156,6 +156,7 @@ export default function AccountScreen() {
                   borderWidth: 1,
                   marginBottom: 10,
                   paddingHorizontal: 10,
+                  color: 'white'
                 }}
                 placeholder='Email'
                 value={email}
@@ -171,6 +172,7 @@ export default function AccountScreen() {
                   borderWidth: 1,
                   marginBottom: 10,
                   paddingHorizontal: 10,
+                  color: 'white'
                 }}
                 placeholder='Password'
                 value={password}

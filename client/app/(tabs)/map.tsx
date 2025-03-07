@@ -7,6 +7,10 @@ import {
 } from '@vis.gl/react-google-maps';
 import throttle from 'lodash.throttle';
 import { getSupabaseClient } from '../../utils/supabase'; // adjust the import path as needed
+import { Dimensions } from 'react-native';
+import { BlurView } from 'expo-blur';
+import PlaceTab from '@/components/PlaceTab';
+import { fetchData } from '@/services/googlePlaces';
 
 interface Restaurant {
   id: number;
@@ -19,6 +23,10 @@ export default function MapScreen() {
   const mapsKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || '';
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showPanel, setShowPanel] = useState(false);
+
+  const { width, height } = Dimensions.get('window');
+  const isMobile = width < 768;
 
   // Function to fetch restaurants in view using the bounding box
   const fetchRestaurantsInView = useCallback(
@@ -75,16 +83,27 @@ export default function MapScreen() {
         defaultZoom={16}
         defaultCenter={defaultCenter}
         onCameraChanged={handleCameraChanged}
+        onClick={() => setShowPanel(false)}
       >
         {!loading &&
           restaurants.map((restaurant) => (
             <Marker
+              onClick={() => {
+                setShowPanel(true)
+                console.log('Show Panel:', showPanel)
+              }}
               key={restaurant.id}
               position={{ lat: restaurant.lat, lng: restaurant.long }}
               title={restaurant.name}
             />
           ))}
       </Map>
+
+      {showPanel && 
+          // Play around with styling to not overlay on certain Maps components
+          <PlaceTab placeId="ChIJj61dQgK6j4AR4GeTYWZsKWw"/>
+            
+          }
     </APIProvider>
   );
 }
