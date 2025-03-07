@@ -8,13 +8,15 @@ import { PhotoData, PlacePhotoProps } from './PlacePhoto.tsx';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PAGE_SIZE = 10; // Number of items per page
+const ITEM_WIDTH = 350;
+const ITEM_HEIGHT = 200;
 
 const PhotoItem = ({ previewPhoto }: { previewPhoto: PhotoData }) => (
     <View style={styles.item}>
         <Image
         style={{
-            width: 250, //previewPhoto.widthPx*.2,
-            height: 100, //previewPhoto.heightPx*.2,
+            width: ITEM_WIDTH, //previewPhoto.widthPx*.2,
+            height: ITEM_HEIGHT, //previewPhoto.heightPx*.2,
         }}
         source={{
             uri: previewPhoto.photoUri,
@@ -152,8 +154,11 @@ export default function PlacePhotoFlatList(props: PlacePhotoProps) {
   return (
     <SafeAreaView style={styles.container}>
         <TouchableOpacity
-            onPress={()=>props.setDisplayAllPhotos(false)}>
-            <Text>{`<`}</Text>
+            onPress={()=>props.setDisplayAllPhotos(false)}
+            style={{
+                marginBottom: 5
+            }}>
+            <Text style={{fontWeight: 'bold'}}>{`<`}</Text>
         </TouchableOpacity>
       <FlatList
             data={photosToDisplay}
@@ -162,6 +167,7 @@ export default function PlacePhotoFlatList(props: PlacePhotoProps) {
                 console.log("Rendering photo item:", item); // Log the item being rendered
                 return <PhotoItem previewPhoto={item} />;
             }}
+            numColumns={1}
             // onEndReached={handleLoadMore}
             // onEndReachedThreshold={0.5} // Adjust this threshold to trigger loading earlier/later
         />
@@ -173,20 +179,17 @@ const styles = StyleSheet.create({
     container: {
       flex: 1, // Ensures the View takes up full height
       padding: 10,
-      backgroundColor: '#f8f8f8',
     },
     item: {
-      padding: 20,
-      marginVertical: 8,
-      backgroundColor: '#fff',
+      marginHorizontal: 10,
+      marginVertical: 5,
       borderRadius: 8,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.2,
       shadowRadius: 4,
       elevation: 3, // For Android shadow,
-      width: 150,
-      height:150
+      width: ITEM_WIDTH
     },
     text: {
       fontSize: 16,
