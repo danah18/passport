@@ -3,10 +3,12 @@ import { Dimensions, FlatList, StatusBar, View, Text, Button, TouchableOpacity, 
 import { getSupabaseClient } from '../utils/supabase.ts';
 import { StarRatingDisplay } from 'react-native-star-rating-widget'; 
 import PlacePhoto from './PlacePhoto.tsx';
+import PlacePhotoFlatList from './PlacePhotoFlatList.tsx';
 // https://github.com/bviebahn/react-native-star-rating-widget/tree/028b43da27ea70a792b208a2d518f7c14d66338d
 
 type PlaceInfoProps = {
     placeId: string,
+    setDisplayAllPhotos: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 type DisplayName = {
@@ -29,7 +31,7 @@ type PlaceData = {
   photos: Photo[],
 }
 
-const mockPhotoArray: Photo[] = [
+export const mockPhotoArray: Photo[] = [
   {
     name:"places/ChIJj61dQgK6j4AR4GeTYWZsKWw/photos/AUy1YQ1dP0lRFtO4lOxJgBvShm7e1zR6jZz37uQkp2UaZQTcQyjxVxbxqSqeDQicc22_Hm8Rgxz1nm8iXb33voRglgQqcugDXHAVUHdJMXHtUmJRYNziNmb5CFbcsBapYj-uGMUzYLfPSYBlnaxAHW4sjBfbdkTFdwGEtQm_yeVWJgiTbIVbc9jjR8upcQtz65rjVwCBRi3edwFT2uMwCWO2ZDMWvkSQGim9j7FnOtxrTq6Q8FdbDoRmwxW7b7oN7hPdbjtivgEnGqSQ3pVtYi75mrzhN6dzC5SQTgQG7J-GQ6y4N5g7zhL--AUnfQS6aG9NUNavWFXDs7LhVd8PY4xFziDKIPl48o6Pmiqr4-_hsOC2R2aBIVNqMO918Pu3xFw5IrqNxhRdmi7QNOEOwBDo8NMOHKRz5F4F",
     widthPx:4032,
@@ -109,7 +111,7 @@ export default function PlaceInfo(props: PlaceInfoProps) {
 
   return (
     <View>
-      <PlacePhoto photos={placeData.photos}/>
+      <PlacePhoto photos={placeData.photos} setDisplayAllPhotos={props.setDisplayAllPhotos}/>
       <View 
         style={{
           opacity: 0.8,

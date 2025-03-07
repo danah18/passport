@@ -10,6 +10,7 @@ import PlacePhotoFlatList from './PlacePhotoFlatList.tsx';
 
 export type PlacePhotoProps = {
     photos: Photo[],
+    setDisplayAllPhotos: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export type PhotoData = {
@@ -22,7 +23,6 @@ export default function PlacePhoto(props: PlacePhotoProps) {
   const { width, height } = Dimensions.get('window');
   const isMobile = width < 768;
 
-  const [displayMorePhotos, setDisplayMorePhotos] = useState(false);
   const [previewPhoto, setPreviewPhoto] = useState<PhotoData>(
     { 
         photoUri: "https://lh3.googleusercontent.com/place-photos/ADOriq0ljiLBtfFAK1dElBxuMVaegVmpTQy9Ru6LV-Vos44lz5_odtCMKwSBSlo2AsNeuPaUe8QcoFbvwYdJD9o9Ikq2v5RRJJ-XzrtsMnbIJsDv6aQmo70Qefd7LBsHxa4Q08tgAIGojA=s4800-w400-h400",
@@ -69,11 +69,8 @@ export default function PlacePhoto(props: PlacePhotoProps) {
           borderRadius: '10px',
           marginTop: 5,
         }}>
-        {displayMorePhotos ?  
-            <PlacePhotoFlatList photos={props.photos}/> 
-        :
             <TouchableOpacity 
-            onPress={() => setDisplayMorePhotos(true)}
+            onPress={() => props.setDisplayAllPhotos(true)}
             style={{
                 padding: 10, // Padding for the button
                 borderRadius: 5, // Rounded corners
@@ -94,7 +91,6 @@ export default function PlacePhoto(props: PlacePhotoProps) {
                     }}
                 />
             </TouchableOpacity>
-        }
       </View>
     </View>
   );
