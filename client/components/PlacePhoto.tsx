@@ -84,7 +84,7 @@ export default function PlacePhoto(props: PlacePhotoProps) {
                     style={{
                         width: previewPhoto.widthPx * .08,
                         height: previewPhoto.heightPx * .08,
-                        marginLeft: 50,
+                        marginRight: 220
                     }}
                     source={{
                         uri: previewPhoto.photoUri,
