@@ -68,6 +68,8 @@ export default function PlacePhoto(props: PlacePhotoProps) {
           backgroundColor: 'white',
           borderRadius: '10px',
           marginTop: 5,
+          width: width*0.25,
+          marginLeft: 5
         }}>
             <TouchableOpacity 
             onPress={() => props.setDisplayAllPhotos(true)}
@@ -84,7 +86,7 @@ export default function PlacePhoto(props: PlacePhotoProps) {
                     style={{
                         width: previewPhoto.widthPx * .08,
                         height: previewPhoto.heightPx * .08,
-                        marginRight: 220
+                        marginLeft: 55
                     }}
                     source={{
                         uri: previewPhoto.photoUri,

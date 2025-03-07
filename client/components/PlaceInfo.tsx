@@ -118,7 +118,9 @@ export default function PlaceInfo(props: PlaceInfoProps) {
           backgroundColor: 'white',
           borderRadius: '10px',
           marginTop: 5,
-          marginBottom: 2
+          marginBottom: 2,
+          width: width*0.25,
+          marginLeft: 5,
         }}>
         <Text
           style={{

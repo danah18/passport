@@ -12,6 +12,38 @@ export default function PlaceTab(props: PlaceTabProps) {
   const { width, height } = Dimensions.get('window');
   const isMobile = width < 768;
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1, // Ensures the View takes up full height
+      padding: 10,
+    },
+    item: {
+      opacity: 0.8,
+      backgroundColor: 'white',
+      borderRadius: '10px',
+      marginLeft: 5,
+      marginVertical: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 3, // For Android shadow,
+      width: width*0.25
+    },
+    text: {
+      fontSize: 14,
+      marginLeft: 5,
+      padding: 10,
+      width: width*0.25
+    },
+    recommenderText: {
+      fontSize: 14,
+      fontStyle: 'italic',
+      marginLeft: 5,
+      padding: 10,
+    },
+  });
+
   const [displayAllPhotos, setDisplayAllPhotos] = useState(false);
 
   // Assumption is that we can retrieve users and their recommendations for the specific pin
@@ -89,35 +121,7 @@ export default function PlaceTab(props: PlaceTabProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1, // Ensures the View takes up full height
-    padding: 10,
-  },
-  item: {
-    opacity: 0.8,
-    backgroundColor: 'white',
-    borderRadius: '10px',
-    marginLeft: 5,
-    marginVertical: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3, // For Android shadow,
-  },
-  text: {
-    fontSize: 14,
-    marginLeft: 5,
-    padding: 10,
-  },
-  recommenderText: {
-    fontSize: 14,
-    fontStyle: 'italic',
-    marginLeft: 5,
-    padding: 10,
-  },
-});
+
 
 
   
