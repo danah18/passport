@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   APIProvider,
   Map,
@@ -62,6 +62,51 @@ export default function MapScreen() {
     [fetchRestaurantsInView]
   );
 
+  useEffect(() => {
+    const supabase = getSupabaseClient();
+
+    const addNewPin = async () => {
+        try {
+          const latitude = 33.0694771;
+          const longitude = -117.3041763;
+          const google_place_id = "ChIJE7hVdOUM3IARwNSTLLmH0Js";
+          const location = `SRID=4326;POINT(${longitude} ${latitude})`;
+          const pin_name = "French Corner Leucadia";
+          const metadata = {
+            formattedAddress: "1200 N Coast Hwy 101, Encinitas, CA 92024, USA",
+            rating: 4.5,
+            userRatingCount: 414,
+            googleMapsUri: "https://maps.google.com/?cid=11227623100421231808",
+            displayName: "French Corner Leucadia",
+            photos: [],
+          }; // JSONB
+
+          const { data, error } = await supabase
+            .from('pins') 
+            .insert([{ 
+              google_place_id: google_place_id,
+              location: location,
+              pin_name: pin_name,
+              metadata: metadata 
+            }]);
+
+          if (error) 
+          { 
+            console.log('Error', error.message);
+          }  
+          else
+          {
+            console.log('Success', 'User added successfully');
+          }
+        } catch (error: any) {
+          console.log('Error', error.message);
+        }
+      }
+
+      addNewPin();
+        
+  }, []);
+
   // Callback to be triggered when the map's camera changes.
   const handleCameraChanged = (ev: MapCameraChangedEvent) => {
     console.log('Camera changed:', ev.detail);
@@ -89,8 +134,8 @@ export default function MapScreen() {
           restaurants.map((restaurant) => (
             <Marker
               onClick={() => {
-                setShowPanel(true)
-                console.log('Show Panel:', showPanel)
+                // setShowPanel(true)
+                // console.log('Show Panel:', showPanel)
               }}
               key={restaurant.id}
               position={{ lat: restaurant.lat, lng: restaurant.long }}
