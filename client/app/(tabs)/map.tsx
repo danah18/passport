@@ -54,6 +54,34 @@ export default function MapScreen() {
     []
   );
 
+   // Function to fetch pins in view using the bounding box
+   const fetchPinsInView = useCallback(
+    async (
+      min_lat: number,
+      min_long: number,
+      max_lat: number,
+      max_long: number
+    ) => {
+      const supabase = getSupabaseClient();
+      setLoading(true);
+
+      // TODO: make equivalent supabase function
+      const { data, error } = await supabase.rpc('restaurants_in_view', {
+        min_lat,
+        min_long,
+        max_lat,
+        max_long,
+      });
+      if (error) {
+        console.error('Error fetching restaurants:', error);
+      } else if (data) {
+        setRestaurants(data as Restaurant[]);
+      }
+      setLoading(false);
+    },
+    []
+  );
+
   // Throttle the fetching of restaurants to at most once per second
   const throttledFetch = useCallback(
     throttle((bounds: { north: number; south: number; east: number; west: number }) => {
@@ -101,10 +129,7 @@ export default function MapScreen() {
         } catch (error: any) {
           console.log('Error', error.message);
         }
-      }
-
-      addNewPin();
-        
+      } 
   }, []);
 
   // Callback to be triggered when the map's camera changes.
