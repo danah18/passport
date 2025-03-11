@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
   try {
     const requestUrl = new URL(req.url);
     const photoResource = requestUrl.searchParams.get("photoResource");
-    
+
     const url = `https://places.googleapis.com/v1/${photoResource}/media?maxHeightPx=400&maxWidthPx=400&skipHttpRedirect=true`;
 
     const response = await fetch(url, {
