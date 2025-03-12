@@ -22,7 +22,7 @@ export type GooglePlace = {
   rating: number,
   googleMapsUri: string,
   userRatingCount: number,
-  displayName: DisplayName,
+  displayName: string,
   photos: Photo[]
 }
 

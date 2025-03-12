@@ -6,7 +6,19 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 
 Deno.serve(async (req) => {
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    "Access-Control-Allow-Methods": "OPTIONS, GET, POST, DELETE, PUT",
+    "Access-Control-Allow-Credentials": "true",
+  }
+
   try {
+    if (req.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204, headers: { ...corsHeaders, "Access-Control-Allow-Headers": req.headers.get("Access-Control-Request-Headers") || "*" },
+      });
+    }
+
     const requestUrl = new URL(req.url);
     const photoResource = requestUrl.searchParams.get("photoResource");
 
@@ -25,10 +37,12 @@ Deno.serve(async (req) => {
     }
 
     const data = await response.json();
-
+    
     return new Response(
       JSON.stringify(data),
-      { headers: { "Content-Type": "application/json" } },
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      },
     )
   } catch (error) {
     console.error("Fetch error:", error);

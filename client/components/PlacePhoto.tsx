@@ -4,9 +4,9 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Dimensions, FlatList, StatusBar, View, Text, Button, TouchableOpacity, Linking } from 'react-native';
 import { getSupabaseClient } from '../utils/supabase.ts';
-import { Photo } from './PlaceInfo.tsx';
 import { Image } from 'react-native';
 import PlacePhotoFlatList from './PlacePhotoFlatList.tsx';
+import { Photo } from '../data/pins.tsx';
 
 export type PlacePhotoProps = {
     photos: Photo[],
@@ -23,39 +23,41 @@ export default function PlacePhoto(props: PlacePhotoProps) {
   const { width, height } = Dimensions.get('window');
   const isMobile = width < 768;
 
-  const [previewPhoto, setPreviewPhoto] = useState<PhotoData>(
-    { 
-        photoUri: "https://lh3.googleusercontent.com/place-photos/ADOriq0ljiLBtfFAK1dElBxuMVaegVmpTQy9Ru6LV-Vos44lz5_odtCMKwSBSlo2AsNeuPaUe8QcoFbvwYdJD9o9Ikq2v5RRJJ-XzrtsMnbIJsDv6aQmo70Qefd7LBsHxa4Q08tgAIGojA=s4800-w400-h400",
-        widthPx:4032,
-        heightPx:3024,
-    });
-
   const supabase = getSupabaseClient();
+  const defaultPreviewPhotoData = { 
+    photoUri: "", //"https://lh3.googleusercontent.com/place-photos/ADOriq0ljiLBtfFAK1dElBxuMVaegVmpTQy9Ru6LV-Vos44lz5_odtCMKwSBSlo2AsNeuPaUe8QcoFbvwYdJD9o9Ikq2v5RRJJ-XzrtsMnbIJsDv6aQmo70Qefd7LBsHxa4Q08tgAIGojA=s4800-w400-h400",
+    widthPx:4032,
+    heightPx:3024,
+  };
 
-  // Enable when CORS issue is resolved:
-  //
-//   useEffect(() => {
-//     getPhotoData();
-//   }, []);
+  const [previewPhoto, setPreviewPhoto] = useState<PhotoData>(defaultPreviewPhotoData);
+
+  useEffect(() => {
+    getPhotoData();
+  }, []);
 
   const getPhotoData = async () => {
-    if (props.photos && props.photos.length >= 1)
+    if (props.photos && props.photos.length > 0)
     {
         const previewPhoto = props.photos[0];
 
-        const { data, error } = await supabase.functions.invoke(`google-place-photos?photoResource=${previewPhoto.name}`, {
-            headers: {
-            'Authorization': `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || ''}`,
-            'Access-Control-Allow-Origin': '*',
-            },
-            method: 'GET',
-        })
-        
-        setPreviewPhoto({
-            photoUri: data.photoUri,
-            widthPx: props.photos[0].widthPx,
-            heightPx: props.photos[0].heightPx
-        });
+        try
+        {
+            const { data, error } = await supabase.functions.invoke(`google-place-photos?photoResource=${previewPhoto.name}`, {
+                method: 'GET',
+            })
+            
+            setPreviewPhoto({
+                photoUri: data.photoUri,
+                widthPx: props.photos[0].widthPx,
+                heightPx: props.photos[0].heightPx
+            });
+        }
+        catch (error)
+        {
+            setPreviewPhoto(defaultPreviewPhotoData);
+            console.log(error);
+        }
     } 
   };
 

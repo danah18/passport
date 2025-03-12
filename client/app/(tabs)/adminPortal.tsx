@@ -19,21 +19,29 @@ export default function AdminPortal() {
     setSupabase(getSupabaseClient());
   }, []);
 
+  const addNewPins = async (textQuery: string) => {
+    const queries: string[] = textQuery.split(",");
+
+    queries.forEach(async (query) => {
+      await addNewPin(query);
+    })
+  }
+
   const addNewPin = async (textQuery: string) => {
     try {
-      // // TODO: uncomment when CORS error is fixed
-      // const supabase = getSupabaseClient(); // Figure out how to not do this on every 
-      // const { data, error } = await supabase.functions.invoke('google-place-text-query', {
-      //   body: { textQuery: textQuery },
-      // });
+      const supabase = getSupabaseClient(); // Figure out how to not do this on every call to this method     
 
-      // if (error) 
-      // {
-      //   throw error;
-      // } 
+      const { data, error } = await supabase.functions.invoke('google-place-text-query', {
+        body: { textQuery: textQuery },
+      });
 
-      const googlePlaceResponse = JSON.parse(textQuery) as GooglePlaceResponse;
+      if (error) 
+      {
+        throw error;
+      } 
 
+      const googlePlaceResponse = data as GooglePlaceResponse;
+      
       // Need to account for multiple responses returned, for now we just assume first element is the result
       if (googlePlaceResponse.places == null || googlePlaceResponse.places.length == 0)
       {
@@ -41,41 +49,30 @@ export default function AdminPortal() {
         return;
       }
 
-      const googlePlace = googlePlaceResponse.places[0];
+    const googlePlace = googlePlaceResponse.places[0];
 
-      const google_place_id = googlePlace.id;
-      const location = `SRID=4326;POINT(${googlePlace.location.longitude} ${googlePlace.location.latitude})`;
-      const pin_name = googlePlace.displayName.text;
-      const metadata = {
-        formattedAddress: googlePlace.formattedAddress,
-        rating: googlePlace.rating,
-        userRatingCount: googlePlace.userRatingCount,
-        googleMapsUri: googlePlace.googleMapsUri,
-        displayName: googlePlace.displayName,
-        photos: [],
-      }; // JSONB
+    const google_place_id = googlePlace.id;
+    const location = `SRID=4326;POINT(${googlePlace.location.longitude} ${googlePlace.location.latitude})`;
+    const pin_name = googlePlace.displayName.text;
+    const metadata = {
+      formattedAddress: googlePlace.formattedAddress,
+      rating: googlePlace.rating,
+      userRatingCount: googlePlace.userRatingCount,
+      googleMapsUri: googlePlace.googleMapsUri,
+      displayName: googlePlace.displayName.text,
+      photos: googlePlace.photos,
+    };
 
-      const { data, error } = await supabase!
-        .from('pins') 
-        .insert([{ 
-          google_place_id: google_place_id,
-          location: location,
-          pin_name: pin_name,
-          metadata: metadata 
-        }]);
-
-      if (error) 
-      { 
-        console.log('Error', error.message);
-      }  
-      else
-      {
-        console.log('Success', 'Pin added successfully with metadata: ' + metadata);
-      }
-    } catch (error: any) {
-      console.log('Error', error.message);
-    }
-  } 
+    await supabase.from('pins').insert([{ 
+      google_place_id: google_place_id,
+      location: location,
+      pin_name: pin_name,
+      metadata: metadata 
+    }]);
+  } catch (error: any) {
+    console.log('Error', error.message);
+  }
+} 
 
   return (
     <View style={styles.container}>
@@ -83,35 +80,31 @@ export default function AdminPortal() {
         <ThemedText type="title">Admin Portal</ThemedText>
       </ThemedView>
       <ThemedText>This tool allows you to add new pins to your local supabase DB instance.</ThemedText>
-      <Collapsible title="1) Get Google Place JSON info">
-        <ThemedText>
-          Due to existing CORS issues, we use the Google Place API explorer to get JSON blobs rather than calling our own edge function.
-          Hit 'Try It', update text query, then hit 'Execute'.
-        </ThemedText>
-        
-        <ExternalLink href="https://developers.google.com/maps/documentation/places/web-service/text-search">
-          <ThemedText type="link">Open Google Place API explorer</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="2) Copy & Paste JSON object into DB">
+      <Collapsible title="1) Add comma separated list of places. Single place entries work as well">
         <TextInput 
           style={styles.input} 
-          placeholder="Paste JSON blob here" 
+          placeholder="Add places here" 
           value={inputValue} 
           onChangeText={setInputValue} // Update state on text change
         />
         <Button 
           title="Submit" 
           onPress={() => {
-            addNewPin(inputValue); // Example action
+            addNewPins(inputValue); // Example action
           }} 
         />
       </Collapsible>
-      <Collapsible title="3) See new info in your local DB instance">
+      <Collapsible title="2) See new info in your local DB instance">
         <ExternalLink href="http://127.0.0.1:54323/project/default/editor/19423?schema=public">
           <ThemedText type="link">Check out the pins table in the public schema to see changes. Make sure you've run `supabase start`.</ThemedText>
         </ExternalLink>
       </Collapsible>    
+      <Collapsible title="Reference:">
+        <ExternalLink href="https://developers.google.com/maps/documentation/places/web-service/text-search">
+          <ThemedText type="link">Open Google Place API explorer</ThemedText>
+        </ExternalLink>
+      </Collapsible>
+      
     </View>
   );
 }
