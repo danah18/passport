@@ -19,26 +19,42 @@ export default function AdminPortal() {
     setSupabase(getSupabaseClient());
   }, []);
 
-  const addNewPin = async (jsonBlob: string) => {
+  const addNewPin = async (textQuery: string) => {
     try {
-      // Need to account for indexing of the array
-      const jsonObject = JSON.parse(jsonBlob) as GooglePlaceResponse;
+      const supabase = getSupabaseClient(); // Figure out how to not do this on every call
+      const { data, error } = await supabase.functions.invoke('google-place-text-query', {
+        headers: { 
+          'Authorization': `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || ''}`,
+          'Content-Type': 'application/json'
+        },
+        body: { textQuery: textQuery },
+        method: 'POST',
+      });
 
-      console.log(jsonObject);
+      console.log('Response data:', data); // Log the response data for debugging
+      if (error) 
+      {
+        throw error;
+      } 
 
-      const latitude = 33.0694771;
-      const longitude = -117.3041763;
-      const google_place_id = "ChIJE7hVdOUM3IARwNSTLLmH0Js";
-      const location = `SRID=4326;POINT(${longitude} ${latitude})`;
-      const pin_name = "French Corner Leucadia";
-      const metadata = {
-        formattedAddress: "1200 N Coast Hwy 101, Encinitas, CA 92024, USA",
-        rating: 4.5,
-        userRatingCount: 414,
-        googleMapsUri: "https://maps.google.com/?cid=11227623100421231808",
-        displayName: "French Corner Leucadia",
-        photos: [],
-      }; // JSONB
+      // // Need to account for indexing of the array
+      // const jsonObject = JSON.parse(jsonBlob) as GooglePlaceResponse;
+
+      // console.log(jsonObject);
+
+      // const latitude = 33.0694771;
+      // const longitude = -117.3041763;
+      // const google_place_id = "ChIJE7hVdOUM3IARwNSTLLmH0Js";
+      // const location = `SRID=4326;POINT(${longitude} ${latitude})`;
+      // const pin_name = "French Corner Leucadia";
+      // const metadata = {
+      //   formattedAddress: "1200 N Coast Hwy 101, Encinitas, CA 92024, USA",
+      //   rating: 4.5,
+      //   userRatingCount: 414,
+      //   googleMapsUri: "https://maps.google.com/?cid=11227623100421231808",
+      //   displayName: "French Corner Leucadia",
+      //   photos: [],
+      // }; // JSONB
 
       // const { data, error } = await supabase!
       //   .from('pins') 

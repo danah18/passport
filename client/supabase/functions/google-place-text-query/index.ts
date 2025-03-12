@@ -18,6 +18,7 @@ Deno.serve(async (req) => {
     let requestData;
     try {
       requestData = await req.json();
+      console.log(requestData);
     } catch (error) {
       console.error("Error parsing JSON:", error);
       return new Response("Invalid JSON", { status: 400 });

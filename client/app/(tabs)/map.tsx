@@ -159,8 +159,7 @@ export default function MapScreen() {
           restaurants.map((restaurant) => (
             <Marker
               onClick={() => {
-                // setShowPanel(true)
-                // console.log('Show Panel:', showPanel)
+                setShowPanel(true)
               }}
               key={restaurant.id}
               position={{ lat: restaurant.lat, lng: restaurant.long }}
