@@ -21,7 +21,9 @@ Deno.serve(async (req) => {
       console.log(requestData);
     } catch (error) {
       console.error("Error parsing JSON:", error);
-      return new Response("Invalid JSON", { status: 400 });
+      return new Response("Invalid JSON",
+        { status: 400, headers: { ...corsHeaders } }
+      );
     }
 
     const response = await fetch(url, {
