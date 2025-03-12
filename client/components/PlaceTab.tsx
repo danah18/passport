@@ -1,11 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { Dimensions, FlatList, StatusBar, View, Text, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
-import PlaceInfo, { mockPhotoArray } from './PlaceInfo.tsx';
+import PlaceInfo from './PlaceInfo.tsx';
 import PlacePhotoFlatList from './PlacePhotoFlatList.tsx';
+import { Pin } from '../app/(tabs)/map.tsx';
 
 type PlaceTabProps = {
-    placeId: string,
+    pin: Pin,
 }
 
 export default function PlaceTab(props: PlaceTabProps) {
@@ -107,9 +108,9 @@ export default function PlaceTab(props: PlaceTabProps) {
         borderRadius: '8px'
       }}>
         {displayAllPhotos ? 
-          <PlacePhotoFlatList photos={mockPhotoArray} setDisplayAllPhotos={setDisplayAllPhotos}/> :
+          <PlacePhotoFlatList photos={props.pin.metadata.photos} setDisplayAllPhotos={setDisplayAllPhotos}/> :
           <View>
-            <PlaceInfo placeId={props.placeId} setDisplayAllPhotos={setDisplayAllPhotos}/>
+            <PlaceInfo pin={props.pin} setDisplayAllPhotos={setDisplayAllPhotos}/>
             <FlatList
               data={DATA}
               renderItem={({item}) => <Item note={item.note} name={item.name} />}

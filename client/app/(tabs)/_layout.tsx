@@ -36,9 +36,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name='explore'
+        name='admin portal'
         options={{
-          title: 'Explore',
+          title: 'Admin Portal',
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name='paperplane.fill' color={color} />
           ),

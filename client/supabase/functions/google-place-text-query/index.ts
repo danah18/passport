@@ -1,8 +1,3 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
-
-// Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 
 Deno.serve(async (req) => {
@@ -19,16 +14,26 @@ Deno.serve(async (req) => {
       });
     }
 
-    const requestUrl = new URL(req.url);
-    const photoResource = requestUrl.searchParams.get("photoResource");
-
-    const url = `https://places.googleapis.com/v1/${photoResource}/media?maxHeightPx=400&maxWidthPx=400&skipHttpRedirect=true`;
+    const url = `https://places.googleapis.com/v1/places:searchText`;
+    let requestData;
+    try {
+      requestData = await req.json();
+      console.log(requestData);
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+      return new Response("Invalid JSON",
+        { status: 400, headers: { ...corsHeaders } }
+      );
+    }
 
     const response = await fetch(url, {
-      method: "GET",
+      method: "POST",
+      body: JSON.stringify(requestData),
       headers: {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": `${Deno.env.get('EXPO_PUBLIC_GOOGLE_MAPS_KEY')}`,
+        "X-Goog-FieldMask": "places.displayName,places.location,places.formattedAddress,places.rating,places.userRatingCount,places.googleMapsUri,places.photos"//,places.reviews" 
+        // "*" to return all fields
       },
     });
 
@@ -37,7 +42,7 @@ Deno.serve(async (req) => {
     }
 
     const data = await response.json();
-    
+
     return new Response(
       JSON.stringify(data),
       {
