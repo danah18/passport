@@ -24,13 +24,7 @@ export default function AdminPortal() {
       // // TODO: uncomment when CORS error is fixed
       // const supabase = getSupabaseClient(); // Figure out how to not do this on every 
       // const { data, error } = await supabase.functions.invoke('google-place-text-query', {
-      //   headers: { 
-      //     ...corsHeaders,
-      //     'Authorization': `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || ''}`,
-      //     'Content-Type': 'application/json'
-      //   },
       //   body: { textQuery: textQuery },
-      //   method: 'POST',
       // });
 
       // if (error) 
