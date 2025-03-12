@@ -6,23 +6,24 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 
 Deno.serve(async (req) => {
+
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    // 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, access-control-allow-credentials, access-control-allow-methods, access-control-allow-origin, access-control-allow-headers',
+    "Access-Control-Allow-Methods": "OPTIONS, GET, POST, DELETE, PUT",
+    "Access-Control-Allow-Credentials": "true",
+  }
+
   try {
-    // Request header field access-control-allow-origin is not allowed by Access-Control-Allow-Headers in preflight response.
     if (req.method === 'OPTIONS') {
-      return new Response('ok', {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type,x-client-info, Authorization, apikey,access-control-allow-origin',
-          "Access-Control-Allow-Credentials": "true",
-          "Vary": "Origin", // Helps browsers handle different origins properly
-        },
+      return new Response(null, {
+        status: 204, headers: { ...corsHeaders, "Access-Control-Allow-Headers": req.headers.get("Access-Control-Request-Headers") || "*" },
       });
     }
 
     const requestUrl = new URL(req.url);
     const placeId = requestUrl.searchParams.get("placeId");
-    
+
     const url = `https://places.googleapis.com/v1/places/${placeId}`;
 
     const response = await fetch(url, {
@@ -38,21 +39,16 @@ Deno.serve(async (req) => {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-      const data = await response.json();
+    const data = await response.json();
 
-      return new Response(
-        JSON.stringify(data),
-        { headers: { 
-          "Content-Type": "application/json", 
-          "Access-Control-Allow-Origin": "*",  // CORS header for temp local development
-          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type,x-client-info, Authorization, apikey,access-control-allow-origin',
-          "Access-Control-Allow-Credentials": "true",
-          "Vary": "Origin", // Helps browsers handle different origins properly
-        } },
-      )
+    return new Response(
+      JSON.stringify(data),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      },
+    )
   } catch (error) {
-      console.error("Fetch error:", error);
-      throw error;
+    console.error("Fetch error:", error);
+    throw error;
   }
 })

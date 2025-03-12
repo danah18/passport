@@ -103,7 +103,6 @@ export default function PlaceInfo(props: PlaceInfoProps) {
     const { data, error } = await supabase.functions.invoke(`google-places?placeId=${props.placeId}`, {
       headers: {
         'Authorization': `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || ''}`,
-        'Access-Control-Allow-Origin': '*',
       },
       method: 'GET',
     })
