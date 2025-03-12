@@ -2,14 +2,65 @@ import { StyleSheet, Image, Platform, View, Button, TextInput } from 'react-nati
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getSupabaseClient } from '../../utils/supabase.ts';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { GooglePlace, GooglePlaceResponse } from '../../data/pins.tsx';
 
-export default function TabTwoScreen() {
+export default function AdminPortal() {
   const [inputValue, setInputValue] = useState("");
+  const [supabase, setSupabase] = useState<SupabaseClient>();
+
+  useEffect(() => {
+    // TODO: add error handling for if supabase is null as code throughout this
+    // file assumes non-null
+    setSupabase(getSupabaseClient());
+  }, []);
+
+  const addNewPin = async (jsonBlob: string) => {
+    try {
+      // Need to account for indexing of the array
+      const jsonObject = JSON.parse(jsonBlob) as GooglePlaceResponse;
+
+      console.log(jsonObject);
+
+      const latitude = 33.0694771;
+      const longitude = -117.3041763;
+      const google_place_id = "ChIJE7hVdOUM3IARwNSTLLmH0Js";
+      const location = `SRID=4326;POINT(${longitude} ${latitude})`;
+      const pin_name = "French Corner Leucadia";
+      const metadata = {
+        formattedAddress: "1200 N Coast Hwy 101, Encinitas, CA 92024, USA",
+        rating: 4.5,
+        userRatingCount: 414,
+        googleMapsUri: "https://maps.google.com/?cid=11227623100421231808",
+        displayName: "French Corner Leucadia",
+        photos: [],
+      }; // JSONB
+
+      // const { data, error } = await supabase!
+      //   .from('pins') 
+      //   .insert([{ 
+      //     google_place_id: google_place_id,
+      //     location: location,
+      //     pin_name: pin_name,
+      //     metadata: metadata 
+      //   }]);
+
+      // if (error) 
+      // { 
+      //   console.log('Error', error.message);
+      // }  
+      // else
+      // {
+      //   console.log('Success', 'User added successfully');
+      // }
+    } catch (error: any) {
+      console.log('Error', error.message);
+    }
+  } 
 
   return (
     <View style={styles.container}>
@@ -37,14 +88,13 @@ export default function TabTwoScreen() {
         <Button 
           title="Submit" 
           onPress={() => {
-            // Handle button press
-            console.log(inputValue); // Example action
+            addNewPin(inputValue); // Example action
           }} 
         />
       </Collapsible>
       <Collapsible title="3) See new info in your local DB instance">
         <ExternalLink href="http://127.0.0.1:54323/project/default/editor/19423?schema=public">
-          <ThemedText type="link">Check out the pins table in the public schema to see changes</ThemedText>
+          <ThemedText type="link">Check out the pins table in the public schema to see changes. Make sure you've run `supabase start`.</ThemedText>
         </ExternalLink>
       </Collapsible>    
     </View>
