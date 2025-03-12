@@ -51,7 +51,7 @@ export default function AdminPortal() {
 
       const google_place_id = googlePlace.id;
       const location = `SRID=4326;POINT(${googlePlace.location.longitude} ${googlePlace.location.latitude})`;
-      const pin_name = googlePlace.displayName;
+      const pin_name = googlePlace.displayName.text;
       const metadata = {
         formattedAddress: googlePlace.formattedAddress,
         rating: googlePlace.rating,

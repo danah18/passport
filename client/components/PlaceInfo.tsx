@@ -4,31 +4,13 @@ import { getSupabaseClient } from '../utils/supabase.ts';
 import { StarRatingDisplay } from 'react-native-star-rating-widget'; 
 import PlacePhoto from './PlacePhoto.tsx';
 import PlacePhotoFlatList from './PlacePhotoFlatList.tsx';
+import { Pin } from '../app/(tabs)/map.tsx';
+import { GooglePlace, Photo } from '../data/pins.tsx';
 // https://github.com/bviebahn/react-native-star-rating-widget/tree/028b43da27ea70a792b208a2d518f7c14d66338d
 
 type PlaceInfoProps = {
-    placeId: string,
+    pin: Pin,
     setDisplayAllPhotos: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-type DisplayName = {
-  text: string,
-  languageCode: string,
-}
-
-export type Photo = {
-  name: string,
-  widthPx: number,
-  heightPx: number,
-}
-
-type PlaceData = {
-  formattedAddress: string,
-  rating: number,
-  userRatingCount: number,
-  googleMapsUri: string,
-  displayName: DisplayName,
-  photos: Photo[],
 }
 
 export const mockPhotoArray: Photo[] = [
@@ -79,34 +61,11 @@ export const mockPhotoArray: Photo[] = [
   },
 ];
 
-const mockPlaceData: PlaceData = {
-  formattedAddress:"1600 Amphitheatre Pkwy, Mountain View, CA 94043, USA",
-  rating:4.2,
-  userRatingCount:9627,
-  googleMapsUri:"https://maps.google.com/?cid=7793879817120868320",
-  displayName:{ text:"Googleplex",languageCode:"en"},
-  photos: mockPhotoArray,
-};
-
 export default function PlaceInfo(props: PlaceInfoProps) {
   const { width, height } = Dimensions.get('window');
-  const [placeData, setPlaceData] = useState<PlaceData>(mockPlaceData);
   const isMobile = width < 768;
 
-  const supabase = getSupabaseClient();
-
-  useEffect(() => {
-    getPlaceData();
-  }, []);
-
-  const getPlaceData = async () => {
-    const { data, error } = await supabase.functions.invoke(`google-places?placeId=${props.placeId}`, {
-      headers: {
-        'Authorization': `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || ''}`,
-      },
-      method: 'GET',
-    })
-  };
+  const placeData = props.pin.metadata;
 
   return (
     <View>

@@ -12,6 +12,7 @@ import { Dimensions } from 'react-native';
 import { BlurView } from 'expo-blur';
 import PlaceTab from '@/components/PlaceTab';
 import { fetchData } from '@/services/googlePlaces';
+import { GooglePlace } from '../../data/pins.tsx';
 
 interface Restaurant {
   id: number;
@@ -20,11 +21,11 @@ interface Restaurant {
   long: number;
 }
 
-interface Pin {
+export interface Pin {
   google_place_id: string;
   pin_name: string;
   category: string;
-  metadata: JSON;
+  metadata: GooglePlace;
   lat: number;
   long: number;
 }
@@ -34,7 +35,7 @@ export default function MapScreen() {
   const [pins, setPins] = useState<Pin[]>([]);
   const [loading, setLoading] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
-  const [placeId, setPlaceId] = useState("ChIJj61dQgK6j4AR4GeTYWZsKWw");
+  const [selectedPin, setSelectedPin] = useState<Pin>();
 
   const { width, height } = Dimensions.get('window');
   const isMobile = width < 768;
@@ -147,9 +148,8 @@ export default function MapScreen() {
           pins.map((pin) => (
             <Marker
               onClick={() => {
-                setShowPanel(true)
-                // setPlaceId(pin.google_place_id); // when we swap to using Pins instead of restaurants we will have access to the place ID
-                // actually in this scenario, passing the Pin as the prop is better as it will have all embedded info
+                setShowPanel(true);
+                setSelectedPin(pin);
               }}
               key={pin.google_place_id}
               position={{ lat: pin.lat, lng: pin.long }}
@@ -160,9 +160,8 @@ export default function MapScreen() {
 
       {showPanel && 
           // Play around with styling to not overlay on certain Maps components
-          <PlaceTab placeId={placeId}/> 
-            
-          }
+          <PlaceTab pin={selectedPin}/> 
+        }
     </APIProvider>
   );
 }
