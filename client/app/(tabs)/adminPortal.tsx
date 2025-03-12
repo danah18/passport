@@ -21,58 +21,63 @@ export default function AdminPortal() {
 
   const addNewPin = async (textQuery: string) => {
     try {
-      const supabase = getSupabaseClient(); // Figure out how to not do this on every call
-      const { data, error } = await supabase.functions.invoke('google-place-text-query', {
-        headers: { 
-          'Authorization': `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || ''}`,
-          'Content-Type': 'application/json'
-        },
-        body: { textQuery: textQuery },
-        method: 'POST',
-      });
-
-      console.log('Response data:', data); // Log the response data for debugging
-      if (error) 
-      {
-        throw error;
-      } 
-
-      // // Need to account for indexing of the array
-      // const jsonObject = JSON.parse(jsonBlob) as GooglePlaceResponse;
-
-      // console.log(jsonObject);
-
-      // const latitude = 33.0694771;
-      // const longitude = -117.3041763;
-      // const google_place_id = "ChIJE7hVdOUM3IARwNSTLLmH0Js";
-      // const location = `SRID=4326;POINT(${longitude} ${latitude})`;
-      // const pin_name = "French Corner Leucadia";
-      // const metadata = {
-      //   formattedAddress: "1200 N Coast Hwy 101, Encinitas, CA 92024, USA",
-      //   rating: 4.5,
-      //   userRatingCount: 414,
-      //   googleMapsUri: "https://maps.google.com/?cid=11227623100421231808",
-      //   displayName: "French Corner Leucadia",
-      //   photos: [],
-      // }; // JSONB
-
-      // const { data, error } = await supabase!
-      //   .from('pins') 
-      //   .insert([{ 
-      //     google_place_id: google_place_id,
-      //     location: location,
-      //     pin_name: pin_name,
-      //     metadata: metadata 
-      //   }]);
+      // // TODO: uncomment when CORS error is fixed
+      // const supabase = getSupabaseClient(); // Figure out how to not do this on every 
+      // const { data, error } = await supabase.functions.invoke('google-place-text-query', {
+      //   headers: { 
+      //     ...corsHeaders,
+      //     'Authorization': `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || ''}`,
+      //     'Content-Type': 'application/json'
+      //   },
+      //   body: { textQuery: textQuery },
+      //   method: 'POST',
+      // });
 
       // if (error) 
-      // { 
-      //   console.log('Error', error.message);
-      // }  
-      // else
       // {
-      //   console.log('Success', 'User added successfully');
-      // }
+      //   throw error;
+      // } 
+
+      const googlePlaceResponse = JSON.parse(textQuery) as GooglePlaceResponse;
+
+      // Need to account for multiple responses returned, for now we just assume first element is the result
+      if (googlePlaceResponse.places == null || googlePlaceResponse.places.length == 0)
+      {
+        console.log(Error(`No results returned for textQuery: ${textQuery}`));
+        return;
+      }
+
+      const googlePlace = googlePlaceResponse.places[0];
+
+      const google_place_id = googlePlace.id;
+      const location = `SRID=4326;POINT(${googlePlace.location.longitude} ${googlePlace.location.latitude})`;
+      const pin_name = googlePlace.displayName;
+      const metadata = {
+        formattedAddress: googlePlace.formattedAddress,
+        rating: googlePlace.rating,
+        userRatingCount: googlePlace.userRatingCount,
+        googleMapsUri: googlePlace.googleMapsUri,
+        displayName: googlePlace.displayName,
+        photos: [],
+      }; // JSONB
+
+      const { data, error } = await supabase!
+        .from('pins') 
+        .insert([{ 
+          google_place_id: google_place_id,
+          location: location,
+          pin_name: pin_name,
+          metadata: metadata 
+        }]);
+
+      if (error) 
+      { 
+        console.log('Error', error.message);
+      }  
+      else
+      {
+        console.log('Success', 'Pin added successfully with metadata: ' + metadata);
+      }
     } catch (error: any) {
       console.log('Error', error.message);
     }
