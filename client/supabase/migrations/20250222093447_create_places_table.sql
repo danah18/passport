@@ -63,3 +63,36 @@ CREATE TABLE IF NOT EXISTS user_pins (
     -- Composite primary key ensures a user can only have one record per pin
     PRIMARY KEY (user_id, pin_id)
 );
+
+-- Create a dedicated separate schema
+create schema if not exists "gis";
+
+-- enable the "postgis" extension
+create extension if not exists postgis
+with
+	schema "gis";
+
+create index pins_geo_index on public.pins using GIST (location);
+
+create or replace function pins_in_view (
+	min_lat float,
+	min_long float,
+	max_lat float,
+	max_long float
+) returns table (
+	google_place_id public.pins.google_place_id % TYPE,
+	pin_name public.pins.pin_name % TYPE,
+    metadata public.pins.metadata % TYPE,
+    category public.pins.category % TYPE,
+	lat float,
+	long float
+)
+set
+	search_path to '' language sql as $$
+	select google_place_id, pin_name, metadata, category, gis.st_y(location::gis.geometry) as lat, gis.st_x(location::gis.geometry) as long
+	from public.pins
+	where location operator(gis.&&) gis.ST_SetSRID(gis.ST_MakeBox2D(gis.ST_Point(min_long, min_lat), gis.ST_Point(max_long, max_lat)), 4326)
+$$;
+
+grant usage on schema gis to anon,
+authenticated;

@@ -4,6 +4,7 @@ import {
   Map,
   Marker,
   MapCameraChangedEvent,
+  Pin,
 } from '@vis.gl/react-google-maps';
 import throttle from 'lodash.throttle';
 import { getSupabaseClient } from '../../utils/supabase'; // adjust the import path as needed
@@ -19,80 +20,65 @@ interface Restaurant {
   long: number;
 }
 
+interface Pin {
+  google_place_id: string;
+  pin_name: string;
+  category: string;
+  metadata: JSON;
+  lat: number;
+  long: number;
+}
+
 export default function MapScreen() {
   const mapsKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || '';
-  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [pins, setPins] = useState<Pin[]>([]);
   const [loading, setLoading] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
+  const [placeId, setPlaceId] = useState("ChIJj61dQgK6j4AR4GeTYWZsKWw");
 
   const { width, height } = Dimensions.get('window');
   const isMobile = width < 768;
 
-  // Function to fetch restaurants in view using the bounding box
-  const fetchRestaurantsInView = useCallback(
-    async (
-      min_lat: number,
-      min_long: number,
-      max_lat: number,
-      max_long: number
-    ) => {
-      const supabase = getSupabaseClient();
-      setLoading(true);
-      const { data, error } = await supabase.rpc('restaurants_in_view', {
-        min_lat,
-        min_long,
-        max_lat,
-        max_long,
-      });
-      if (error) {
-        console.error('Error fetching restaurants:', error);
-      } else if (data) {
-        setRestaurants(data as Restaurant[]);
-      }
-      setLoading(false);
-    },
-    []
-  );
+  // Function to fetch pins in view using the bounding box
+  const fetchPinsInView = useCallback(
+  async (
+    min_lat: number,
+    min_long: number,
+    max_lat: number,
+    max_long: number
+  ) => {
+    const supabase = getSupabaseClient();
+    setLoading(true);
 
-   // Function to fetch pins in view using the bounding box
-   const fetchPinsInView = useCallback(
-    async (
-      min_lat: number,
-      min_long: number,
-      max_lat: number,
-      max_long: number
-    ) => {
-      const supabase = getSupabaseClient();
-      setLoading(true);
+    // TODO: make equivalent supabase function
+    const { data, error } = await supabase.rpc('pins_in_view', {
+      min_lat,
+      min_long,
+      max_lat,
+      max_long,
+    });
+    if (error) {
+      console.error('Error fetching pins:', error);
+    } else if (data) {
+      setPins(data as Pin[]);
+    }
+    setLoading(false);
+  },
+  []
+);
 
-      // TODO: make equivalent supabase function
-      const { data, error } = await supabase.rpc('restaurants_in_view', {
-        min_lat,
-        min_long,
-        max_lat,
-        max_long,
-      });
-      if (error) {
-        console.error('Error fetching restaurants:', error);
-      } else if (data) {
-        setRestaurants(data as Restaurant[]);
-      }
-      setLoading(false);
-    },
-    []
-  );
-
-  // Throttle the fetching of restaurants to at most once per second
+  // Throttle the fetching of pins to at most once per second
   const throttledFetch = useCallback(
-    throttle((bounds: { north: number; south: number; east: number; west: number }) => {
-      fetchRestaurantsInView(bounds.south, bounds.west, bounds.north, bounds.east);
-    }, 1000),
-    [fetchRestaurantsInView]
-  );
+  throttle((bounds: { north: number; south: number; east: number; west: number }) => {
+    fetchPinsInView(bounds.south, bounds.west, bounds.north, bounds.east);
+  }, 1000),
+  [fetchPinsInView]
+);
 
   useEffect(() => {
     const supabase = getSupabaseClient();
 
+    // TODO: this should be moved into the schema migration file and with photo urls
     const addNewPin = async () => {
         try {
           const latitude = 33.0694771;
@@ -142,7 +128,9 @@ export default function MapScreen() {
   };
 
   // Define a default center for the map
-  const defaultCenter = { lat: 40.8075, lng: -73.946 };
+  // TODO: update this to auto-populate based on selected capsule location
+  // const defaultCenter = { lat: 40.8075, lng: -73.946 };
+  const defaultCenter = { lat: 33.069095, lng: -117.303448 };
 
   return (
     <APIProvider
@@ -156,21 +144,23 @@ export default function MapScreen() {
         onClick={() => setShowPanel(false)}
       >
         {!loading &&
-          restaurants.map((restaurant) => (
+          pins.map((pin) => (
             <Marker
               onClick={() => {
                 setShowPanel(true)
+                // setPlaceId(pin.google_place_id); // when we swap to using Pins instead of restaurants we will have access to the place ID
+                // actually in this scenario, passing the Pin as the prop is better as it will have all embedded info
               }}
-              key={restaurant.id}
-              position={{ lat: restaurant.lat, lng: restaurant.long }}
-              title={restaurant.name}
+              key={pin.google_place_id}
+              position={{ lat: pin.lat, lng: pin.long }}
+              title={pin.pin_name}
             />
           ))}
       </Map>
 
       {showPanel && 
           // Play around with styling to not overlay on certain Maps components
-          <PlaceTab placeId="ChIJj61dQgK6j4AR4GeTYWZsKWw"/>
+          <PlaceTab placeId={placeId}/> 
             
           }
     </APIProvider>
