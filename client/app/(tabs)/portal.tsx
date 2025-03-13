@@ -9,8 +9,9 @@ import { getSupabaseClient } from '../../utils/supabase.ts';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { GooglePlace, GooglePlaceResponse } from '../../data/pins.tsx';
 
-export default function AdminPortal() {
+export default function Portal() {
   const [inputValue, setInputValue] = useState("");
+  const [cityInputValue, setCityInputValue] = useState("");
   const [supabase, setSupabase] = useState<SupabaseClient>();
 
   useEffect(() => {
@@ -20,15 +21,16 @@ export default function AdminPortal() {
   }, []);
 
   const addNewPins = async (textQuery: string) => {
-    const queries: string[] = textQuery.split(",");
+    const queries: string[] = textQuery.split(/[\n,]+/);
 
     queries.forEach(async (query) => {
-      await addNewPin(query);
+      await addNewPin(query + ` ${cityInputValue}`);
     })
   }
 
   const addNewPin = async (textQuery: string) => {
     try {
+      console.log(textQuery);
       const supabase = getSupabaseClient(); // Figure out how to not do this on every call to this method     
 
       const { data, error } = await supabase.functions.invoke('google-place-text-query', {
@@ -77,13 +79,21 @@ export default function AdminPortal() {
   return (
     <View style={styles.container}>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Admin Portal</ThemedText>
+        <ThemedText type="title">Portal</ThemedText>
       </ThemedView>
       <ThemedText>This tool allows you to add new pins to your local supabase DB instance.</ThemedText>
-      <Collapsible title="1) Add comma separated list of places. Single place entries work as well">
+      <Collapsible title="1) Add the name of the city you are traveling to">
         <TextInput 
           style={styles.input} 
-          placeholder="Add places here" 
+          placeholder="E.g. Leucadia" 
+          value={cityInputValue} 
+          onChangeText={setCityInputValue} // Update state on text change
+        />
+      </Collapsible>
+      <Collapsible title="2) Add comma-separated list of places (new line not yet supported). Single entries work as well.">
+        <TextInput 
+          style={styles.input} 
+          placeholder="E.g. Pannikin Coffee, Buona Forchetta, etc." 
           value={inputValue} 
           onChangeText={setInputValue} // Update state on text change
         />
@@ -94,7 +104,7 @@ export default function AdminPortal() {
           }} 
         />
       </Collapsible>
-      <Collapsible title="2) See new info in your local DB instance">
+      <Collapsible title="3) See new info in your local DB instance">
         <ExternalLink href="http://127.0.0.1:54323/project/default/editor/19423?schema=public">
           <ThemedText type="link">Check out the pins table in the public schema to see changes. Make sure you've run `supabase start`.</ThemedText>
         </ExternalLink>
