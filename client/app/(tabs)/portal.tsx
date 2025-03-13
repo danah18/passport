@@ -78,43 +78,28 @@ export default function Portal() {
 
   return (
     <View style={styles.container}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Portal</ThemedText>
-      </ThemedView>
-      <ThemedText>This tool allows you to add new pins to your local supabase DB instance.</ThemedText>
-      <Collapsible title="1) Add the name of the city you are traveling to">
-        <TextInput 
+      <ThemedText>Enter the name of the city or country of interest </ThemedText>
+      <TextInput 
           style={styles.input} 
           placeholder="E.g. Leucadia" 
           value={cityInputValue} 
           onChangeText={setCityInputValue} // Update state on text change
         />
-      </Collapsible>
-      <Collapsible title="2) Add comma-separated list of places (new line not yet supported). Single entries work as well.">
-        <TextInput 
+
+      <ThemedText>Paste in recommendations you received & name of recommender</ThemedText>
+      <TextInput 
           style={styles.input} 
           placeholder="E.g. Pannikin Coffee, Buona Forchetta, etc." 
           value={inputValue} 
           onChangeText={setInputValue} // Update state on text change
         />
+      {/* need to add input for recommender name */}
         <Button 
           title="Submit" 
           onPress={() => {
             addNewPins(inputValue); // Example action
           }} 
         />
-      </Collapsible>
-      <Collapsible title="3) See new info in your local DB instance">
-        <ExternalLink href="http://127.0.0.1:54323/project/default/editor/19423?schema=public">
-          <ThemedText type="link">Check out the pins table in the public schema to see changes. Make sure you've run `supabase start`.</ThemedText>
-        </ExternalLink>
-      </Collapsible>    
-      <Collapsible title="Reference:">
-        <ExternalLink href="https://developers.google.com/maps/documentation/places/web-service/text-search">
-          <ThemedText type="link">Open Google Place API explorer</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      
     </View>
   );
 }
@@ -133,6 +118,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
+    borderRadius: 10,
     marginBottom: 20,
     paddingHorizontal: 10,
     color:'white'

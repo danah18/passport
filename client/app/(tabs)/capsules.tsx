@@ -2,43 +2,85 @@ import { AirplaneAnimation } from "@/components/AirplaneAnimation";
 import ParallaxScrollViewNoHeader from "@/components/ParallaxScrollViewNoHeader";
 import { ThemedView } from "@/components/ThemedView";
 import { router, useNavigation } from "expo-router";
-import { Button, Text, StyleSheet, Dimensions, TouchableOpacity, FlatList } from "react-native";
+import { User } from '@supabase/supabase-js';
+import { Button, Text, StyleSheet, Dimensions, TouchableOpacity, FlatList, View } from "react-native";
+import { getSupabaseClient } from "../../utils/supabase.ts";
+import { useCallback, useEffect, useState } from "react";
+import TextBlockComponent from "../../components/TextBlockComponent.tsx";
+import TextBlockList from "../../components/TextBlockList.tsx";
 
 const { width, height } = Dimensions.get('window');
 const isMobile = width < 768;
 
 export default function Capsules() { 
+    const [user, setUser] = useState<User | null>(null);
     const numColumns = 2;
 
-    // This will be replaced with a /GET that returns the places list
-    // I think it's fine if there's a mix of country-level with city/island level but tbd
-    const placeholderPlacesList = ["bali", "lombok", "nusa penida", "spain", "tangier"];
+    // This will be replaced with a /GET that returns the user's capsule list + capsules_shared list
+    // Mix of country-level with city/island level should be fine but no continents
+    const placeholderPlacesList = [];//["bali", "lombok", "nusa penida", "spain", "tangier"];
+
+    useCallback(() => {
+        const supabase = getSupabaseClient();
+
+        const fetchUser = async () => {
+            const { data, error } = await supabase.auth.getUser();
+            if (error) {
+              console.log('Error fetching user:', error);
+              return;
+            }
+            setUser(data?.user || null);
+        };
+      
+        fetchUser();
+    }, []);
+   
 
     return (
       <ParallaxScrollViewNoHeader>
       <ThemedView style={styles.titleContainer}>
-          <Text style={styles.headerText}>name's capsules</Text>
+          <Text style={styles.headerText}>Welcome, {user?.user_metadata.firstName}!</Text>
      </ThemedView>
 
      <ThemedView style={styles.titleContainer}>
           <AirplaneAnimation/>
      </ThemedView>
 
-      {isMobile ? ( placeholderPlacesList.map((placeName, index) => (
-            <TouchableOpacity 
-                style={styles.mobileContainer}
-                key={index} 
-                onPress={() => router.push({
-                  pathname: '/tripCapsule',
-                  params: { placeName: placeName },
-                })}
+     <TextBlockList/>
+
+      {isMobile ? (     
+        <>
+            <TouchableOpacity
+                style={styles.startButtonContainer}
+                onPress={() => router.replace('./portal')}
             >
-                <Text style={styles.buttonText}>{placeName}</Text>
+                <Text style={styles.buttonText}>Start</Text>
             </TouchableOpacity>
-        ))) : (
-            <FlatList
-                data={placeholderPlacesList}
-                renderItem={({ item }) => (
+            {placeholderPlacesList.map((placeName, index) => (
+                <TouchableOpacity 
+                    style={styles.mobileContainer}
+                    key={index} 
+                    onPress={() => router.push({
+                    pathname: '/tripCapsule',
+                    params: { placeName: placeName },
+                    })}
+                >
+                    <Text style={styles.buttonText}>{placeName}</Text>
+                </TouchableOpacity>
+            ))}
+        </>
+        ) : (
+            <View styles={styles.container}>
+                <TouchableOpacity
+                    style={styles.startButtonContainer}
+                    onPress={() => router.replace('./portal')}
+                >
+                    <Text style={styles.buttonText}>Start</Text>
+                </TouchableOpacity>
+
+                <FlatList
+                    data={placeholderPlacesList}
+                    renderItem={({ item }) => (
                     <TouchableOpacity
                         style={styles.desktopContainerGridItem}
                         onPress={() => router.push({
@@ -52,7 +94,8 @@ export default function Capsules() {
                 keyExtractor={(item, index) => index.toString()}
                 numColumns={numColumns}
                 columnWrapperStyle={styles.row}
-            />
+                />
+            </View>
         )}
       </ParallaxScrollViewNoHeader>
     );
@@ -88,9 +131,25 @@ const styles = StyleSheet.create({
         alignSelf: 'center', // Center the button horizontally
         borderRadius: 5, // Optional: Add rounded corners
     },
+    startButtonContainer: {
+        backgroundColor: "#68bef7",
+        flexDirection: 'row',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        width: 200,
+        margin: 10,
+        justifyContent: 'center',
+        alignSelf: 'center',
+        borderRadius: 5, 
+    },
     buttonText: {
         color: '#fff',
         fontWeight: 'bold',
+    },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     desktopContainerGridItem: {
         backgroundColor: "#68bef7",

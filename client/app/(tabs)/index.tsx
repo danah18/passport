@@ -7,6 +7,7 @@ import { User } from '@supabase/supabase-js';
 import * as QueryParams from 'expo-auth-session/build/QueryParams';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
+import { Link, router } from 'expo-router';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -204,12 +205,7 @@ export default function AccountScreen() {
       }}
     >
       {user ? (
-        <>
-          <ThemedText style={{ marginBottom: 20 }}>
-            Welcome, {user.user_metadata.firstName}
-          </ThemedText>
-          <Button title='Sign Out' onPress={signOut} />
-        </>
+        router.navigate("./capsules", { relativeToDirectory: false })
       ) : (
         <>
           {loading ? (
