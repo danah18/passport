@@ -44,6 +44,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "b645b88a-b3a5-45f7-8099-3bc42dd65bdd"
+      }
+    },
+    "owner": "kitzeller"
   }
 }
