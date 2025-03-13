@@ -22,6 +22,7 @@ export type PhotoData = {
 export default function PlacePhoto(props: PlacePhotoProps) {
   const { width, height } = Dimensions.get('window');
   const isMobile = width < 768;
+  const maxRetry = 3;
 
   const supabase = getSupabaseClient();
   const defaultPreviewPhotoData = { 
@@ -33,35 +34,56 @@ export default function PlacePhoto(props: PlacePhotoProps) {
   const [previewPhoto, setPreviewPhoto] = useState<PhotoData>(defaultPreviewPhotoData);
 
   useEffect(() => {
-    getPhotoData();
-  }, []);
-
-  const getPhotoData = async () => {
     if (props.photos && props.photos.length > 0)
     {
-        const previewPhoto = props.photos[0];
+        getPhotoData(0, 0);
+    }
+    else
+    {
+        setPreviewPhoto(defaultPreviewPhotoData);
+    }
+  }, [props]);
 
-        try
+
+  const getPhotoData = async (index: number, counter: number) => {
+    const previewPhoto = props.photos[index];
+
+    if (counter < maxRetry)
+    {
+        const { data, error } = await supabase.functions.invoke(`google-place-photos?photoResource=${previewPhoto.name}`, {
+            method: 'GET',
+        })
+
+        console.log(`data: `+ data);
+        console.log(`error: `+ error);
+
+        if (error)
         {
-            const { data, error } = await supabase.functions.invoke(`google-place-photos?photoResource=${previewPhoto.name}`, {
-                method: 'GET',
-            })
-            
+            if (error.code == 429)
+            {
+                if (index+1 < props.photos.length)
+                {
+                    await getPhotoData(index+1, counter+1);
+                }
+                else
+                {
+                    setPreviewPhoto(defaultPreviewPhotoData);
+                    console.log(error);
+                    return;
+                }
+            }
+        }
+        else
+        {
             setPreviewPhoto({
                 photoUri: data.photoUri,
-                widthPx: props.photos[0].widthPx,
-                heightPx: props.photos[0].heightPx
+                widthPx: props.photos[index].widthPx,
+                heightPx: props.photos[index].heightPx
             });
         }
-        catch (error)
-        {
-            setPreviewPhoto(defaultPreviewPhotoData);
-            console.log(error);
-        }
-    } 
+    }
   };
 
-  // Rate limiting does occur with the image resource
   return (
     <View>
       <View 
