@@ -34,7 +34,7 @@ export default function PlacePhotoFlatList(props: PlacePhotoProps) {
   useEffect(() => {
     props.photos.forEach(async (photoReference) => {
         const photo = await getPhotoData(photoReference.name);
-        setPhotosToDisplay([...photosToDisplay, photo]); 
+        setPhotosToDisplay(prevPhotos => [...prevPhotos, photo]); 
     });
   }, []);
 

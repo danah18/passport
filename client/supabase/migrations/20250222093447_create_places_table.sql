@@ -54,6 +54,14 @@ CREATE TABLE IF NOT EXISTS user_pins (
     pin_id uuid NOT NULL REFERENCES pins (id),
     -- A note about the pin provided by the user
     note text,
+    -- Long term, we want to query user_pins to display the list of notes
+    -- that have been shared with a user. For the beta, as 99% of notes shared
+    -- will come from people who don't have accounts, we allow users to add
+    -- a list of note objects ({note, author name}. This allows us to temporarily
+    -- solve notes population without needing to create multiple mock accounts. 
+    -- If we have the phone number of the author who shared, we can make an account
+    -- on their behalf and populate the user_pin for that note that way.
+    notes JSONB,
     -- Optional rating given by the user (e.g., on a scale from 1 to 5)
     rating int,
     -- Boolean flag indicating if the user has favorited this pin
