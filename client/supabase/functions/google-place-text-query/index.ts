@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify(requestData),
       headers: {
         "Content-Type": "application/json",
-        "X-Goog-Api-Key": `${Deno.env.get('EXPO_PUBLIC_GOOGLE_MAPS_KEY')}`,
+        "X-Goog-Api-Key": `${Deno.env.get('GOOGLE_MAPS_KEY')}`,
         "X-Goog-FieldMask": "places.displayName,places.location,places.formattedAddress,places.rating,places.userRatingCount,places.googleMapsUri,places.photos"//,places.reviews" 
         // "*" to return all fields
       },
