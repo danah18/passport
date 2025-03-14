@@ -5,6 +5,7 @@ import { Button } from "./ui/Button.tsx";
 import { Textarea } from "./ui/Textarea.tsx";
 import { Card, CardContent } from "./ui/Card.tsx";
 import { Input } from "./ui/Input.tsx";
+import { useThemeColor } from "../hooks/useThemeColor.ts";
 
 interface TextBlockComponentProps {
   text: string;
@@ -37,6 +38,8 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
       }
     }
   }, [isActive, text.length]);
+
+  const backgroundColor = useThemeColor({}, 'background');
 
   const containerVariants = {
     initial: { opacity: 0, y: 10 },
@@ -79,42 +82,23 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
       exit="exit"
       className="text-block relative group"
     >
-      <Card className={`border shadow-sm transition-all duration-300 ${
+      <Card 
+        style={{ backgroundColor: '#f8fafc' }}
+        className={`border shadow-sm transition-all duration-300 ${
         isActive ? "ring-2 ring-primary/20" : "hover:shadow-md"
       }`}>
         <CardContent className="p-0">
           <div className="text-block-container relative rounded-lg p-4">
-            <div className="absolute -top-3 right-3 flex space-x-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:flex">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-7 w-7 rounded-full text-destructive hover:bg-destructive/10"
-                onClick={onRemove}
-                aria-label="Remove block"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-            
             <div className="flex items-center mb-2 ml-1">
-              {isEditingTitle ? (
-                <Input
-                  value={title}
-                  onChange={(e) => onTitleChange(index, e.target.value)}
-                  onBlur={() => setIsEditingTitle(false)}
-                  onKeyDown={handleTitleKeyDown}
-                  autoFocus
-                  className="text-xs tracking-wide h-6 py-0 px-1"
-                />
-              ) : (
-                <div 
-                  className="text-xs text-muted-foreground font-medium tracking-wide uppercase flex items-center cursor-pointer hover:text-foreground"
-                  onClick={() => setIsEditingTitle(true)}
-                >
-                  <span>{title || `Block ${index + 1}`}</span>
-                  <Pencil className="h-3 w-3 ml-1 opacity-50" />
-                </div>
-              )}
+            <Input
+                value={title}
+                onChange={(e) => onTitleChange(index, e.target.value)}
+                onBlur={() => setIsEditingTitle(false)}
+                onKeyDown={handleTitleKeyDown}
+                placeholder="Recommender name"
+                autoFocus
+                className="text-xs tracking-wide h-6 py-0 px-1"
+            />
             </div>
             
             <Textarea
@@ -126,6 +110,19 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
               placeholder="Enter your text here..."
               className="text-input min-h-[120px] resize-y border-0 bg-background/60 focus:ring-0 focus-visible:ring-offset-0 rounded-lg"
             />
+
+            <div style={{marginRight: 5}} className="absolute flex space-x-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:flex">
+              <Button
+                size="icon"
+                variant="ghost"
+                style={{marginTop: 5}}
+                className="h-7 w-7 rounded-full text-destructive hover:bg-destructive/10"
+                onClick={onRemove}
+                aria-label="Remove block"
+              >
+                <Trash2 className="h-4 w-4" style={{ color: backgroundColor }} />
+              </Button>
+            </div>
             
             <div className="mt-3 text-xs text-right text-muted-foreground">
               {text.length} characters {text.trim().length > 0 ? `• ${text.trim().split(/\s+/).length} words` : ""}

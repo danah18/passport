@@ -1,4 +1,4 @@
-import { StyleSheet, Image, Platform, View, Button, TextInput } from 'react-native';
+import { StyleSheet, Image, Platform, View, Button, TextInput, ScrollView } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -8,11 +8,15 @@ import { useEffect, useState } from 'react';
 import { getSupabaseClient } from '../../utils/supabase.ts';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { GooglePlace, GooglePlaceResponse } from '../../data/pins.tsx';
+import TextBlockList from '../../components/TextBlockList.tsx';
+import { motion } from 'framer-motion';
+import { useThemeColor } from '../../hooks/useThemeColor.ts';
 
 export default function Portal() {
   const [inputValue, setInputValue] = useState("");
   const [cityInputValue, setCityInputValue] = useState("");
   const [supabase, setSupabase] = useState<SupabaseClient>();
+  const backgroundColor = useThemeColor({}, 'background');
 
   useEffect(() => {
     // TODO: add error handling for if supabase is null as code throughout this
@@ -77,7 +81,10 @@ export default function Portal() {
 } 
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={{ flex: 1, backgroundColor: backgroundColor }}>
+        <div className="min-h-screen flex flex-col">
+        <div className="container max-w-4xl mx-auto px-4 py-8 flex-grow">
+      
       <ThemedText>Enter the name of the city or country of interest </ThemedText>
       <TextInput 
           style={styles.input} 
@@ -86,21 +93,24 @@ export default function Portal() {
           onChangeText={setCityInputValue} // Update state on text change
         />
 
-      <ThemedText>Paste in recommendations you received & name of recommender</ThemedText>
-      <TextInput 
-          style={styles.input} 
-          placeholder="E.g. Pannikin Coffee, Buona Forchetta, etc." 
-          value={inputValue} 
-          onChangeText={setInputValue} // Update state on text change
-        />
-      {/* need to add input for recommender name */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <TextBlockList />
+      </motion.div>
+     
+      {/* Move this to the submit button within portal.tsx
         <Button 
-          title="Submit" 
-          onPress={() => {
-            addNewPins(inputValue); // Example action
-          }} 
-        />
-    </View>
+        title="Submit" 
+        onPress={() => {
+          addNewPins(inputValue); // Example action
+        }} 
+      /> */}
+      </div>
+      </div>
+    </ScrollView>
   );
 }
 
@@ -111,8 +121,6 @@ const styles = StyleSheet.create({
   },
   container: {
     gap: 30,
-    marginTop: 10,
-    marginLeft: 10
   },
   input: {
     height: 40,

@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Save } from "lucide-react";
+import { Check, Plus, Save } from "lucide-react";
 import { Button } from "./ui/Button.tsx";
 import TextBlockComponent from "./TextBlockComponent.tsx";
 
@@ -94,18 +94,8 @@ const TextBlockList = () => {
           className="mb-8 flex justify-between items-center"
         >
           <div>
-            <h2 className="text-2xl font-display font-medium tracking-tight">Your Text Blocks</h2>
-            <p className="text-muted-foreground">Add, edit, and organize your content</p>
-          </div>
-          <div className="flex space-x-2">
-            <Button 
-              variant="outline" 
-              className="flex items-center" 
-              onClick={saveTextBlocks}
-            >
-              <Save className="mr-2 h-4 w-4" />
-              Save
-            </Button>
+            <h2 className="text-2xl font-display font-medium tracking-tight text-white">Your Text Blocks</h2>
+            <p className="text-muted-foreground text-white">Add, edit, and organize your content</p>
           </div>
         </motion.div>
         
@@ -141,11 +131,21 @@ const TextBlockList = () => {
         >
           <Button 
             onClick={addNewBlock} 
-            className="group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+            className="mr-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
           >
             <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
             <span className="relative flex items-center justify-center text-white">
               <Plus className="mr-2 h-4 w-4" /> Add New Block
+            </span>
+          </Button>
+
+          <Button 
+            onClick={saveTextBlocks} 
+            className="group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+          >
+            <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
+            <span className="relative flex items-center justify-center text-white">
+              <Check className="mr-2 h-4 w-4" /> Submit
             </span>
           </Button>
         </motion.div>

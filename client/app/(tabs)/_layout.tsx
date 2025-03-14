@@ -51,7 +51,13 @@ export default function Layout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer screenOptions={{
           headerRight: () => (user &&
-            <Button title="Log Out" onPress={signOut} color="#68bef7" />
+            <div style={{marginRight:10}}>
+              <Button 
+                title="Log Out" 
+                onPress={signOut} 
+                color="#68bef7"
+                />
+            </div>
           ),
         }}>
         <Drawer.Screen

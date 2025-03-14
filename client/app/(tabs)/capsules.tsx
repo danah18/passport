@@ -46,8 +46,6 @@ export default function Capsules() {
           <AirplaneAnimation/>
      </ThemedView>
 
-     <TextBlockList/>
-
       {isMobile ? (     
         <>
             <TouchableOpacity
