@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, Plus, Save } from "lucide-react";
 import { Button } from "./ui/Button.tsx";
 import TextBlockComponent from "./TextBlockComponent.tsx";
+import GooglePlaceAutofillComponent from "./GooglePlaceAutofillComponent.tsx";
+import { TextInput } from "react-native";
+import { Input } from "./ui/Input.tsx";
 
 interface TextBlock {
   id: string;
@@ -18,6 +21,7 @@ const TextBlockList = () => {
     title: ""
   }]);
   const [activeBlockIndex, setActiveBlockIndex] = useState<number>(0);
+  const [googlePlaceAutofillInputValue, setGooglePlaceAutofillInputValue] = useState("");
   const endOfPageRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -87,6 +91,34 @@ const TextBlockList = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <div className="container max-w-4xl mx-auto px-4 py-8 flex-grow">
+      <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8 flex justify-between items-center"
+        >
+          <div>
+            <h2 className="text-2xl font-display font-medium tracking-tight text-white">Where to?</h2>
+            <p className="text-muted-foreground text-white">Enter the city or country of interest</p>
+            <Input
+                value={'title'}
+                onChange={(e) => {}}
+                onBlur={() => {}}
+                onKeyDown={()=>{}}
+                placeholder="City or country of interest"
+                autoFocus
+                className="text-xs tracking-wide h-6 py-0 px-1"
+                style={{
+                    height: 40,
+                    borderColor: 'gray',
+                    borderWidth: 1,
+                    borderRadius: 10,
+                    marginTop: 5,
+                }}
+            />
+          </div>
+        </motion.div>
+
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -94,8 +126,9 @@ const TextBlockList = () => {
           className="mb-8 flex justify-between items-center"
         >
           <div>
-            <h2 className="text-2xl font-display font-medium tracking-tight text-white">Your Text Blocks</h2>
-            <p className="text-muted-foreground text-white">Add, edit, and organize your content</p>
+            <h2 className="text-2xl font-display font-medium tracking-tight text-white">Recommended by Friends</h2>
+            <p className="text-muted-foreground text-white">Add each set of recs received from friends</p>
+            {/* Add card, add input, handle in the way you were originally handling city input */}
           </div>
         </motion.div>
         
@@ -135,7 +168,7 @@ const TextBlockList = () => {
           >
             <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
             <span className="relative flex items-center justify-center text-white">
-              <Plus className="mr-2 h-4 w-4" /> Add New Block
+              <Plus className="mr-2 h-4 w-4" /> Add New List
             </span>
           </Button>
 

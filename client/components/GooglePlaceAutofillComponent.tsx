@@ -7,7 +7,7 @@ import { Card, CardContent } from "./ui/Card.tsx";
 import { Input } from "./ui/Input.tsx";
 import { useThemeColor } from "../hooks/useThemeColor.ts";
 
-interface TextBlockComponentProps {
+interface GooglePlaceAutofillComponentProps {
   text: string;
   index: number;
   title: string;
@@ -18,7 +18,7 @@ interface TextBlockComponentProps {
   onRemove: () => void;
 }
 
-const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
+const GooglePlaceAutofillComponent: React.FC<GooglePlaceAutofillComponentProps> = ({
   text,
   index,
   title,
@@ -95,37 +95,10 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
                 onChange={(e) => onTitleChange(index, e.target.value)}
                 onBlur={() => setIsEditingTitle(false)}
                 onKeyDown={handleTitleKeyDown}
-                placeholder="Name of friend who sent you list"
+                placeholder="City or country of interest"
                 autoFocus
                 className="text-xs tracking-wide h-6 py-0 px-1"
             />
-            </div>
-            
-            <Textarea
-              ref={textareaRef}
-              value={text}
-              onChange={(e) => onTextChange(index, e.target.value)}
-              onFocus={onFocus}
-              onKeyDown={handleKeyDown}
-              placeholder="Paste list of recs here..."
-              className="text-input min-h-[120px] resize-y border-0 bg-background/60 focus:ring-0 focus-visible:ring-offset-0 rounded-lg"
-            />
-
-            <div style={{marginRight: 5}} className="absolute flex space-x-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:flex">
-              <Button
-                size="icon"
-                variant="ghost"
-                style={{marginTop: 5}}
-                className="h-7 w-7 rounded-full text-destructive hover:bg-destructive/10"
-                onClick={onRemove}
-                aria-label="Remove block"
-              >
-                <Trash2 className="h-4 w-4" style={{ color: backgroundColor }} />
-              </Button>
-            </div>
-            
-            <div className="mt-3 text-xs text-right text-muted-foreground">
-              {text.length} characters {text.trim().length > 0 ? `• ${text.trim().split(/\s+/).length} words` : ""}
             </div>
           </div>
         </CardContent>
@@ -134,4 +107,4 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
   );
 };
 
-export default TextBlockComponent;
+export default GooglePlaceAutofillComponent;

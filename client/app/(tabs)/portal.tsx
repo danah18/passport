@@ -84,14 +84,6 @@ export default function Portal() {
     <ScrollView style={{ flex: 1, backgroundColor: backgroundColor }}>
         <div className="min-h-screen flex flex-col">
         <div className="container max-w-4xl mx-auto px-4 py-8 flex-grow">
-      
-      <ThemedText>Enter the name of the city or country of interest </ThemedText>
-      <TextInput 
-          style={styles.input} 
-          placeholder="E.g. Leucadia" 
-          value={cityInputValue} 
-          onChangeText={setCityInputValue} // Update state on text change
-        />
 
       <motion.div
         initial={{ opacity: 0 }}
