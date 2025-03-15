@@ -86,9 +86,6 @@ export default function Layout() {
           options={{
             drawerLabel: 'Map',
             title: '',
-            // Temp workaround - it is still clickable but somewhat hidden
-            // https://react-navigation.canny.io/feature-requests/p/add-option-to-hide-item-from-a-drawer
-            drawerLabelStyle:  { display: 'none' }
           }}
         /> 
         <Drawer.Screen
@@ -96,6 +93,8 @@ export default function Layout() {
           options={{
             drawerLabel: 'Trip Capsule',
             title: '',
+            // Temp workaround - it is still clickable but somewhat hidden
+            // https://react-navigation.canny.io/feature-requests/p/add-option-to-hide-item-from-a-drawer
             drawerLabelStyle:  { display: 'none' }
           }}
         />  
