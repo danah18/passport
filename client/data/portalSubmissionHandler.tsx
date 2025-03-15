@@ -8,6 +8,7 @@ import { createOrFetchPin } from "./pinManager.tsx";
 export type PortalSubmissionHandlerProps = {
   textBlockList: TextBlock[],
   placeName: string,
+  isCuratorMode: boolean
 };
 
 const defaultPassword = "5uP@WuJO2$Z3lK";
@@ -92,16 +93,29 @@ export async function handlePortalSubmission(props: PortalSubmissionHandlerProps
     // We need to make a global retrieval fxn instead of getting it each time
     const supabase = getSupabaseClient();
 
-    props.textBlockList.forEach(async (item) => {
-        const ephemeralUser = await addNewEphemeralUser(supabase, item.friendName);
-
-        if (ephemeralUser)
-        {
-            // TODO: Adding custom columns to profiles table for ephemeral user once Kit’s changes are in (displayName, isEphemeralUser, linkedPhoneNumber)
-            
-            const capsuleId = await createCapsule(supabase, ephemeralUser, props.placeName, item.recs);
-
-            // TODO: add capsule id to capsule_shares table for original user
+    if (props.isCuratorMode)
+    {
+        const { data, error } = await supabase.auth.getUser();
+        if (error) {
+            console.log('Error fetching user:', error);
+            return;
         }
-    })
+
+        const capsuleId = await createCapsule(supabase, data?.user, props.placeName, props.textBlockList[0].recs);
+    }
+    else
+    {
+        props.textBlockList.forEach(async (item) => {
+            const ephemeralUser = await addNewEphemeralUser(supabase, item.friendName);
+    
+            if (ephemeralUser)
+            {
+                // TODO: Adding custom columns to profiles table for ephemeral user once Kit’s changes are in (displayName, isEphemeralUser, linkedPhoneNumber)
+                
+                const capsuleId = await createCapsule(supabase, ephemeralUser, props.placeName, item.recs);
+    
+                // TODO: add capsule id to capsule_shares table for original user
+            }
+        })
+    }    
 }

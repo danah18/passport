@@ -85,7 +85,7 @@ const TextBlockList = () => {
     
     try 
     {
-        handlePortalSubmission({textBlockList: textBlocks, placeName: googlePlaceAutofillInputValue});
+        handlePortalSubmission({textBlockList: textBlocks, placeName: googlePlaceAutofillInputValue, isCuratorMode: isCuratorMode});
     }
     catch (error)
     {
