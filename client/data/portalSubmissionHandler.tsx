@@ -64,10 +64,9 @@ const createCapsule = async (supabase: SupabaseClient, user: User, placeName: st
 
     recList.forEach(async (rec) => {
         const pinId = await createOrFetchPin(rec);
-        console.log(`pinId: ${pinId}`)
-
-        //await createCapsulePin(supabase, user, capsuleId, pinId);
-        //await createUserPin(supabase, user, pinId, rec);
+        
+        await createCapsulePin(supabase, user, capsuleId, pinId);
+        await createUserPin(supabase, user, pinId, rec);
     });
 
     return capsuleId;    
@@ -77,12 +76,11 @@ const createCapsulePin = async (supabase: SupabaseClient, user: User, capsuleId:
     await supabase.from('capsule_pins').insert([{ 
         capsule_id: capsuleId,
         pin_id: pinId,
-        // position: 0, // I think this should be removed unless there's a reason we need it
+        position: 0, // I think this should be removed unless there's a reason we need it or we need a management system for getting list count
     }]);
 }
 
 const createUserPin = async (supabase: SupabaseClient, user: User, pinId: string, rec: string) => {
-    
     await supabase.from('user_pins').insert([{ 
         user_id: user.id,
         pin_id: pinId,
