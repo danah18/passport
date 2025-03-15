@@ -1,6 +1,8 @@
 import { SupabaseClient, User } from "@supabase/supabase-js";
 import { TextBlock } from "../components/TextBlockList.tsx";
 import { getSupabaseClient } from "../utils/supabase.ts";
+import { Pin } from "../app/(tabs)/map.tsx";
+import { createOrFetchPin } from "./pinManager.tsx";
 
 
 export type PortalSubmissionHandlerProps = {
@@ -47,28 +49,45 @@ const addNewEphemeralUser = async (supabase: SupabaseClient, friendName: string)
     } 
 }
 
-const createCapsule = async (user: User, recs: string) => {
-    // Create capsule on behalf of this new user, set name to be the same as what user specified in portal form
+ // Creates capsule on behalf of ephemeral user using place name
+const createCapsule = async (supabase: SupabaseClient, user: User, placeName: string, recs: string) => {
+    const { data, error } = await supabase.rpc('insert_capsule', {
+        user_id: user.id,
+        name: placeName,
+        description: ''
+    });
+
+    const capsuleId = data;
 
     // Split recs by comma or new line
+    const recList: string[] = recs.split(/[\n,]+/);
 
-    // Create pin (or retrieve if one already exists for the google place ID in the DB)
-    // Create capsule_pin
-    // Create user_pin 
-    // Add a TODO comment about extracting and adding any additional provided note
+    recList.forEach(async (rec) => {
+        const pinId = await createOrFetchPin(rec);
+        console.log(`pinId: ${pinId}`)
+
+        //await createCapsulePin(supabase, user, capsuleId, pinId);
+        //await createUserPin(supabase, user, pinId, rec);
+    });
+
+    return capsuleId;    
 }
 
-const createOrFetchPin = async (user: User) => {
-    // Create pin (or retrieve if one already exists for the google place ID in the DB)
+const createCapsulePin = async (supabase: SupabaseClient, user: User, capsuleId: string, pinId: string) => {
+    await supabase.from('capsule_pins').insert([{ 
+        capsule_id: capsuleId,
+        pin_id: pinId,
+        // position: 0, // I think this should be removed unless there's a reason we need it
+    }]);
 }
 
-const createCapsulePin = async (user: User) => {
-    // Create capsule_pin
-}
-
-const createUserPin = async (user: User) => {
-    // Create user_pin 
-    // Add a TODO comment about extracting and adding any additional provided note
+const createUserPin = async (supabase: SupabaseClient, user: User, pinId: string, rec: string) => {
+    
+    await supabase.from('user_pins').insert([{ 
+        user_id: user.id,
+        pin_id: pinId,
+        note: '', // TODO: extract any provided notes from rec and add to user pin
+    }]);
 }
 
 export async function handlePortalSubmission(props: PortalSubmissionHandlerProps) {
@@ -78,16 +97,15 @@ export async function handlePortalSubmission(props: PortalSubmissionHandlerProps
     console.log(props.placeName);
 
     props.textBlockList.forEach(async (item) => {
-        const user = await addNewEphemeralUser(supabase, item.friendName);
+        const ephemeralUser = await addNewEphemeralUser(supabase, item.friendName);
 
-        if (user)
+        if (ephemeralUser)
         {
             // TODO: Adding custom columns to profiles table for ephemeral user once Kit’s changes are in (displayName, isEphemeralUser, linkedPhoneNumber)
             
-            await createCapsule(user, item.recs);
+            const capsuleId = await createCapsule(supabase, ephemeralUser, props.placeName, item.recs);
+
+            // TODO: add capsule id to capsule_shares table for original user
         }
     })
-
-    // console.log(item.friendName);
-    // console.log(item.recs);
 }
