@@ -10,7 +10,7 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "functions": "npx supabase functions serve --env-file ./.env.local"
+    "functions": "npx supabase functions serve --env-file ./supabase/functions/.env.local"
   },
   "jest": {
     "preset": "jest-expo"
