@@ -25,6 +25,7 @@ const TextBlockList = () => {
   const [activeBlockIndex, setActiveBlockIndex] = useState<number>(0);
   const [googlePlaceAutofillInputValue, setGooglePlaceAutofillInputValue] = useState("");
   const [isCuratorMode, setIsCuratorMode] = useState(false);
+  const [isEditingPlaceName, setIsEditingPlaceName] = React.useState(false);
   const endOfPageRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -33,6 +34,16 @@ const TextBlockList = () => {
       endOfPageRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [textBlocks.length]);
+
+  const handlePlaceNameKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      setIsEditingPlaceName(false);
+    }
+  };
+
+  const handlePlaceNameChange = (newPlaceName: string) => {
+    setGooglePlaceAutofillInputValue(newPlaceName);
+  };
 
   const handleRecsChange = (index: number, newRecs: string) => {
     const newBlocks = [...textBlocks];
@@ -118,9 +129,9 @@ const TextBlockList = () => {
             <p className="text-muted-foreground text-white">Enter the city or country of interest</p>
             <Input
                 value={googlePlaceAutofillInputValue}
-                onChange={(e) => {}}
-                onBlur={() => {}}
-                onKeyDown={()=>{}}
+                onChange={(e) => handlePlaceNameChange(e.target.value)}
+                onBlur={() => setIsEditingPlaceName(false)}
+                onKeyDown={handlePlaceNameKeyDown}
                 placeholder="City or country of interest"
                 autoFocus
                 className="text-xs tracking-wide h-6 py-0 px-1"
