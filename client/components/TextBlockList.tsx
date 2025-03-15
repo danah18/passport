@@ -102,7 +102,6 @@ const TextBlockList = () => {
 
   const toggleSwitch = () => {
     setIsCuratorMode(previousState => !previousState);
-    console.log(isCuratorMode);
   }
 
   return (

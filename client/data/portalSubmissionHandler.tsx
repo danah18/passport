@@ -50,6 +50,19 @@ const addNewEphemeralUser = async (supabase: SupabaseClient, friendName: string)
     } 
 }
 
+const parseInput = (input: string): string[] => {
+    if (input.includes("\n") && !input.includes(",")) {
+        // If only new lines are present
+        return input.split(/\r?\n/).map(item => item.trim()).filter(Boolean);
+    } else if (input.includes(",") && !input.includes("\n")) {
+        // If only commas are present
+        return input.split(",").map(item => item.trim()).filter(Boolean);
+    } else {
+        // If mixed, split by both
+        return input.split(/[\n,]+/).map(item => item.trim()).filter(Boolean);
+    }
+};
+
  // Creates capsule on behalf of ephemeral user using place name
 const createCapsule = async (supabase: SupabaseClient, user: User, placeName: string, recs: string) => {
     const { data, error } = await supabase.rpc('insert_capsule', {
@@ -60,8 +73,7 @@ const createCapsule = async (supabase: SupabaseClient, user: User, placeName: st
 
     const capsuleId = data;
 
-    // Split recs by comma or new line
-    const recList: string[] = recs.split(/[\n,]+/);
+    const recList = parseInput(recs);
 
     recList.forEach(async (rec) => {
         const pinId = await createOrFetchPin(rec);
