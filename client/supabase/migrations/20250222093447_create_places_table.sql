@@ -19,9 +19,11 @@ CREATE TABLE IF NOT EXISTS pins (
 CREATE TABLE IF NOT EXISTS capsules (
     -- Unique identifier for the capsule, generated automatically
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    -- Foreign key reference to the user who created the capsule (using Supabase auth.users)
-    user_id uuid NOT NULL REFERENCES auth.users (id),
-    -- Name of the capsule (e.g., "Summer Road Capsule")
+    -- Foreign key reference to the user who created the capsule
+    -- Must be retreived from Supabase auth.users, but we manually provide as users
+    -- can create on behalf of others
+    user_id uuid,
+    -- Name of the capsule from Google Place Autofill
     name text NOT NULL,
     -- Optional description for additional details
     description text,
@@ -48,8 +50,10 @@ CREATE TABLE IF NOT EXISTS capsule_pins (
 -- This includes notes, ratings, and whether the user has favorited the pin.
 -- A user can have one record per pin regardless of how many capsules the pin is part of.
 CREATE TABLE IF NOT EXISTS user_pins (
-    -- Foreign key reference to the user (using Supabase auth.users)
-    user_id uuid NOT NULL REFERENCES auth.users (id),
+    -- Foreign key reference to the user who created the capsule
+    -- Must be retreived from Supabase auth.users, but we manually provide as users
+    -- can create on behalf of others
+    user_id uuid,
     -- Foreign key reference to the pin
     pin_id uuid NOT NULL REFERENCES pins (id),
     -- A note about the pin provided by the user
@@ -96,3 +100,37 @@ $$;
 
 grant usage on schema gis to anon,
 authenticated;
+
+CREATE OR REPLACE FUNCTION insert_capsule(
+    user_id uuid,
+    name text,
+    description text
+) RETURNS uuid AS $$
+DECLARE
+    new_id uuid;
+BEGIN
+    INSERT INTO capsules (user_id, name, description)
+    VALUES (user_id, name, description)
+    RETURNING id INTO new_id;
+
+    RETURN new_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION add_pin(
+    google_place_id text,
+    location gis.geography(Point, 4326),
+    pin_name text,
+    category text,
+    metadata JSONB
+) RETURNS uuid AS $$
+DECLARE
+    new_id uuid;
+BEGIN
+    INSERT INTO pins (google_place_id, location, pin_name, category, metadata)
+    VALUES (google_place_id, location, pin_name, category, metadata)
+    RETURNING id INTO new_id;
+
+    RETURN new_id;
+END;
+$$ LANGUAGE plpgsql;

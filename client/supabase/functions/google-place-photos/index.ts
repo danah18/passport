@@ -33,19 +33,30 @@ Deno.serve(async (req) => {
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      return new Response(
+        JSON.stringify({ error: `[Response.statusText]: ${response.statusText}. [Response.text]: ${response.text}` }), 
+        {
+          status: await response.status, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        },
+      );
     }
 
     const data = await response.json();
     
     return new Response(
-      JSON.stringify(data),
+      JSON.stringify({ data: data}),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       },
     )
   } catch (error) {
-    console.error("Fetch error:", error);
-    throw error;
+    return new Response(
+      JSON.stringify({ error: await error }), 
+      {
+        status: error.code,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      },
+    );
   }
 })

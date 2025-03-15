@@ -1,4 +1,4 @@
-import { StyleSheet, Image, Platform, View, Button, TextInput } from 'react-native';
+import { StyleSheet, Image, Platform, View, Button, TextInput, ScrollView } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -8,10 +8,15 @@ import { useEffect, useState } from 'react';
 import { getSupabaseClient } from '../../utils/supabase.ts';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { GooglePlace, GooglePlaceResponse } from '../../data/pins.tsx';
+import TextBlockList from '../../components/TextBlockList.tsx';
+import { motion } from 'framer-motion';
+import { useThemeColor } from '../../hooks/useThemeColor.ts';
 
-export default function AdminPortal() {
+export default function Portal() {
   const [inputValue, setInputValue] = useState("");
+  const [cityInputValue, setCityInputValue] = useState("");
   const [supabase, setSupabase] = useState<SupabaseClient>();
+  const backgroundColor = useThemeColor({}, 'background');
 
   useEffect(() => {
     // TODO: add error handling for if supabase is null as code throughout this
@@ -20,15 +25,16 @@ export default function AdminPortal() {
   }, []);
 
   const addNewPins = async (textQuery: string) => {
-    const queries: string[] = textQuery.split(",");
+    const queries: string[] = textQuery.split(/[\n,]+/);
 
     queries.forEach(async (query) => {
-      await addNewPin(query);
+      await addNewPin(query + ` ${cityInputValue}`);
     })
   }
 
   const addNewPin = async (textQuery: string) => {
     try {
+      console.log(textQuery);
       const supabase = getSupabaseClient(); // Figure out how to not do this on every call to this method     
 
       const { data, error } = await supabase.functions.invoke('google-place-text-query', {
@@ -75,37 +81,28 @@ export default function AdminPortal() {
 } 
 
   return (
-    <View style={styles.container}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Admin Portal</ThemedText>
-      </ThemedView>
-      <ThemedText>This tool allows you to add new pins to your local supabase DB instance.</ThemedText>
-      <Collapsible title="1) Add comma separated list of places. Single place entries work as well">
-        <TextInput 
-          style={styles.input} 
-          placeholder="Add places here" 
-          value={inputValue} 
-          onChangeText={setInputValue} // Update state on text change
-        />
+    <ScrollView style={{ flex: 1, backgroundColor: backgroundColor }}>
+        <div className="min-h-screen flex flex-col">
+        <div className="container max-w-4xl mx-auto px-4 py-8 flex-grow">
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <TextBlockList />
+      </motion.div>
+     
+      {/* Move this to the submit button within portal.tsx
         <Button 
-          title="Submit" 
-          onPress={() => {
-            addNewPins(inputValue); // Example action
-          }} 
-        />
-      </Collapsible>
-      <Collapsible title="2) See new info in your local DB instance">
-        <ExternalLink href="http://127.0.0.1:54323/project/default/editor/19423?schema=public">
-          <ThemedText type="link">Check out the pins table in the public schema to see changes. Make sure you've run `supabase start`.</ThemedText>
-        </ExternalLink>
-      </Collapsible>    
-      <Collapsible title="Reference:">
-        <ExternalLink href="https://developers.google.com/maps/documentation/places/web-service/text-search">
-          <ThemedText type="link">Open Google Place API explorer</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      
-    </View>
+        title="Submit" 
+        onPress={() => {
+          addNewPins(inputValue); // Example action
+        }} 
+      /> */}
+      </div>
+      </div>
+    </ScrollView>
   );
 }
 
@@ -116,13 +113,12 @@ const styles = StyleSheet.create({
   },
   container: {
     gap: 30,
-    marginTop: 10,
-    marginLeft: 10
   },
   input: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
+    borderRadius: 10,
     marginBottom: 20,
     paddingHorizontal: 10,
     color:'white'

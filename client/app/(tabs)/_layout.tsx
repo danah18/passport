@@ -1,64 +1,104 @@
-import { Stack, Tabs, useNavigation } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import React, { useEffect, useState } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Drawer } from 'expo-router/drawer';
+import TestScreen from '../../components/TestScreen.tsx';
+import { Button } from 'react-native';
+import { getSupabaseClient } from '../../utils/supabase.ts';
+import { router } from 'expo-router';
+import { User } from '@supabase/supabase-js';
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+// Note from Expo Router Docs: Be careful when using react-native-gesture-handler on the web. 
+// It can increase the JavaScript bundle size significantly. 
+// Expo router recommends learning about using platform-specific modules.
+export default function Layout() {
+  const [user, setUser] = useState<User | null>(null);
 
+  useEffect(() => {
+    const supabase = getSupabaseClient();
+
+    const fetchUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        console.log('Error fetching user:', error);
+        return;
+      }
+      setUser(data?.user || null);
+    };
+
+    fetchUser();
+
+    // Subscribe to auth state changes.
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user || null);
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  // Sign out the user.
+  const signOut = async () => {
+    const supabase = getSupabaseClient();
+    await supabase.auth.signOut();
+    setUser(null);
+    router.back();
+  };
+  
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}
-    >
-      <Tabs.Screen
-        name='index'
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name='house.fill' color={color} />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Drawer screenOptions={{
+          headerRight: () => (user &&
+            <div style={{marginRight:10}}>
+              <Button 
+                title="Log Out" 
+                onPress={signOut} 
+                color="#68bef7"
+                />
+            </div>
           ),
-        }}
-      />
-      <Tabs.Screen
-        name='admin portal'
-        options={{
-          title: 'Admin Portal',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name='paperplane.fill' color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name='tripCapsule'
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name='account'
-        options={{
-          title: 'Account',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name='person.fill' color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+        }}>
+        <Drawer.Screen
+          name="index" // This is the name of the page and must match the url from root
+          options={{
+            drawerLabel: 'Account',
+            title: ''
+          }}
+        />
+        <Drawer.Screen
+          name="capsules" // This is the name of the page and must match the url from root
+          options={{
+            drawerLabel: 'Capsules',
+            title: '',
+          }}
+        />
+        <Drawer.Screen
+          name="portal" 
+          options={{
+            drawerLabel: 'Portal',
+            title: '',
+          }}
+        />      
+        <Drawer.Screen
+          name="map" 
+          options={{
+            drawerLabel: 'Map',
+            title: '',
+          }}
+        /> 
+        <Drawer.Screen
+          name="tripCapsule" 
+          options={{
+            drawerLabel: 'Trip Capsule',
+            title: '',
+            // Temp workaround - it is still clickable but somewhat hidden
+            // https://react-navigation.canny.io/feature-requests/p/add-option-to-hide-item-from-a-drawer
+            drawerLabelStyle:  { display: 'none' }
+          }}
+        />  
+      </Drawer>
+    </GestureHandlerRootView>
   );
 }

@@ -47,6 +47,22 @@ export default function PlaceTab(props: PlaceTabProps) {
 
   const [displayAllPhotos, setDisplayAllPhotos] = useState(false);
 
+  // Given pin id from props, query user_pin DB for the list of recommendations
+  // 
+  // Add recommendations in portal
+  // TODO: make equivalent supabase function
+  //  const { data, error } = await supabase.rpc('pins_in_view', {
+  //   min_lat,
+  //   min_long,
+  //   max_lat,
+  //   max_long,
+  // });
+  // if (error) {
+  //   console.error('Error fetching pins:', error);
+  // } else if (data) {
+  //   setPins(data as Pin[]);
+  // }
+
   // Assumption is that we can retrieve users and their recommendations for the specific pin
   // user1, note from user1; user2, note from user2l user3, note from user3
   const DATA = [
