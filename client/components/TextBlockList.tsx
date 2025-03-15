@@ -7,18 +7,19 @@ import TextBlockComponent from "./TextBlockComponent.tsx";
 import GooglePlaceAutofillComponent from "./GooglePlaceAutofillComponent.tsx";
 import { TextInput } from "react-native";
 import { Input } from "./ui/Input.tsx";
+import { handlePortalSubmission } from "../data/portalSubmissionHandler.tsx";
 
-interface TextBlock {
+export interface TextBlock {
   id: string;
-  text: string;
-  title: string;
+  recs: string;
+  friendName: string;
 }
 
 const TextBlockList = () => {
   const [textBlocks, setTextBlocks] = useState<TextBlock[]>([{
     id: crypto.randomUUID(),
-    text: "",
-    title: ""
+    recs: "",
+    friendName: ""
   }]);
   const [activeBlockIndex, setActiveBlockIndex] = useState<number>(0);
   const [googlePlaceAutofillInputValue, setGooglePlaceAutofillInputValue] = useState("");
@@ -31,23 +32,23 @@ const TextBlockList = () => {
     }
   }, [textBlocks.length]);
 
-  const handleTextChange = (index: number, newText: string) => {
+  const handleRecsChange = (index: number, newRecs: string) => {
     const newBlocks = [...textBlocks];
-    newBlocks[index].text = newText;
+    newBlocks[index].recs = newRecs;
     setTextBlocks(newBlocks);
   };
 
-  const handleTitleChange = (index: number, newTitle: string) => {
+  const handleFriendNameChange = (index: number, newFriendName: string) => {
     const newBlocks = [...textBlocks];
-    newBlocks[index].title = newTitle;
+    newBlocks[index].friendName = newFriendName;
     setTextBlocks(newBlocks);
   };
 
   const addNewBlock = () => {
     setTextBlocks([...textBlocks, {
       id: crypto.randomUUID(),
-      text: "",
-      title: ""
+      recs: "",
+      friendName: ""
     }]);
     setActiveBlockIndex(textBlocks.length);
   };
@@ -56,8 +57,8 @@ const TextBlockList = () => {
     if (textBlocks.length === 1) {
       setTextBlocks([{
         id: crypto.randomUUID(),
-        text: "",
-        title: ""
+        recs: "",
+        friendName: ""
       }]);
       return;
     }
@@ -71,7 +72,7 @@ const TextBlockList = () => {
   };
 
   const saveTextBlocks = () => {
-    const nonEmptyBlocks = textBlocks.filter(block => block.text.trim().length > 0);
+    const nonEmptyBlocks = textBlocks.filter(block => block.recs.trim().length > 0);
     
     if (nonEmptyBlocks.length === 0) {
       console.error("Nothing to save", {
@@ -80,8 +81,12 @@ const TextBlockList = () => {
       return;
     }
     
+    handlePortalSubmission({textBlockList: textBlocks, placeName: googlePlaceAutofillInputValue});
+
     // Save to local storage
-    localStorage.setItem("savedTextBlocks", JSON.stringify(nonEmptyBlocks));
+    //localStorage.setItem("savedTextBlocks", JSON.stringify(nonEmptyBlocks));
+
+    // here is where we need to create the user item
     
     console.log("Text blocks saved", {
       description: `${nonEmptyBlocks.length} block${nonEmptyBlocks.length === 1 ? "" : "s"} saved successfully`
@@ -101,7 +106,7 @@ const TextBlockList = () => {
             <h2 className="text-2xl font-display font-medium tracking-tight text-white">Where to?</h2>
             <p className="text-muted-foreground text-white">Enter the city or country of interest</p>
             <Input
-                value={'title'}
+                value={googlePlaceAutofillInputValue}
                 onChange={(e) => {}}
                 onBlur={() => {}}
                 onKeyDown={()=>{}}
@@ -143,12 +148,12 @@ const TextBlockList = () => {
               className="mb-6"
             >
               <TextBlockComponent
-                text={block.text}
-                title={block.title}
+                text={block.recs}
+                title={block.friendName}
                 index={index}
                 isActive={activeBlockIndex === index}
-                onTextChange={handleTextChange}
-                onTitleChange={handleTitleChange}
+                onTextChange={handleRecsChange}
+                onTitleChange={handleFriendNameChange}
                 onFocus={() => setActiveBlockIndex(index)}
                 onRemove={() => removeBlock(index)}
               />
