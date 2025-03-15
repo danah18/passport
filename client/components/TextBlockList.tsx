@@ -5,9 +5,10 @@ import { Check, Plus, Save } from "lucide-react";
 import { Button } from "./ui/Button.tsx";
 import TextBlockComponent from "./TextBlockComponent.tsx";
 import GooglePlaceAutofillComponent from "./GooglePlaceAutofillComponent.tsx";
-import { TextInput } from "react-native";
+import { Platform, Switch, TextInput } from "react-native";
 import { Input } from "./ui/Input.tsx";
 import { handlePortalSubmission } from "../data/portalSubmissionHandler.tsx";
+import { router } from "expo-router";
 
 export interface TextBlock {
   id: string;
@@ -23,6 +24,7 @@ const TextBlockList = () => {
   }]);
   const [activeBlockIndex, setActiveBlockIndex] = useState<number>(0);
   const [googlePlaceAutofillInputValue, setGooglePlaceAutofillInputValue] = useState("");
+  const [isCuratorMode, setIsCuratorMode] = useState(false);
   const endOfPageRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -81,17 +83,27 @@ const TextBlockList = () => {
       return;
     }
     
-    handlePortalSubmission({textBlockList: textBlocks, placeName: googlePlaceAutofillInputValue});
+    try 
+    {
+        handlePortalSubmission({textBlockList: textBlocks, placeName: googlePlaceAutofillInputValue});
+    }
+    catch (error)
+    {
+        throw error;
+    }
 
-    // Save to local storage
-    //localStorage.setItem("savedTextBlocks", JSON.stringify(nonEmptyBlocks));
-
-    // here is where we need to create the user item
+    // If there are no issues with portal submission, navigate to the map page
+    router.replace('./map')
     
     console.log("Text blocks saved", {
       description: `${nonEmptyBlocks.length} block${nonEmptyBlocks.length === 1 ? "" : "s"} saved successfully`
     });
   };
+
+  const toggleSwitch = () => {
+    setIsCuratorMode(previousState => !previousState);
+    console.log(isCuratorMode);
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -124,6 +136,17 @@ const TextBlockList = () => {
           </div>
         </motion.div>
 
+        <Switch  
+          trackColor={{false: '#767577', true: '#81b0ff'}} 
+          thumbColor={isCuratorMode ? '#2563eb' : '#f4f3f4'} 
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={toggleSwitch}
+          value={isCuratorMode}
+          {...Platform.select({web: {
+            activeThumbColor: 'white'
+        }})}
+        />
+
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -131,10 +154,13 @@ const TextBlockList = () => {
           className="mb-8 flex justify-between items-center"
         >
           <div>
-            <h2 className="text-2xl font-display font-medium tracking-tight text-white">Recommended by Friends</h2>
-            <p className="text-muted-foreground text-white">Add each set of recs received from friends</p>
-            {/* Add card, add input, handle in the way you were originally handling city input */}
-          </div>
+            <h2 className="text-2xl font-display font-medium tracking-tight text-white">
+                {isCuratorMode ? `Recommended by You` : `Recommended by Friends`}
+            </h2>
+            <p className="text-muted-foreground text-white">
+                {isCuratorMode ? `Add the places you recommend for your friends` : `Add each set of recs received from friends`}
+            </p>
+         </div>
         </motion.div>
         
         <AnimatePresence>
@@ -152,6 +178,7 @@ const TextBlockList = () => {
                 title={block.friendName}
                 index={index}
                 isActive={activeBlockIndex === index}
+                isCuratorMode={isCuratorMode}
                 onTextChange={handleRecsChange}
                 onTitleChange={handleFriendNameChange}
                 onFocus={() => setActiveBlockIndex(index)}
@@ -167,16 +194,18 @@ const TextBlockList = () => {
           transition={{ delay: 0.3 }}
           className="flex justify-center mt-8"
         >
-          <Button 
-            onClick={addNewBlock} 
-            className="mr-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
-          >
-            <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-            <span className="relative flex items-center justify-center text-white">
-              <Plus className="mr-2 h-4 w-4" /> Add New List
-            </span>
-          </Button>
-
+            {isCuratorMode ? <></> :
+                <Button 
+                    onClick={addNewBlock} 
+                    className="mr-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+                >
+                    <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
+                    <span className="relative flex items-center justify-center text-white">
+                    <Plus className="mr-2 h-4 w-4" /> Add New List
+                    </span>
+                </Button>
+            }
+            
           <Button 
             onClick={saveTextBlocks} 
             className="group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"

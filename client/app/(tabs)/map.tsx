@@ -51,6 +51,8 @@ export default function MapScreen() {
       const supabase = getSupabaseClient();
       setLoading(true);
 
+      // Using the user ID, query capsule_shares table and get capsule_pins list as the group to render
+
       const { data, error } = await supabase.rpc('pins_in_view', {
         min_lat,
         min_long,

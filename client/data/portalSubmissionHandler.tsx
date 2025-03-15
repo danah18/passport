@@ -91,8 +91,6 @@ const createUserPin = async (supabase: SupabaseClient, user: User, pinId: string
 export async function handlePortalSubmission(props: PortalSubmissionHandlerProps) {
     // We need to make a global retrieval fxn instead of getting it each time
     const supabase = getSupabaseClient();
-    
-    console.log(props.placeName);
 
     props.textBlockList.forEach(async (item) => {
         const ephemeralUser = await addNewEphemeralUser(supabase, item.friendName);

@@ -12,6 +12,7 @@ interface TextBlockComponentProps {
   index: number;
   title: string;
   isActive: boolean;
+  isCuratorMode: boolean;
   onTextChange: (index: number, newText: string) => void;
   onTitleChange: (index: number, newTitle: string) => void;
   onFocus: () => void;
@@ -23,6 +24,7 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
   index,
   title,
   isActive,
+  isCuratorMode,
   onTextChange,
   onTitleChange,
   onFocus,
@@ -90,15 +92,18 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
         <CardContent className="p-0">
           <div className="text-block-container relative rounded-lg p-4">
             <div className="flex items-center mb-2 ml-1">
-            <Input
-                value={title}
-                onChange={(e) => onTitleChange(index, e.target.value)}
-                onBlur={() => setIsEditingTitle(false)}
-                onKeyDown={handleTitleKeyDown}
-                placeholder="Name of friend who sent you list"
-                autoFocus
-                className="text-xs tracking-wide h-6 py-0 px-1"
-            />
+
+            {isCuratorMode ? <></> :
+                <Input
+                    value={title}
+                    onChange={(e) => onTitleChange(index, e.target.value)}
+                    onBlur={() => setIsEditingTitle(false)}
+                    onKeyDown={handleTitleKeyDown}
+                    placeholder="Name of friend who sent you list"
+                    autoFocus
+                    className="text-xs tracking-wide h-6 py-0 px-1"
+                />
+            }
             </div>
             
             <Textarea
