@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Drawer } from 'expo-router/drawer';
-import TestScreen from '../../components/TestScreen.tsx';
-import { Button } from 'react-native';
 import { getSupabaseClient } from '../../utils/supabase.ts';
 import { router } from 'expo-router';
 import { User } from '@supabase/supabase-js';
+import { Button } from "../../components/ui/Button.tsx";
 
 // Note from Expo Router Docs: Be careful when using react-native-gesture-handler on the web. 
 // It can increase the JavaScript bundle size significantly. 
@@ -51,12 +50,16 @@ export default function Layout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer screenOptions={{
           headerRight: () => (user &&
-            <div style={{marginRight:10}}>
+            <div style={{marginRight:10}}> 
               <Button 
-                title="Log Out" 
-                onPress={signOut} 
-                color="#68bef7"
-                />
+                    onClick={signOut} 
+                    className="mr-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+                >
+                    <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
+                    <span className="relative flex items-center justify-center text-white">
+                      Log Out
+                    </span>
+                </Button>
             </div>
           ),
         }}>
