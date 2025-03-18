@@ -20,14 +20,14 @@ export default function Capsules() {
     // Mix of country-level with city/island level should be fine but no continents
     const placeholderPlacesList = [];//["bali", "lombok", "nusa penida", "spain", "tangier"];
 
-    useCallback(() => {
+    useEffect(() => {
         const supabase = getSupabaseClient();
 
         const fetchUser = async () => {
             const { data, error } = await supabase.auth.getUser();
             if (error) {
               console.log('Error fetching user:', error);
-              return;
+              return;   
             }
             setUser(data?.user || null);
         };
@@ -39,7 +39,7 @@ export default function Capsules() {
     return (
       <ParallaxScrollViewNoHeader>
       <ThemedView style={styles.titleContainer}>
-          <Text style={styles.headerText}>Welcome, {user?.user_metadata.firstName}!</Text>
+          <Text style={styles.headerText}>Welcome, {user?.user_metadata.first_name}!</Text>
      </ThemedView>
 
      <ThemedView style={styles.titleContainer}>

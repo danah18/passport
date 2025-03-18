@@ -163,8 +163,8 @@ export default function AccountScreen() {
         password: defaultPassword,
         options: {
           data: {
-            firstName: autoCapitalizedFirstName,
-            lastName: autoCapitalizedLastName,
+            first_name: autoCapitalizedFirstName,
+            last_name: autoCapitalizedLastName,
             name: fullName,
           }
         }
