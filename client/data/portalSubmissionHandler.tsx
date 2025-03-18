@@ -11,6 +11,11 @@ export type PortalSubmissionHandlerProps = {
   isCuratorMode: boolean
 };
 
+export type Profile = {
+    id: string;
+    auth_user_id: string;
+}
+
 const defaultPassword = "5uP@WuJO2$Z3lK";
 
 const generateRandomDigits = (length: number) => {
@@ -37,8 +42,8 @@ const addNewEphemeralUser = async (supabase: SupabaseClient, friendName: string)
           password: defaultPassword,
           options: {
             data: {
-              firstName: friendName,
-              lastName: '',
+              first_name: friendName,
+              last_name: '',
               name: friendName,
             }
           }
@@ -49,6 +54,32 @@ const addNewEphemeralUser = async (supabase: SupabaseClient, friendName: string)
         console.error('Phone Sign-Up Error:', error);
     } 
 }
+
+const addNewEphemeralProfile = async (supabase: SupabaseClient, friendName: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert({
+          first_name: friendName,
+          last_name: '',
+          is_public: false
+          // Do not provide auth_user_id; it will be null, marking this profile as ephemeral.
+        })
+        .select()
+        .single();  
+  
+      if (error) {
+        console.error('Error creating ephemeral profile:', error);
+        return null;
+      }
+
+      console.log("created profile " + data);
+      return data;
+    } catch (error) {
+      console.error('Error creating ephemeral profile:', error);
+      return null;
+    }
+  };
 
 const parseInput = (input: string): string[] => {
     if (input.includes("\n") && !input.includes(",")) {
@@ -64,9 +95,9 @@ const parseInput = (input: string): string[] => {
 };
 
  // Creates capsule on behalf of ephemeral user using place name
-const createCapsule = async (supabase: SupabaseClient, user: User, placeName: string, recs: string) => {
+const createCapsule = async (supabase: SupabaseClient, profileId: string, placeName: string, recs: string) => {
     const { data, error } = await supabase.rpc('insert_capsule', {
-        user_id: user.id,
+        _profile_id: profileId,
         name: placeName,
         description: ''
     });
@@ -78,14 +109,14 @@ const createCapsule = async (supabase: SupabaseClient, user: User, placeName: st
     recList.forEach(async (rec) => {
         const pinId = await createOrFetchPin(rec);
         
-        await createCapsulePin(supabase, user, capsuleId, pinId);
-        await createUserPin(supabase, user, pinId, rec);
+        await createCapsulePin(supabase, profileId, capsuleId, pinId);
+        await createUserPin(supabase, profileId, pinId, rec);
     });
 
     return capsuleId;    
 }
 
-const createCapsulePin = async (supabase: SupabaseClient, user: User, capsuleId: string, pinId: string) => {
+const createCapsulePin = async (supabase: SupabaseClient, profileId: string, capsuleId: string, pinId: string) => {
     await supabase.from('capsule_pins').insert([{ 
         capsule_id: capsuleId,
         pin_id: pinId,
@@ -93,9 +124,9 @@ const createCapsulePin = async (supabase: SupabaseClient, user: User, capsuleId:
     }]);
 }
 
-const createUserPin = async (supabase: SupabaseClient, user: User, pinId: string, rec: string) => {
+const createUserPin = async (supabase: SupabaseClient, profileId: string, pinId: string, rec: string) => {
     await supabase.from('user_pins').insert([{ 
-        user_id: user.id,
+        profile_id: profileId,
         pin_id: pinId,
         note: '', // TODO: extract any provided notes from rec and add to user pin
     }]);
@@ -104,29 +135,34 @@ const createUserPin = async (supabase: SupabaseClient, user: User, pinId: string
 export async function handlePortalSubmission(props: PortalSubmissionHandlerProps) {
     // We need to make a global retrieval fxn instead of getting it each time
     const supabase = getSupabaseClient();
-
+    const { data, error } = await supabase.auth.getUser();
+    if (error) {
+        console.log('Error fetching user:', error);
+        return;
+    }
+    
     if (props.isCuratorMode)
     {
-        const { data, error } = await supabase.auth.getUser();
-        if (error) {
-            console.log('Error fetching user:', error);
-            return;
-        }
-
-        const capsuleId = await createCapsule(supabase, data?.user, props.placeName, props.textBlockList[0].recs);
+        const capsuleId = await createCapsule(supabase, data?.user?.user_metadata?.profile_id, props.placeName, props.textBlockList[0].recs);
     }
     else
     {
         props.textBlockList.forEach(async (item) => {
-            const ephemeralUser = await addNewEphemeralUser(supabase, item.friendName);
-    
-            if (ephemeralUser)
+            const profile = await addNewEphemeralProfile(supabase, item.friendName);
+            if (profile)
             {
+                console.log("Profile created:" + profile);
                 // TODO: Adding custom columns to profiles table for ephemeral user once Kit’s changes are in (displayName, isEphemeralUser, linkedPhoneNumber)
                 
-                const capsuleId = await createCapsule(supabase, ephemeralUser, props.placeName, item.recs);
+                const capsuleId = await createCapsule(supabase, profile.id, props.placeName, item.recs);
     
-                // TODO: add capsule id to capsule_shares table for original user
+                console.log("Capsule created:" + capsuleId);
+
+                // Add capsule id to capsule_shares table for original user
+                await supabase.from('capsule_shares').insert([{ 
+                    profile_id: data?.user?.user_metadata?.profile_id,
+                    capsule_id: capsuleId,
+                }]);
             }
         })
     }    
