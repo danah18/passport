@@ -8,6 +8,7 @@ import * as QueryParams from 'expo-auth-session/build/QueryParams';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { Link, router } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -54,6 +55,23 @@ export default function AccountScreen() {
       listener.subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      router.push("./capsules");
+    }
+  }, [user]);
+
+  // useFocusEffect to force redirection even on nav click
+  /*
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user) {
+        router.push("./capsules");
+      }
+    }, [user])
+  );
+  */
 
   // Helper to create a session from the URL after OAuth.
   const createSessionFromUrl = async (url: string) => {
@@ -205,7 +223,11 @@ export default function AccountScreen() {
       }}
     >
       {user ? (
-        router.navigate("./capsules", { relativeToDirectory: false })
+        <>
+          <ThemedText style={{ marginVertical: 20 }}>
+            Welcome, {user.user_metadata.name}!
+          </ThemedText>
+        </>
       ) : (
         <>
           {loading ? (
