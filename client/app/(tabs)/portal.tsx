@@ -104,6 +104,7 @@ const textBlockListWithMotion = (
         <SplitScreen 
           LeftComponent={textBlockListWithMotion}
           RightComponent={<MapScreen/>}
+          setSplitState={setSplitScreen}
         /> : 
         textBlockListWithMotion
       }

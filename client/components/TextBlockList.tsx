@@ -97,7 +97,6 @@ const TextBlockList = (props: TextBlockListProps) => {
     }
 
     // If there are no issues with portal submission, navigate to the map page
-    // router.replace('./map')
     props.setSplitState(true);
     
     console.log("Text blocks saved", {
