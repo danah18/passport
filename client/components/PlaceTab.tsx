@@ -68,32 +68,26 @@ export default function PlaceTab(props: PlaceTabProps) {
   const DATA = [
     {
       id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      note: 'You get great portions for the price, and the food quality is v worth it. Check out their happy hour specials',
       name: 'Michelle Monaghan'
     },
     {
       id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      note: 'It’s in a great spot with plenty of parking and easy access. Perfect for a quick bite or a long, relaxed meal',
       name: 'Aubrey Plaza'
     },
     {
       id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      note: 'Menu has a little something for everyone, and everything is made with fresh, high-quality ingredients',
       name: 'Jennifer Coolidge'
     },
     {
       id: 'a8694a0f-3da1-471f-bd96-145571e29d72',
-      note: 'We had to wait a good amount to get a table, but once seated the staff was super apologetic',
       name: 'Jennifer Aniston'
     },
     {
       id: 'f8694a0f-3da1-471f-bd96-145571e29d72',
-      note: `Generous portion sizes, I'd recommend doing family style or only apps if you're not hungry`,
       name: 'Alex Pettyfer'
     },
     {
       id: 'g8694a0f-3da1-471f-bd96-145571e29d72',
-      note: `Street parking is hard, just do the valet - it's worth the $10`,
       name: 'Jim Carter'
     },
   ];
@@ -105,7 +99,7 @@ export default function PlaceTab(props: PlaceTabProps) {
   
   const Item = ({note, name}: ItemProps) => (
     <View style={styles.item}>
-      <Text style={styles.text}>{note}</Text>
+      {/* <Text style={styles.text}>{note}</Text> */}
       <Text style={styles.recommenderText}>{name}</Text>
     </View> 
   );

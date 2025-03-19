@@ -98,7 +98,7 @@ export default function AccountScreen() {
 
   useEffect(() => {
     if (user) {
-      router.push("./capsules");
+      router.push("./portal");
     }
   }, [user]);
 

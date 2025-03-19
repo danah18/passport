@@ -1,6 +1,7 @@
 import React, {useRef, useEffect, useState} from 'react';
 import {useMapsLibrary} from '@vis.gl/react-google-maps';
 import { cn } from '../utils/libUtils.tsx';
+import { View } from 'react-native';
 
 interface Props {
   onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
@@ -36,7 +37,7 @@ export const PlaceAutocomplete = ({onPlaceSelect}: Props) => {
   }, [onPlaceSelect, placeAutocomplete]);
 
   return (
-    <div className="autocomplete-container">
+    <View className="autocomplete-container">
       <input 
         ref={inputRef}
         style={{ 
@@ -47,12 +48,12 @@ export const PlaceAutocomplete = ({onPlaceSelect}: Props) => {
             borderRadius: 10,
             marginTop: 5,
         }}
-        placeholder='City or country of interest'
+        placeholder=' City or country of interest'
         className={cn(
           "flex h-10 w-full rounded-md border border-input px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
           "text-xs tracking-wide h-6 py-0 px-1"
         )}
       />
-    </div>
+    </View>
   );
 };

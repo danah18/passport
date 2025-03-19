@@ -75,7 +75,7 @@ export default function TripCapsule() {
 
   return (
     <View>
-      <div style={{ display: 'flex', margin: 10 }}>
+      <View style={{ display: 'flex', margin: 10 }}>
         <TouchableOpacity
           style={{ marginRight: 10 }}
           onPress={() =>
@@ -89,7 +89,7 @@ export default function TripCapsule() {
         <Text
           style={{ fontSize: 30, color: '#FFFFFF' }}
         >{`${capsule?.name} trip capsule`}</Text>
-      </div>
+      </View>
 
       {/* swap to a dark mode // light mode style for font marginRight:10*/}
 
@@ -111,21 +111,21 @@ export default function TripCapsule() {
 
       {isEditing ? (
         <>
-          <div style={styles.saveButtonContainer}>
+          <View style={styles.saveButtonContainer}>
             <TouchableOpacity style={{ marginRight: 10 }} onPress={handleSave}>
               <Text style={{ fontSize: 25 }}>✔️</Text>
             </TouchableOpacity>
-          </div>
+          </View>
         </>
       ) : (
-        <div style={styles.pencilButton}>
+        <View style={styles.pencilButton}>
           <TouchableOpacity
             style={{ marginRight: 10 }}
             onPress={() => setIsEditing(!isEditing)}
           >
             <Text style={{ fontSize: 20 }}>✏️</Text>
           </TouchableOpacity>
-        </div>
+        </View>
       )}
 
       {/* Just for debugging */}

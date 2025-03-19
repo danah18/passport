@@ -1,12 +1,13 @@
 import * as React from "react"
 
 import { cn } from "../../utils/libUtils.tsx"
+import { View } from "react-native";
 
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div
+  <View
     ref={ref}
     className={cn(
       "rounded-lg border bg-card text-card-foreground shadow-sm",

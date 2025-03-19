@@ -4,11 +4,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, Plus, Save } from "lucide-react";
 import { Button } from "./ui/Button.tsx";
 import TextBlockComponent from "./TextBlockComponent.tsx";
-import { Platform, Switch, TextInput } from "react-native";
+import { Platform, Switch, Text, TextInput, View } from "react-native";
 import { handlePortalSubmission } from "../data/portalSubmissionHandler.tsx";
 import { router } from "expo-router";
 import { PlaceAutocomplete } from "./PlaceAutocomplete.tsx";
 import { APIProvider } from "@vis.gl/react-google-maps";
+import { ThemedView } from "./ThemedView.tsx";
+import { AirplaneAnimation } from "./AirplaneAnimation.tsx";
 
 export interface TextBlock {
   id: string;
@@ -16,7 +18,11 @@ export interface TextBlock {
   friendName: string;
 }
 
-const TextBlockList = () => {
+type TextBlockListProps = {
+    setSplitState: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const TextBlockList = (props: TextBlockListProps) => {
   const [textBlocks, setTextBlocks] = useState<TextBlock[]>([{
     id: crypto.randomUUID(),
     recs: "",
@@ -93,7 +99,7 @@ const TextBlockList = () => {
     }
 
     // If there are no issues with portal submission, navigate to the map page
-    router.replace('./map')
+    props.setSplitState(true);
     
     console.log("Text blocks saved", {
       description: `${nonEmptyBlocks.length} block${nonEmptyBlocks.length === 1 ? "" : "s"} saved successfully`
@@ -111,24 +117,27 @@ const TextBlockList = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="container max-w-4xl mx-auto px-4 py-8 flex-grow">
+    <View className="min-h-screen flex flex-col">
+      <View className="container max-w-4xl mx-auto px-4 py-8 flex-grow">
       <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
           className="mb-8 flex justify-between items-center"
         >
-          <div>
-            <h2 className="text-2xl font-display font-medium tracking-tight text-white">Where to?</h2>
-            <p className="text-muted-foreground text-white">Enter the city or country of interest</p>
+          <View>
+            <View style={{flexDirection: "row"}}>
+              <AirplaneAnimation/>
+              <Text className="ml-2 text-2xl font-display font-medium tracking-tight text-white">Where to?</Text>
+            </View>
+            <Text className="text-muted-foreground text-white">Enter the city or country of interest</Text>
             
             <APIProvider
                 apiKey={process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || ''}
                 solutionChannel='GMP_devsite_samples_v3_rgmautocomplete'>
                 <PlaceAutocomplete onPlaceSelect={(place) => handleAutocompletePlace(place as google.maps.places.PlaceResult)}/>
             </APIProvider>
-          </div>
+          </View>
         </motion.div>
 
         <Switch  
@@ -148,14 +157,14 @@ const TextBlockList = () => {
           transition={{ duration: 0.5 }}
           className="mb-8 flex justify-between items-center"
         >
-          <div>
+          <View>
             <h2 className="text-2xl font-display font-medium tracking-tight text-white">
                 {isCuratorMode ? `Recommended by You` : `Recommended by Friends`}
             </h2>
             <p className="text-muted-foreground text-white">
                 {isCuratorMode ? `Add the places you recommend for your friends` : `Add each set of recs received from friends`}
             </p>
-         </div>
+         </View>
         </motion.div>
         
         <AnimatePresence>
@@ -213,8 +222,8 @@ const TextBlockList = () => {
         </motion.div>
         
         <div ref={endOfPageRef} />
-      </div>
-    </div>
+      </View>
+    </View>
   );
 };
 
