@@ -4,11 +4,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, Plus, Save } from "lucide-react";
 import { Button } from "./ui/Button.tsx";
 import TextBlockComponent from "./TextBlockComponent.tsx";
-import { Platform, Switch, TextInput, View } from "react-native";
+import { Platform, Switch, Text, TextInput, View } from "react-native";
 import { handlePortalSubmission } from "../data/portalSubmissionHandler.tsx";
 import { router } from "expo-router";
 import { PlaceAutocomplete } from "./PlaceAutocomplete.tsx";
 import { APIProvider } from "@vis.gl/react-google-maps";
+import { ThemedView } from "./ThemedView.tsx";
+import { AirplaneAnimation } from "./AirplaneAnimation.tsx";
 
 export interface TextBlock {
   id: string;
@@ -124,8 +126,11 @@ const TextBlockList = (props: TextBlockListProps) => {
           className="mb-8 flex justify-between items-center"
         >
           <View>
-            <h2 className="text-2xl font-display font-medium tracking-tight text-white">Where to?</h2>
-            <p className="text-muted-foreground text-white">Enter the city or country of interest</p>
+            <View style={{flexDirection: "row"}}>
+              <AirplaneAnimation/>
+              <Text className="ml-2 text-2xl font-display font-medium tracking-tight text-white">Where to?</Text>
+            </View>
+            <Text className="text-muted-foreground text-white">Enter the city or country of interest</Text>
             
             <APIProvider
                 apiKey={process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || ''}
