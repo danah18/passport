@@ -140,17 +140,6 @@ const TextBlockList = (props: TextBlockListProps) => {
           </View>
         </motion.div>
 
-        <Switch  
-          trackColor={{false: '#767577', true: '#81b0ff'}} 
-          thumbColor={isCuratorMode ? '#2563eb' : '#f4f3f4'} 
-          ios_backgroundColor="#3e3e3e"
-          onValueChange={toggleSwitch}
-          value={isCuratorMode}
-          {...Platform.select({web: {
-            activeThumbColor: 'white'
-        }})}
-        />
-
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -158,13 +147,27 @@ const TextBlockList = (props: TextBlockListProps) => {
           className="mb-8 flex justify-between items-center"
         >
           <View>
-            <h2 className="text-2xl font-display font-medium tracking-tight text-white">
+            <Text className="text-2xl font-display font-medium tracking-tight text-white">
                 {isCuratorMode ? `Recommended by You` : `Recommended by Friends`}
-            </h2>
-            <p className="text-muted-foreground text-white">
+            </Text>
+            <Text className="text-muted-foreground text-white">
                 {isCuratorMode ? `Add the places you recommend for your friends` : `Add each set of recs received from friends`}
-            </p>
+            </Text>
+
+            <Switch 
+                className="mt-2" 
+                trackColor={{false: '#767577', true: '#81b0ff'}} 
+                thumbColor={isCuratorMode ? '#2563eb' : '#f4f3f4'} 
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={toggleSwitch}
+                value={isCuratorMode}
+                {...Platform.select({web: {
+                    activeThumbColor: 'white'
+                }})}
+            />
          </View>
+
+         
         </motion.div>
         
         <AnimatePresence>
