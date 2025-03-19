@@ -7,7 +7,7 @@ import { createOrFetchPin } from "./pinManager.tsx";
 
 export type PortalSubmissionHandlerProps = {
   textBlockList: TextBlock[],
-  placeName: string,
+  place: google.maps.places.PlaceResult,
   isCuratorMode: boolean
 };
 
@@ -95,10 +95,10 @@ const parseInput = (input: string): string[] => {
 };
 
  // Creates capsule on behalf of ephemeral user using place name
-const createCapsule = async (supabase: SupabaseClient, profileId: string, placeName: string, recs: string) => {
+const createCapsule = async (supabase: SupabaseClient, profileId: string, place: google.maps.places.PlaceResult, recs: string) => {
     const { data, error } = await supabase.rpc('insert_capsule', {
         _profile_id: profileId,
-        name: placeName,
+        name: place?.name,
         description: ''
     });
 
@@ -107,10 +107,12 @@ const createCapsule = async (supabase: SupabaseClient, profileId: string, placeN
     const recList = parseInput(recs);
 
     recList.forEach(async (rec) => {
-        const pinId = await createOrFetchPin(rec);
-        
+        const recWithPlace = `${rec} ${place?.name}`;
+
+        const pinId = await createOrFetchPin(recWithPlace);
+    
         await createCapsulePin(supabase, profileId, capsuleId, pinId);
-        await createUserPin(supabase, profileId, pinId, rec);
+        await createUserPin(supabase, profileId, pinId, recWithPlace);
     });
 
     return capsuleId;    
@@ -143,7 +145,7 @@ export async function handlePortalSubmission(props: PortalSubmissionHandlerProps
     
     if (props.isCuratorMode)
     {
-        const capsuleId = await createCapsule(supabase, data?.user?.user_metadata?.profile_id, props.placeName, props.textBlockList[0].recs);
+        const capsuleId = await createCapsule(supabase, data?.user?.user_metadata?.profile_id, props.place, props.textBlockList[0].recs);
     }
     else
     {
@@ -154,7 +156,7 @@ export async function handlePortalSubmission(props: PortalSubmissionHandlerProps
                 console.log("Profile created:" + profile);
                 // TODO: Adding custom columns to profiles table for ephemeral user once Kit’s changes are in (displayName, isEphemeralUser, linkedPhoneNumber)
                 
-                const capsuleId = await createCapsule(supabase, profile.id, props.placeName, item.recs);
+                const capsuleId = await createCapsule(supabase, profile.id, props.place, item.recs);
     
                 console.log("Capsule created:" + capsuleId);
 

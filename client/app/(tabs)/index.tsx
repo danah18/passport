@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, ActivityIndicator, TextInput, StyleSheet } from 'react-native';
+import { ActivityIndicator, TextInput, StyleSheet } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
 import { getSupabaseClient } from '../../utils/supabase';
@@ -8,6 +8,9 @@ import * as QueryParams from 'expo-auth-session/build/QueryParams';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { Link, router } from 'expo-router';
+import { Button } from "../../components/ui/Button.tsx";
+import { Check } from 'lucide-react';
+import { Input } from '../../components/ui/Input.tsx';
 import { useFocusEffect } from '@react-navigation/native';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -21,9 +24,46 @@ export default function AccountScreen() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [newUser, setNewUser] = useState(false);
+  const [isEditingPhoneNumber, setIsEditingPhoneNumber] = React.useState(false);
+  const [isEditingFirstName, setIsEditingFirstName] = React.useState(false);
+  const [isEditingLastName, setIsEditingLastName] = React.useState(false);
 
   // We use a default password with phone sign-in for now to avoid setting up OTP verification for the time being
   const defaultPassword = "5uP@WuJO2$Z3lK";
+
+  const handleNameKeyDown = (e: React.KeyboardEvent, isFirstName: boolean) => {
+    if (e.key === "Enter") {
+      if (isFirstName)
+      {
+        setIsEditingFirstName(false);
+      }
+      else
+      {
+        setIsEditingLastName(false);
+      }
+    }
+  };
+
+  const handleNameChange = (newName: string, isFirstName: boolean) => {
+    if (isFirstName)
+    {
+      setFirstName(newName);
+    }
+    else
+    {
+      setLastName(newName);
+    }
+  };
+
+  const handlePhoneNumberKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      setIsEditingPhoneNumber(false);
+    }
+  };
+
+  const handlePhoneNumberChange = (newPhone: string) => {
+    setPhone(newPhone);
+  };
 
   // Check if user is already logged in on component mount.
   useEffect(() => {
@@ -235,66 +275,117 @@ export default function AccountScreen() {
           ) : (
             <>
               {newUser ? ( 
-                <ThemedText style={{ marginVertical: 20 }}>Sign Up</ThemedText> 
-              ) : ( 
-                <ThemedText style={{ marginVertical: 20 }}>Sign In</ThemedText> 
-              )}
-
-              {newUser ? ( 
                 <>
-                  <TextInput
-                  style={styles.inputStyle}
-                  placeholder='First Name'
-                  value={firstName}
-                  onChangeText={setFirstName}
-                  autoCapitalize='words'
-                  keyboardType='default'
-                />
-                <TextInput
-                  style={styles.inputStyle}
-                  placeholder='Last Name'
-                  value={lastName}
-                  onChangeText={setLastName}
-                  autoCapitalize='sentences'
-                  keyboardType='default'
-                />
+                  <Input
+                    value={firstName}
+                    onChange={(e) => handleNameChange(e.target.value, true)}
+                    onBlur={() => setIsEditingLastName(false)}
+                    onKeyDown={(e) => handleNameKeyDown(e, true)}
+                    placeholder="First Name"
+                    autoFocus
+                    className="text-xs tracking-wide h-6 py-0 px-1"
+                    style={{
+                        width: '20%',
+                        height: 40,
+                        borderColor: 'gray',
+                        borderWidth: 1,
+                        borderRadius: 10,
+                        marginTop: 5,
+                        marginBottom: 5
+                    }}
+                  />
+
+                  <Input
+                    value={lastName}
+                    onChange={(e) => handleNameChange(e.target.value, false)}
+                    onBlur={() => setIsEditingLastName(false)}
+                    onKeyDown={(e) => handleNameKeyDown(e, false)}
+                    placeholder="Last Name"
+                    autoFocus
+                    className="text-xs tracking-wide h-6 py-0 px-1"
+                    style={{
+                        width: '20%',
+                        height: 40,
+                        borderColor: 'gray',
+                        borderWidth: 1,
+                        borderRadius: 10,
+                        marginTop: 5,
+                        marginBottom: 5
+                    }}
+                  />
                 </>  
               ) : ( 
                 <></>
               )}
 
-              <TextInput
-                style={{
-                  height: 40,
-                  width: 250,
-                  borderColor: 'gray',
-                  borderWidth: 1,
-                  marginBottom: 10,
-                  paddingHorizontal: 10,
-                  color: 'gray'
-                }}
-                placeholder='Phone Number'
+            <Input
                 value={phone}
-                onChangeText={setPhone}
-                autoCapitalize='none'
-                keyboardType='phone-pad'
-              />
+                onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                onBlur={() => setIsEditingPhoneNumber(false)}
+                onKeyDown={handlePhoneNumberKeyDown}
+                placeholder="Phone Number"
+                autoFocus
+                className="text-xs tracking-wide h-6 py-0 px-1"
+                style={{
+                    width: '20%',
+                    height: 40,
+                    borderColor: 'gray',
+                    borderWidth: 1,
+                    borderRadius: 10,
+                    marginTop: 5,
+                    marginBottom: 5
+                }}
+            />
 
               {newUser ? ( 
                 <>
-                  <Button title='Sign Up' onPress={signUpWithPhone} />
-                  <Button title='I already have an account' onPress={(() => {
-                    setPhone('');
-                    setNewUser(false);
-                  })} />
+                  <Button 
+                    onClick={signUpWithPhone} 
+                    className="mt-2 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
+                    <span className="relative flex items-center justify-center text-white">
+                      Sign Up
+                    </span>
+                  </Button>
+
+                  <Button 
+                    onClick={(() => {
+                      setPhone('');
+                      setNewUser(false);
+                    })} 
+                    className="mt-2 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
+                    <span className="relative flex items-center justify-center text-white">
+                      <Check className="mr-2 h-4 w-4" /> I already have an account
+                    </span>
+                  </Button>
                 </>
               ) : ( 
                 <>
-                  <Button title='Sign In' onPress={signInWithPhone}/>
-                  <Button title='New User?' onPress={(() => {
-                    setPhone('');
-                    setNewUser(true);
-                  })} />
+                  <Button 
+                    onClick={signInWithPhone} 
+                    className="mt-2 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
+                    <span className="relative flex items-center justify-center text-white">
+                      Sign In
+                    </span>
+                  </Button>               
+
+                  <Button 
+                    onClick={(() => {
+                      setPhone('');
+                      setNewUser(true);
+                    })} 
+                    className="mt-2 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
+                    <span className="relative flex items-center justify-center text-white">
+                      New User?
+                    </span>
+                  </Button>
                 </>
               )}  
             </>
