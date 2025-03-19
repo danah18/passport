@@ -1,0 +1,12 @@
+-- ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+-- -- Policy: allow each user to see only their profile (plus an optional public check)
+-- CREATE POLICY "profiles_select_own_or_public"
+-- ON profiles
+-- FOR SELECT
+-- TO authenticated
+-- USING (
+--   -- The row is public OR belongs to the logged-in user
+--   is_public
+--   OR auth_user_id = auth.uid()
+-- );

@@ -1,25 +1,16 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import {
   APIProvider,
   Map,
   Marker,
   MapCameraChangedEvent,
-  Pin,
+  MapEvent,
+  MapCameraProps,
 } from '@vis.gl/react-google-maps';
-import throttle from 'lodash.throttle';
 import { getSupabaseClient } from '../../utils/supabase'; // adjust the import path as needed
 import { Dimensions } from 'react-native';
-import { BlurView } from 'expo-blur';
 import PlaceTab from '@/components/PlaceTab';
-import { fetchData } from '@/services/googlePlaces';
 import { GooglePlace } from '../../data/pins.tsx';
-
-interface Restaurant {
-  id: number;
-  name: string;
-  lat: number;
-  long: number;
-}
 
 export interface Pin {
   google_place_id: string;
@@ -30,15 +21,26 @@ export interface Pin {
   long: number;
 }
 
+interface Bounds {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+}
+
+const INITIAL_CAMERA = {
+  center: { lat: 33.069095, lng: -117.303448 },
+  zoom: 12,
+};
+
 export default function MapScreen() {
   const mapsKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || '';
   const [pins, setPins] = useState<Pin[]>([]);
-  const [loading, setLoading] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
   const [selectedPin, setSelectedPin] = useState<Pin>();
-
-  const { width, height } = Dimensions.get('window');
-  const isMobile = width < 768;
+  const [cameraProps, setCameraProps] =
+    useState<MapCameraProps>(INITIAL_CAMERA);
+  const latestBoundsRef = useRef<Bounds | null>(null);
 
   // Function to fetch pins in view using the bounding box
   const fetchPinsInView = useCallback(
@@ -49,47 +51,41 @@ export default function MapScreen() {
       max_long: number
     ) => {
       const supabase = getSupabaseClient();
-      setLoading(true);
-
       // Using the user ID, query capsule_shares table and get capsule_pins list as the group to render
-
       const { data, error } = await supabase.rpc('pins_in_view', {
         min_lat,
         min_long,
         max_lat,
         max_long,
       });
-
       if (error) {
         console.error('Error fetching pins:', error);
       } else if (data) {
         setPins(data as Pin[]);
       }
-      setLoading(false);
     },
-  []);
-
-  // Throttle the fetching of pins to at most once per second
-  const throttledFetch = useCallback(
-    throttle((bounds: { north: number; south: number; east: number; west: number }) => {
-      fetchPinsInView(bounds.south, bounds.west, bounds.north, bounds.east);
-    }, 1000),
-    [fetchPinsInView]
+    []
   );
 
-  // Callback to be triggered when the map's camera changes.
-  const handleCameraChanged = (ev: MapCameraChangedEvent) => {
-    console.log('Camera changed:', ev.detail);
-    const bounds = ev.detail.bounds;
-    if (bounds) {
-      throttledFetch(bounds);
+  // Update mapBounds when the camera changes
+  const handleCameraChange = useCallback((ev: MapCameraChangedEvent) => {
+    setCameraProps(ev.detail);
+    latestBoundsRef.current = ev.detail.bounds;
+  }, []);
+
+  // When the map goes idle, use the latest stored bounds to fetch pins
+  const handleMapIdle = () => {
+    const mapBounds = latestBoundsRef.current;
+    console.log('Map idle:', mapBounds);
+    if (mapBounds) {
+      fetchPinsInView(
+        mapBounds.south,
+        mapBounds.west,
+        mapBounds.north,
+        mapBounds.east
+      );
     }
   };
-
-  // Define a default center for the map
-  // TODO: update this to auto-populate based on selected capsule location
-  // const defaultCenter = { lat: 40.8075, lng: -73.946 };
-  const defaultCenter = { lat: 33.069095, lng: -117.303448 };
 
   return (
     <APIProvider
@@ -97,29 +93,26 @@ export default function MapScreen() {
       onLoad={() => console.log('Maps API has loaded.')}
     >
       <Map
-        defaultZoom={16}
-        defaultCenter={defaultCenter}
-        onCameraChanged={handleCameraChanged}
+        {...cameraProps}
+        onCameraChanged={handleCameraChange}
+        onIdle={handleMapIdle}
         onClick={() => setShowPanel(false)}
       >
-        {!loading &&
-          pins.map((pin) => (
-            <Marker
-              onClick={() => {
-                setShowPanel(true);
-                setSelectedPin(pin);
-              }}
-              key={pin.google_place_id}
-              position={{ lat: pin.lat, lng: pin.long }}
-              title={pin.pin_name}
-            />
-          ))}
+        {pins.map((pin) => (
+          <Marker
+            onClick={() => {
+              setShowPanel(true);
+              setSelectedPin(pin);
+            }}
+            key={pin.google_place_id}
+            position={{ lat: pin.lat, lng: pin.long }}
+            title={pin.pin_name}
+          />
+        ))}
       </Map>
 
-      {showPanel && 
-          // Play around with styling to not overlay on certain Maps components
-          <PlaceTab pin={selectedPin}/> 
-        }
+      {/* Play around with styling to not overlay on certain Maps components */}
+      {showPanel && <PlaceTab pin={selectedPin} />}
     </APIProvider>
   );
 }
