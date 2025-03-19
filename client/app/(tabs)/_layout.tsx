@@ -65,20 +65,6 @@ export default function Layout() {
           ),
         }}>
         <Drawer.Screen
-          name="index" // This is the name of the page and must match the url from root
-          options={{
-            drawerLabel: 'Account',
-            title: ''
-          }}
-        />
-        <Drawer.Screen
-          name="capsules" // This is the name of the page and must match the url from root
-          options={{
-            drawerLabel: 'Capsules',
-            title: '',
-          }}
-        />
-        <Drawer.Screen
           name="portal" 
           options={{
             drawerLabel: 'Portal',
@@ -93,15 +79,16 @@ export default function Layout() {
           }}
         /> 
         <Drawer.Screen
-          name="tripCapsule" 
+          name="index" // This is the name of the page and must match the url from root
           options={{
-            drawerLabel: 'Trip Capsule',
+            drawerLabel: 'Account',
             title: '',
-            // Temp workaround - it is still clickable but somewhat hidden
+            // Hide for now - it is still clickable but somewhat hidden
             // https://react-navigation.canny.io/feature-requests/p/add-option-to-hide-item-from-a-drawer
             drawerLabelStyle:  { display: 'none' }
+          
           }}
-        />  
+        />
       </Drawer>
     </GestureHandlerRootView>
   );
