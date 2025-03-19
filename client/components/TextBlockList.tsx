@@ -9,6 +9,8 @@ import { Platform, Switch, TextInput } from "react-native";
 import { Input } from "./ui/Input.tsx";
 import { handlePortalSubmission } from "../data/portalSubmissionHandler.tsx";
 import { router } from "expo-router";
+import { PlaceAutocomplete } from "./PlaceAutocomplete.tsx";
+import { APIProvider } from "@vis.gl/react-google-maps";
 
 export interface TextBlock {
   id: string;
@@ -115,6 +117,11 @@ const TextBlockList = () => {
     setIsCuratorMode(previousState => !previousState);
   }
 
+  const handleAutocompletePlace = (place: google.maps.places.PlaceResult) => {
+    console.log("handleAutocompletePlace")
+    console.log(place);
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <div className="container max-w-4xl mx-auto px-4 py-8 flex-grow">
@@ -125,8 +132,17 @@ const TextBlockList = () => {
           className="mb-8 flex justify-between items-center"
         >
           <div>
+            <APIProvider
+                apiKey={process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || ''}
+                solutionChannel='GMP_devsite_samples_v3_rgmautocomplete'
+            >
+                <PlaceAutocomplete onPlaceSelect={(place) => handleAutocompletePlace(place as google.maps.places.PlaceResult)}/>
+            </APIProvider>
+            
             <h2 className="text-2xl font-display font-medium tracking-tight text-white">Where to?</h2>
             <p className="text-muted-foreground text-white">Enter the city or country of interest</p>
+            
+
             <Input
                 value={googlePlaceAutofillInputValue}
                 onChange={(e) => handlePlaceNameChange(e.target.value)}
