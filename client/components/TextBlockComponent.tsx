@@ -6,6 +6,7 @@ import { Textarea } from "./ui/Textarea.tsx";
 import { Card, CardContent } from "./ui/Card.tsx";
 import { Input } from "./ui/Input.tsx";
 import { useThemeColor } from "../hooks/useThemeColor.ts";
+import { View } from "react-native";
 
 interface TextBlockComponentProps {
   text: string;
@@ -90,8 +91,8 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
         isActive ? "ring-2 ring-primary/20" : "hover:shadow-md"
       }`}>
         <CardContent className="p-0">
-          <div className="text-block-container relative rounded-lg p-4">
-            <div className="flex items-center mb-2 ml-1">
+          <View className="text-block-container relative rounded-lg p-4">
+            <View className="flex items-center mb-2 ml-1">
 
             {isCuratorMode ? <></> :
                 <Input
@@ -99,12 +100,12 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
                     onChange={(e) => onTitleChange(index, e.target.value)}
                     onBlur={() => setIsEditingTitle(false)}
                     onKeyDown={handleTitleKeyDown}
-                    placeholder="Name of friend who sent you list"
+                    placeholder=" Name of friend who sent you list"
                     autoFocus
                     className="text-xs tracking-wide h-6 py-0 px-1"
                 />
             }
-            </div>
+            </View>
             
             <Textarea
               ref={textareaRef}
@@ -116,7 +117,7 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
               className="text-input min-h-[120px] resize-y border-0 bg-background/60 focus:ring-0 focus-visible:ring-offset-0 rounded-lg"
             />
 
-            <div style={{marginRight: 5}} className="absolute flex space-x-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:flex">
+            <View className="absolute flex space-x-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:flex">
               <Button
                 size="icon"
                 variant="ghost"
@@ -125,14 +126,14 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
                 onClick={onRemove}
                 aria-label="Remove block"
               >
-                <Trash2 className="h-4 w-4" style={{ color: backgroundColor }} />
+                <Trash2 className="h-4 w-4" style={{ color: backgroundColor, marginTop: 305 }} />
               </Button>
-            </div>
+            </View>
             
-            <div className="mt-3 text-xs text-right text-muted-foreground">
+            <View className="mt-3 text-xs text-right text-muted-foreground">
               {text.length} characters {text.trim().length > 0 ? `• ${text.trim().split(/\s+/).length} words` : ""}
-            </div>
-          </div>
+            </View>
+          </View>
         </CardContent>
       </Card>
     </motion.div>

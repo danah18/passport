@@ -11,12 +11,16 @@ import { GooglePlace, GooglePlaceResponse } from '../../data/pins.tsx';
 import TextBlockList from '../../components/TextBlockList.tsx';
 import { motion } from 'framer-motion';
 import { useThemeColor } from '../../hooks/useThemeColor.ts';
+import SplitScreen from '../../components/SplitScreen.tsx';
+import MapScreen from './map.tsx';
+import React from 'react';
 
 export default function Portal() {
   const [inputValue, setInputValue] = useState("");
   const [cityInputValue, setCityInputValue] = useState("");
   const [supabase, setSupabase] = useState<SupabaseClient>();
   const backgroundColor = useThemeColor({}, 'background');
+  const [splitScreen, setSplitScreen] = useState(false);
 
   useEffect(() => {
     // TODO: add error handling for if supabase is null as code throughout this
@@ -78,30 +82,31 @@ export default function Portal() {
   } catch (error: any) {
     console.log('Error', error.message);
   }
-} 
+}
 
-  return (
-    <ScrollView style={{ flex: 1, backgroundColor: backgroundColor }}>
-        <div className="min-h-screen flex flex-col">
-        <div className="container max-w-4xl mx-auto px-4 py-8 flex-grow">
-
+const textBlockListWithMotion = (
+  <View className="min-h-screen flex flex-col">
+    <View className="container max-w-4xl mx-auto px-4 py-8 flex-grow">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <TextBlockList />
+        <TextBlockList setSplitState={setSplitScreen} />
       </motion.div>
-     
-      {/* Move this to the submit button within portal.tsx
-        <Button 
-        title="Submit" 
-        onPress={() => {
-          addNewPins(inputValue); // Example action
-        }} 
-      /> */}
-      </div>
-      </div>
+    </View>
+  </View>
+);
+
+  return (
+    <ScrollView style={{ flex: 1, backgroundColor: backgroundColor }}>
+      {splitScreen ? 
+        <SplitScreen 
+          LeftComponent={textBlockListWithMotion}
+          RightComponent={<MapScreen/>}
+        /> : 
+        textBlockListWithMotion
+      }
     </ScrollView>
   );
 }
