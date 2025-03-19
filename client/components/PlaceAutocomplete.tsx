@@ -21,7 +21,7 @@ export const PlaceAutocomplete = ({onPlaceSelect}: Props) => {
     if (!places || !inputRef.current) return;
 
     const options = {
-      fields: ['geometry', 'name', 'formatted_address']
+      fields: ['name', 'formatted_address', 'geometry']
     };
 
     setPlaceAutocomplete(new places.Autocomplete(inputRef.current, options));
@@ -39,7 +39,14 @@ export const PlaceAutocomplete = ({onPlaceSelect}: Props) => {
     <div className="autocomplete-container">
       <input 
         ref={inputRef}
-        style={{ border: '1px solid #ccc' }}
+        style={{ 
+          border: '1px solid #ccc',
+            height: 40,
+            borderColor: 'gray',
+            borderWidth: 1,
+            borderRadius: 10,
+            marginTop: 5,
+        }}
         placeholder='City or country of interest'
         className={cn(
           "flex h-10 w-full rounded-md border border-input px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",

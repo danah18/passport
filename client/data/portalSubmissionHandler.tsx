@@ -7,7 +7,7 @@ import { createOrFetchPin } from "./pinManager.tsx";
 
 export type PortalSubmissionHandlerProps = {
   textBlockList: TextBlock[],
-  placeName: string,
+  place: google.maps.places.PlaceResult,
   isCuratorMode: boolean
 };
 
@@ -64,10 +64,10 @@ const parseInput = (input: string): string[] => {
 };
 
  // Creates capsule on behalf of ephemeral user using place name
-const createCapsule = async (supabase: SupabaseClient, user: User, placeName: string, recs: string) => {
+const createCapsule = async (supabase: SupabaseClient, user: User, place: google.maps.places.PlaceResult, recs: string) => {
     const { data, error } = await supabase.rpc('insert_capsule', {
         user_id: user.id,
-        name: placeName,
+        name: place?.name,
         description: ''
     });
 
@@ -76,10 +76,12 @@ const createCapsule = async (supabase: SupabaseClient, user: User, placeName: st
     const recList = parseInput(recs);
 
     recList.forEach(async (rec) => {
-        const pinId = await createOrFetchPin(rec);
+        const recWithPlace = `${rec} ${place?.name}`;
+
+        const pinId = await createOrFetchPin(recWithPlace);
         
         await createCapsulePin(supabase, user, capsuleId, pinId);
-        await createUserPin(supabase, user, pinId, rec);
+        await createUserPin(supabase, user, pinId, recWithPlace);
     });
 
     return capsuleId;    
@@ -113,7 +115,7 @@ export async function handlePortalSubmission(props: PortalSubmissionHandlerProps
             return;
         }
 
-        const capsuleId = await createCapsule(supabase, data?.user, props.placeName, props.textBlockList[0].recs);
+        const capsuleId = await createCapsule(supabase, data?.user, props.place, props.textBlockList[0].recs);
     }
     else
     {
@@ -124,7 +126,7 @@ export async function handlePortalSubmission(props: PortalSubmissionHandlerProps
             {
                 // TODO: Adding custom columns to profiles table for ephemeral user once Kit’s changes are in (displayName, isEphemeralUser, linkedPhoneNumber)
                 
-                const capsuleId = await createCapsule(supabase, ephemeralUser, props.placeName, item.recs);
+                const capsuleId = await createCapsule(supabase, ephemeralUser, props.place, item.recs);
     
                 // TODO: add capsule id to capsule_shares table for original user
             }

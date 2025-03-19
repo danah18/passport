@@ -4,9 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, Plus, Save } from "lucide-react";
 import { Button } from "./ui/Button.tsx";
 import TextBlockComponent from "./TextBlockComponent.tsx";
-import GooglePlaceAutofillComponent from "./GooglePlaceAutofillComponent.tsx";
 import { Platform, Switch, TextInput } from "react-native";
-import { Input } from "./ui/Input.tsx";
 import { handlePortalSubmission } from "../data/portalSubmissionHandler.tsx";
 import { router } from "expo-router";
 import { PlaceAutocomplete } from "./PlaceAutocomplete.tsx";
@@ -25,9 +23,8 @@ const TextBlockList = () => {
     friendName: ""
   }]);
   const [activeBlockIndex, setActiveBlockIndex] = useState<number>(0);
-  const [googlePlaceAutofillInputValue, setGooglePlaceAutofillInputValue] = useState("");
+  const [googlePlaceAutocomplete, setGooglePlaceAutocomplete] = useState<google.maps.places.PlaceResult>();
   const [isCuratorMode, setIsCuratorMode] = useState(false);
-  const [isEditingPlaceName, setIsEditingPlaceName] = React.useState(false);
   const endOfPageRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -36,16 +33,6 @@ const TextBlockList = () => {
       endOfPageRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [textBlocks.length]);
-
-  const handlePlaceNameKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      setIsEditingPlaceName(false);
-    }
-  };
-
-  const handlePlaceNameChange = (newPlaceName: string) => {
-    setGooglePlaceAutofillInputValue(newPlaceName);
-  };
 
   const handleRecsChange = (index: number, newRecs: string) => {
     const newBlocks = [...textBlocks];
@@ -98,7 +85,7 @@ const TextBlockList = () => {
     
     try 
     {
-        handlePortalSubmission({textBlockList: textBlocks, placeName: googlePlaceAutofillInputValue, isCuratorMode: isCuratorMode});
+        handlePortalSubmission({textBlockList: textBlocks, place: googlePlaceAutocomplete!, isCuratorMode: isCuratorMode});
     }
     catch (error)
     {
@@ -118,8 +105,9 @@ const TextBlockList = () => {
   }
 
   const handleAutocompletePlace = (place: google.maps.places.PlaceResult) => {
-    console.log("handleAutocompletePlace")
-    console.log(place);
+    setGooglePlaceAutocomplete(place);
+    console.log(place?.geometry?.location?.lat());
+    console.log(place?.geometry?.location?.lng());
   }
 
   return (
@@ -132,33 +120,14 @@ const TextBlockList = () => {
           className="mb-8 flex justify-between items-center"
         >
           <div>
-            <APIProvider
-                apiKey={process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || ''}
-                solutionChannel='GMP_devsite_samples_v3_rgmautocomplete'
-            >
-                <PlaceAutocomplete onPlaceSelect={(place) => handleAutocompletePlace(place as google.maps.places.PlaceResult)}/>
-            </APIProvider>
-            
             <h2 className="text-2xl font-display font-medium tracking-tight text-white">Where to?</h2>
             <p className="text-muted-foreground text-white">Enter the city or country of interest</p>
             
-
-            <Input
-                value={googlePlaceAutofillInputValue}
-                onChange={(e) => handlePlaceNameChange(e.target.value)}
-                onBlur={() => setIsEditingPlaceName(false)}
-                onKeyDown={handlePlaceNameKeyDown}
-                placeholder="City or country of interest"
-                autoFocus
-                className="text-xs tracking-wide h-6 py-0 px-1"
-                style={{
-                    height: 40,
-                    borderColor: 'gray',
-                    borderWidth: 1,
-                    borderRadius: 10,
-                    marginTop: 5,
-                }}
-            />
+            <APIProvider
+                apiKey={process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || ''}
+                solutionChannel='GMP_devsite_samples_v3_rgmautocomplete'>
+                <PlaceAutocomplete onPlaceSelect={(place) => handleAutocompletePlace(place as google.maps.places.PlaceResult)}/>
+            </APIProvider>
           </div>
         </motion.div>
 
