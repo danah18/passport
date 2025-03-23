@@ -107,8 +107,20 @@ const TextBlockList = (props: TextBlockListProps) => {
   };
 
   const toggleSwitch = () => {
-    setIsCuratorMode(previousState => !previousState);
-  }
+    setIsCuratorMode((previousState) => {
+      const newState = !previousState;
+  
+      // If switching to curator mode, remove extra blocks 
+      if (newState) {
+        setTextBlocks((currentBlocks) => {
+          // If there’s at least one block, keep only the first
+          return currentBlocks.length > 0 ? [currentBlocks[0]] : [];
+        });
+      }
+  
+      return newState;
+    });
+  };
 
   const handleAutocompletePlace = (place: google.maps.places.PlaceResult) => {
     setGooglePlaceAutocomplete(place);
