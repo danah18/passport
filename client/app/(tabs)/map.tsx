@@ -1,16 +1,8 @@
-import React, { useState, useCallback, useRef } from 'react';
-import {
-  APIProvider,
-  Map,
-  Marker,
-  MapCameraChangedEvent,
-  MapEvent,
-  MapCameraProps,
-} from '@vis.gl/react-google-maps';
-import { getSupabaseClient } from '../../utils/supabase'; // adjust the import path as needed
-import { Dimensions } from 'react-native';
-import PlaceTab from '@/components/PlaceTab';
-import { GooglePlace } from '../../data/pins.tsx';
+import PlaceTab from "@/components/PlaceTab";
+import { APIProvider, Map, MapCameraChangedEvent, MapCameraProps, Marker } from "@vis.gl/react-google-maps";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { GooglePlace } from "../../data/pins.tsx";
+import { getSupabaseClient } from "../../utils/supabase"; // adjust the import path as needed
 
 export interface Pin {
   google_place_id: string;
@@ -33,39 +25,34 @@ const INITIAL_CAMERA = {
   zoom: 12,
 };
 
-export default function MapScreen() {
-  const mapsKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || '';
+interface MapScreenProps {
+  refreshKey: number;
+}
+
+export default function MapScreen({ refreshKey }: MapScreenProps) {
+  const mapsKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || "";
   const [pins, setPins] = useState<Pin[]>([]);
   const [showPanel, setShowPanel] = useState(false);
   const [selectedPin, setSelectedPin] = useState<Pin>();
-  const [cameraProps, setCameraProps] =
-    useState<MapCameraProps>(INITIAL_CAMERA);
+  const [cameraProps, setCameraProps] = useState<MapCameraProps>(INITIAL_CAMERA);
   const latestBoundsRef = useRef<Bounds | null>(null);
 
   // Function to fetch pins in view using the bounding box
-  const fetchPinsInView = useCallback(
-    async (
-      min_lat: number,
-      min_long: number,
-      max_lat: number,
-      max_long: number
-    ) => {
-      const supabase = getSupabaseClient();
-      // Using the user ID, query capsule_shares table and get capsule_pins list as the group to render
-      const { data, error } = await supabase.rpc('pins_in_view', {
-        min_lat,
-        min_long,
-        max_lat,
-        max_long,
-      });
-      if (error) {
-        console.error('Error fetching pins:', error);
-      } else if (data) {
-        setPins(data as Pin[]);
-      }
-    },
-    []
-  );
+  const fetchPinsInView = useCallback(async (min_lat: number, min_long: number, max_lat: number, max_long: number) => {
+    const supabase = getSupabaseClient();
+    // Using the user ID, query capsule_shares table and get capsule_pins list as the group to render
+    const { data, error } = await supabase.rpc("pins_in_view", {
+      min_lat,
+      min_long,
+      max_lat,
+      max_long,
+    });
+    if (error) {
+      console.error("Error fetching pins:", error);
+    } else if (data) {
+      setPins(data as Pin[]);
+    }
+  }, []);
 
   // Update mapBounds when the camera changes
   const handleCameraChange = useCallback((ev: MapCameraChangedEvent) => {
@@ -76,22 +63,27 @@ export default function MapScreen() {
   // When the map goes idle, use the latest stored bounds to fetch pins
   const handleMapIdle = () => {
     const mapBounds = latestBoundsRef.current;
-    console.log('Map idle:', mapBounds);
+    console.log("Map idle:", mapBounds);
     if (mapBounds) {
-      fetchPinsInView(
-        mapBounds.south,
-        mapBounds.west,
-        mapBounds.north,
-        mapBounds.east
-      );
+      fetchPinsInView(mapBounds.south, mapBounds.west, mapBounds.north, mapBounds.east);
     }
   };
 
+  useEffect(() => {
+    // Bit awkward, good enough for now
+    const mapBounds = latestBoundsRef.current;
+    console.log("Map refresh");
+    if (mapBounds) {
+      const timeoutId = setTimeout(() => {
+        fetchPinsInView(mapBounds.south, mapBounds.west, mapBounds.north, mapBounds.east);
+      }, 500); // Wait for 0.5 seconds before fetching pins
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [refreshKey, fetchPinsInView]);
+
   return (
-    <APIProvider
-      apiKey={mapsKey}
-      onLoad={() => console.log('Maps API has loaded.')}
-    >
+    <APIProvider apiKey={mapsKey} onLoad={() => console.log("Maps API has loaded.")}>
       <Map
         {...cameraProps}
         onCameraChanged={handleCameraChange}

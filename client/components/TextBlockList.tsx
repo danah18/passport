@@ -18,6 +18,7 @@ export interface TextBlock {
 
 type TextBlockListProps = {
   setSplitState: React.Dispatch<React.SetStateAction<boolean>>;
+  onCapsuleUpdated: () => void;
 };
 
 const TextBlockList = (props: TextBlockListProps) => {
@@ -85,7 +86,7 @@ const TextBlockList = (props: TextBlockListProps) => {
     }
   };
 
-  const saveTextBlocks = () => {
+  const saveTextBlocks = async () => {
     const nonEmptyBlocks = textBlocks.filter((block) => block.recs.trim().length > 0);
 
     if (nonEmptyBlocks.length === 0) {
@@ -96,7 +97,7 @@ const TextBlockList = (props: TextBlockListProps) => {
     }
 
     try {
-      handlePortalSubmission({
+      await handlePortalSubmission({
         capsule: capsule,
         textBlockList: textBlocks,
         place: googlePlaceAutocomplete!,
@@ -113,6 +114,8 @@ const TextBlockList = (props: TextBlockListProps) => {
     console.log("Text blocks saved", {
       description: `${nonEmptyBlocks.length} block${nonEmptyBlocks.length === 1 ? "" : "s"} saved successfully`,
     });
+
+    props.onCapsuleUpdated();
   };
 
   const toggleSwitch = () => {

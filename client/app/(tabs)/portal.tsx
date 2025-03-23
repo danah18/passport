@@ -1,18 +1,13 @@
-import { StyleSheet, Image, Platform, View, Button, TextInput, ScrollView, Text } from "react-native";
-import { Collapsible } from "@/components/Collapsible";
-import { ExternalLink } from "@/components/ExternalLink";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { useEffect, useState, createContext, useContext } from "react";
-import { getSupabaseClient } from "../../utils/supabase.ts";
 import { SupabaseClient } from "@supabase/supabase-js";
-import { GooglePlace, GooglePlaceResponse } from "../../data/pins.tsx";
-import TextBlockList from "../../components/TextBlockList.tsx";
 import { motion } from "framer-motion";
-import { useThemeColor } from "../../hooks/useThemeColor.ts";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
 import SplitScreen from "../../components/SplitScreen.tsx";
+import TextBlockList from "../../components/TextBlockList.tsx";
+import { GooglePlaceResponse } from "../../data/pins.tsx";
+import { useThemeColor } from "../../hooks/useThemeColor.ts";
+import { getSupabaseClient } from "../../utils/supabase.ts";
 import MapScreen from "./map.tsx";
-import React from "react";
 
 // Create a context to store the capsule data
 const CapsuleContext = createContext(null);
@@ -26,6 +21,7 @@ export default function Portal() {
   const backgroundColor = useThemeColor({}, "background");
   const [splitScreen, setSplitScreen] = useState(false);
   const [capsule, setCapsule] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0); // Add a state variable to track changes
 
   useEffect(() => {
     // TODO: add error handling for if supabase is null as code throughout this
@@ -119,7 +115,10 @@ export default function Portal() {
     <View className="min-h-screen flex flex-col">
       <View className="container max-w-4xl mx-auto px-4 py-8 flex-grow">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }}>
-          <TextBlockList setSplitState={setSplitScreen} />
+          <TextBlockList
+            setSplitState={setSplitScreen}
+            onCapsuleUpdated={() => setRefreshKey((prevKey) => prevKey + 1)}
+          />
         </motion.div>
       </View>
     </View>
@@ -131,7 +130,7 @@ export default function Portal() {
         {splitScreen ? (
           <SplitScreen
             LeftComponent={textBlockListWithMotion}
-            RightComponent={<MapScreen />}
+            RightComponent={<MapScreen refreshKey={refreshKey} />}
             setSplitState={setSplitScreen}
           />
         ) : (
