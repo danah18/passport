@@ -1,5 +1,6 @@
 import PlaceTab from "@/components/PlaceTab";
 import { APIProvider, Map, MapCameraChangedEvent, MapCameraProps, Marker } from "@vis.gl/react-google-maps";
+import throttle from "lodash/throttle";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { GooglePlace } from "../../data/pins.tsx";
 import { getSupabaseClient } from "../../utils/supabase"; // adjust the import path as needed
@@ -61,13 +62,16 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
   }, []);
 
   // When the map goes idle, use the latest stored bounds to fetch pins
-  const handleMapIdle = () => {
-    const mapBounds = latestBoundsRef.current;
-    console.log("Map idle:", mapBounds);
-    if (mapBounds) {
-      fetchPinsInView(mapBounds.south, mapBounds.west, mapBounds.north, mapBounds.east);
-    }
-  };
+  const throttledHandleMapIdle = useCallback(
+    throttle(() => {
+      const mapBounds = latestBoundsRef.current;
+      console.log("Map idle:", mapBounds);
+      if (mapBounds) {
+        fetchPinsInView(mapBounds.south, mapBounds.west, mapBounds.north, mapBounds.east);
+      }
+    }, 500), // Wait for 0.5 seconds before fetching pins, resizing page triggers too many
+    [fetchPinsInView]
+  );
 
   useEffect(() => {
     // Bit awkward, good enough for now
@@ -87,7 +91,7 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
       <Map
         {...cameraProps}
         onCameraChanged={handleCameraChange}
-        onIdle={handleMapIdle}
+        onIdle={throttledHandleMapIdle}
         onClick={() => setShowPanel(false)}
       >
         {pins.map((pin) => (
