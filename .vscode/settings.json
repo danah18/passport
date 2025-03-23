@@ -1,8 +1,9 @@
 {
-    "deno.enable": true,
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-        "source.addMissingImports.ts": "explicit",
-        "source.organizeImports": "explicit"
-    }
+  "deno.enable": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.codeActionsOnSave": {
+    "source.addMissingImports.ts": "explicit",
+    "source.organizeImports": "explicit"
+  }
 }

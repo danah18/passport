@@ -1,5 +1,3 @@
-
-
 -- Create a dedicated separate schema
 create schema if not exists "gis";
 
@@ -32,18 +30,6 @@ $$;
 
 grant usage on schema gis to anon,
 authenticated;
-
-CREATE OR REPLACE FUNCTION insert_capsule (_profile_id uuid, name text, description text) RETURNS uuid AS $$
-DECLARE
-    new_id uuid;
-BEGIN
-    INSERT INTO capsules (profile_id, name, description)
-    VALUES (_profile_id, name, description)
-    RETURNING id INTO new_id;
-
-    RETURN new_id;
-END;
-$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION add_pin (
   google_place_id text,

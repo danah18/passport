@@ -1,16 +1,14 @@
-import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Check, Plus, Save } from "lucide-react";
-import { Button } from "./ui/Button.tsx";
-import TextBlockComponent from "./TextBlockComponent.tsx";
-import { Platform, Switch, Text, TextInput, View } from "react-native";
-import { handlePortalSubmission } from "../data/portalSubmissionHandler.tsx";
-import { router } from "expo-router";
-import { PlaceAutocomplete } from "./PlaceAutocomplete.tsx";
 import { APIProvider } from "@vis.gl/react-google-maps";
-import { ThemedView } from "./ThemedView.tsx";
-import { AirplaneAnimation } from "./AirplaneAnimation.tsx";
+import { AnimatePresence, motion } from "framer-motion";
+import { Check, Plus } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Platform, Switch, Text, View } from "react-native";
 import { useCapsule } from "../app/(tabs)/portal.tsx"; // Import the useCapsule hook
+import { handlePortalSubmission } from "../data/portalSubmissionHandler.tsx";
+import { AirplaneAnimation } from "./AirplaneAnimation.tsx";
+import { PlaceAutocomplete } from "./PlaceAutocomplete.tsx";
+import TextBlockComponent from "./TextBlockComponent.tsx";
+import { Button } from "./ui/Button.tsx";
 
 export interface TextBlock {
   id: string;
@@ -99,6 +97,7 @@ const TextBlockList = (props: TextBlockListProps) => {
 
     try {
       handlePortalSubmission({
+        capsule: capsule,
         textBlockList: textBlocks,
         place: googlePlaceAutocomplete!,
         isCuratorMode: isCuratorMode,
@@ -108,7 +107,8 @@ const TextBlockList = (props: TextBlockListProps) => {
     }
 
     // If there are no issues with portal submission, navigate to the map page
-    props.setSplitState(true);
+    // props.setSplitState(true);
+    // window.location.reload();
 
     console.log("Text blocks saved", {
       description: `${nonEmptyBlocks.length} block${nonEmptyBlocks.length === 1 ? "" : "s"} saved successfully`,
