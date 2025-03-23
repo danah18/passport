@@ -73,6 +73,14 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
     [fetchPinsInView]
   );
 
+  // Function to navigate to a specific pin
+  const navigateToPin = (pin: Pin) => {
+    setCameraProps({
+      center: { lat: pin.lat, lng: pin.long },
+      zoom: 15, // Adjust the zoom level as needed
+    });
+  };
+
   useEffect(() => {
     // Bit awkward, good enough for now
     const mapBounds = latestBoundsRef.current;
