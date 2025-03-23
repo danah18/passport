@@ -3,7 +3,7 @@
 // This enables autocomplete, go to definition, etc.
 
 // Setup type definitions for built-in Supabase Runtime APIs
-import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 Deno.serve(async (req) => {
   const corsHeaders = {
@@ -34,25 +34,25 @@ Deno.serve(async (req) => {
 
     if (!response.ok) {
       return new Response(
-        JSON.stringify({ error: `[Response.statusText]: ${response.statusText}. [Response.text]: ${response.text}` }), 
+        JSON.stringify({ error: `[Response.statusText]: ${response.statusText}. [Response.text]: ${response.text}` }),
         {
-          status: await response.status, 
+          status: await response.status,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         },
       );
     }
 
     const data = await response.json();
-    
+
     return new Response(
-      JSON.stringify({ data: data}),
+      JSON.stringify(data),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       },
     )
   } catch (error) {
     return new Response(
-      JSON.stringify({ error: await error }), 
+      JSON.stringify({ error: await error }),
       {
         status: error.code,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
