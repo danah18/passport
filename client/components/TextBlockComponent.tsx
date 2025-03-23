@@ -6,7 +6,7 @@ import { Textarea } from "./ui/Textarea.tsx";
 import { Card, CardContent } from "./ui/Card.tsx";
 import { Input } from "./ui/Input.tsx";
 import { useThemeColor } from "../hooks/useThemeColor.ts";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 
 interface TextBlockComponentProps {
   text: string;
@@ -117,21 +117,25 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
               className="text-input min-h-[120px] resize-y border-0 bg-background/60 focus:ring-0 focus-visible:ring-offset-0 rounded-lg"
             />
 
-            <View className="absolute flex space-x-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:flex">
-              <Button
-                size="icon"
-                variant="ghost"
-                style={{marginTop: 5}}
-                className="h-7 w-7 rounded-full text-destructive hover:bg-destructive/10"
-                onClick={onRemove}
-                aria-label="Remove block"
-              >
-                <Trash2 className="h-4 w-4" style={{ color: backgroundColor, marginTop: 305 }} />
-              </Button>
-            </View>
-            
-            <View className="mt-3 text-xs text-right text-muted-foreground">
-              {text.length} characters {text.trim().length > 0 ? `• ${text.trim().split(/\s+/).length} words` : ""}
+            <View className="group flex-row items-center justify-between w-full mt-1">
+              <View className="opacity-0 transition-opacity duration-200 group-hover:opacity-100 flex">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-7 w-7 rounded-full text-destructive hover:bg-destructive/10"
+                  onClick={onRemove}
+                  aria-label="Remove block"
+                >
+                  <Trash2 className="h-4 w-4" style={{ color: backgroundColor }} />
+                </Button>
+              </View>
+
+              <Text className="text-xs text-right text-muted-foreground">
+                {text.length} characters
+                {text.trim().length > 0
+                  ? ` • ${text.trim().split(/\s+/).length} words`
+                  : ''}
+              </Text>
             </View>
           </View>
         </CardContent>
