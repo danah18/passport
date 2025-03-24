@@ -116,12 +116,17 @@ const createCapsule = async (
   place: google.maps.places.PlaceResult,
   recs: string
 ) => {
+  const lat = place.geometry?.location?.lat() ?? 0;
+  const long = place.geometry?.location?.lng() ?? 0;
+  const location = `SRID=4326;POINT(${long} ${lat})`;
+
   const { data: newCapsule, error } = await supabase
     .from("capsules")
     .insert({
       profile_id: profileId,
       name: place?.name ?? "",
       description: "",
+      location: location,
     })
     .select("*")
     .single();

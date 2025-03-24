@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import SplitScreen from "../../components/SplitScreen.tsx";
 import TextBlockList from "../../components/TextBlockList.tsx";
 import { GooglePlaceResponse } from "../../data/pins.tsx";
+import { Capsule } from "../../data/portalSubmissionHandler";
 import { useThemeColor } from "../../hooks/useThemeColor.ts";
 import { getSupabaseClient } from "../../utils/supabase.ts";
 import MapScreen from "./map.tsx";
@@ -20,40 +21,39 @@ export default function Portal() {
   const [supabase, setSupabase] = useState<SupabaseClient>();
   const backgroundColor = useThemeColor({}, "background");
   const [splitScreen, setSplitScreen] = useState(false);
-  const [capsule, setCapsule] = useState(null);
+  const [capsule, setCapsule] = useState<Capsule>(null);
   const [refreshKey, setRefreshKey] = useState(0); // Add a state variable to track changes
 
   useEffect(() => {
     // TODO: add error handling for if supabase is null as code throughout this
     // file assumes non-null
     setSupabase(getSupabaseClient());
-
-    // Fetch existing capsule data
-    const fetchCapsule = async () => {
-      const supabase = getSupabaseClient();
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      if (userError) {
-        console.log("Error fetching user:", userError);
-        return;
-      }
-      const profileId = userData?.user?.user_metadata?.profile_id;
-
-      const { data, error } = await supabase.from("capsules").select("*").eq("profile_id", profileId);
-
-      if (error) {
-        console.log("Error fetching capsule:", error.message);
-        return;
-      }
-
-      if (data.length > 0) {
-        console.log(data[0]);
-        setCapsule(data[0]);
-        setSplitScreen(true);
-      }
-    };
-
     fetchCapsule();
   }, []);
+
+  // Fetch existing capsule data
+  const fetchCapsule = async () => {
+    const supabase = getSupabaseClient();
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError) {
+      console.log("Error fetching user:", userError);
+      return;
+    }
+    const profileId = userData?.user?.user_metadata?.profile_id;
+
+    const { data, error } = await supabase.from("capsules").select("*").eq("profile_id", profileId);
+
+    if (error) {
+      console.log("Error fetching capsule:", error.message);
+      return;
+    }
+
+    if (data.length > 0) {
+      console.log(data[0]);
+      setCapsule(data[0]);
+      setSplitScreen(true);
+    }
+  };
 
   const addNewPins = async (textQuery: string) => {
     const queries: string[] = textQuery.split(/[\n,]+/);
@@ -118,6 +118,7 @@ export default function Portal() {
           <TextBlockList
             setSplitState={setSplitScreen}
             onCapsuleUpdated={() => setRefreshKey((prevKey) => prevKey + 1)}
+            onCapsuleAdded={() => fetchCapsule()}
           />
         </motion.div>
       </View>

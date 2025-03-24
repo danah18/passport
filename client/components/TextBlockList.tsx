@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Check, Plus } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Platform, Switch, Text, View } from "react-native";
-import { useCapsule } from "../app/(tabs)/portal.tsx"; // Import the useCapsule hook
+import { useCapsule } from "../app/(tabs)/portal.tsx";
 import { handlePortalSubmission } from "../data/portalSubmissionHandler.tsx";
 import { AirplaneAnimation } from "./AirplaneAnimation.tsx";
 import { PlaceAutocomplete } from "./PlaceAutocomplete.tsx";
@@ -18,6 +18,7 @@ export interface TextBlock {
 
 type TextBlockListProps = {
   setSplitState: React.Dispatch<React.SetStateAction<boolean>>;
+  onCapsuleAdded: () => void;
   onCapsuleUpdated: () => void;
 };
 
@@ -115,6 +116,10 @@ const TextBlockList = (props: TextBlockListProps) => {
       description: `${nonEmptyBlocks.length} block${nonEmptyBlocks.length === 1 ? "" : "s"} saved successfully`,
     });
 
+    if (!capsule) {
+      console.log("Capsule added");
+      props.onCapsuleAdded();
+    }
     props.onCapsuleUpdated();
   };
 

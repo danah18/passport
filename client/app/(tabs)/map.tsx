@@ -3,7 +3,9 @@ import { APIProvider, Map, MapCameraChangedEvent, MapCameraProps, Marker } from 
 import throttle from "lodash/throttle";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { GooglePlace } from "../../data/pins.tsx";
+import { Capsule } from "../../data/portalSubmissionHandler";
 import { getSupabaseClient } from "../../utils/supabase"; // adjust the import path as needed
+import { useCapsule } from "./portal";
 
 export interface Pin {
   google_place_id: string;
@@ -37,6 +39,17 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
   const [selectedPin, setSelectedPin] = useState<Pin>();
   const [cameraProps, setCameraProps] = useState<MapCameraProps>(INITIAL_CAMERA);
   const latestBoundsRef = useRef<Bounds | null>(null);
+  const capsule: Capsule | null = useCapsule();
+
+  useEffect(() => {
+    // Center the map on the capsule if it exists
+    if (capsule) {
+      setCameraProps({
+        center: { lat: capsule.lat, lng: capsule.long },
+        zoom: 12,
+      });
+    }
+  }, [capsule]);
 
   // Function to fetch pins in view using the bounding box
   const fetchPinsInView = useCallback(async (min_lat: number, min_long: number, max_lat: number, max_long: number) => {
@@ -88,7 +101,7 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
     if (mapBounds) {
       const timeoutId = setTimeout(() => {
         fetchPinsInView(mapBounds.south, mapBounds.west, mapBounds.north, mapBounds.east);
-      }, 500); // Wait for 0.5 seconds before fetching pins
+      }, 1000); // Wait for 1 second before fetching pins
 
       return () => clearTimeout(timeoutId);
     }
