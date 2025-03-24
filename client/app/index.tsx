@@ -51,6 +51,8 @@ export default function AccountScreen() {
   const handlePhoneNumberKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       setIsEditingPhoneNumber(false);
+      // Sign-in for ease
+      signInWithPhone();
     }
   };
 
