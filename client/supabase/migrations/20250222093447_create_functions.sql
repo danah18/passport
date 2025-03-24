@@ -44,7 +44,7 @@ $$;
 
 -- Returns all capsule pins in view
 create or replace function capsule_pins_in_view (
-  capsule_id uuid,
+  _capsule_id uuid,
   min_lat float,
   min_long float,
   max_lat float,
@@ -73,7 +73,7 @@ set
     from public.pins p
     join public.user_pins up on p.id = up.pin_id
     join public.capsule_pins cp on up.id = cp.user_pin_id
-    where cp.capsule_id = capsule_id
+    where cp.capsule_id = _capsule_id
       and p.location operator(gis.&&) gis.ST_SetSRID(gis.ST_MakeBox2D(gis.ST_Point(min_long, min_lat), gis.ST_Point(max_long, max_lat)), 4326)
 $$;
 

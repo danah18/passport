@@ -58,7 +58,7 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
 
       if (capsule) {
         const { data, error } = await supabase.rpc("capsule_pins_in_view", {
-          capsule_id: capsule.id,
+          _capsule_id: capsule.id,
           min_lat,
           min_long,
           max_lat,
