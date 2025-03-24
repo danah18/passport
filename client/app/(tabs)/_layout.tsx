@@ -42,7 +42,7 @@ export default function Layout() {
     const supabase = getSupabaseClient();
     await supabase.auth.signOut();
     setUser(null);
-    router.back();
+    router.replace("/");
   };
 
   return (
