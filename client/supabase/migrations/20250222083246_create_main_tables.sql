@@ -71,7 +71,10 @@ CREATE TABLE IF NOT EXISTS pins (
   -- e.g., "restaurant", "hotel", "cafe"
   category TEXT,
   -- Additional data from Google or custom metadata
-  metadata JSONB
+  metadata JSONB,
+  -- Latitude and longitude generated from the location
+  lat DOUBLE PRECISION GENERATED ALWAYS AS (gis.ST_Y (location::gis.geometry)) STORED,
+  long DOUBLE PRECISION GENERATED ALWAYS AS (gis.ST_X (location::gis.geometry)) STORED
 );
 
 -- Table to store capsules created by users.
@@ -86,7 +89,12 @@ CREATE TABLE IF NOT EXISTS capsules (
   -- Optional description for additional details
   description text,
   -- Timestamp when the capsule was created
-  created_at timestamptz DEFAULT now()
+  created_at timestamptz DEFAULT now(),
+  -- Geographic location stored as a PostGIS geography point (using SRID 4326 by default)
+  location gis.geography (POINT) NOT NULL,
+  -- Latitude and longitude generated from the location
+  lat DOUBLE PRECISION GENERATED ALWAYS AS (gis.ST_Y (location::gis.geometry)) STORED,
+  long DOUBLE PRECISION GENERATED ALWAYS AS (gis.ST_X (location::gis.geometry)) STORED
 );
 
 -- Join table that associates capsules with pins.
