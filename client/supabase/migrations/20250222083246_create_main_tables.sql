@@ -71,7 +71,10 @@ CREATE TABLE IF NOT EXISTS pins (
   -- e.g., "restaurant", "hotel", "cafe"
   category TEXT,
   -- Additional data from Google or custom metadata
-  metadata JSONB
+  metadata JSONB,
+  -- Latitude and longitude generated from the location
+  lat DOUBLE PRECISION GENERATED ALWAYS AS (gis.ST_Y (location::gis.geometry)) STORED,
+  long DOUBLE PRECISION GENERATED ALWAYS AS (gis.ST_X (location::gis.geometry)) STORED
 );
 
 -- Table to store capsules created by users.
@@ -86,28 +89,20 @@ CREATE TABLE IF NOT EXISTS capsules (
   -- Optional description for additional details
   description text,
   -- Timestamp when the capsule was created
-  created_at timestamptz DEFAULT now()
-);
-
--- Join table that associates capsules with pins.
--- This table orders the pins in each capsule and allows a pin to be used in multiple capsules.
-CREATE TABLE IF NOT EXISTS capsule_pins (
-  -- Unique identifier for each entry in the join table
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
-  -- Foreign key reference to the capsule; if the capsule is deleted, related entries are automatically removed
-  capsule_id uuid NOT NULL REFERENCES capsules (id) ON DELETE CASCADE,
-  -- Foreign key reference to the pin; if the pin is deleted, related entries are automatically removed
-  pin_id uuid NOT NULL REFERENCES pins (id) ON DELETE CASCADE,
-  -- Specifies the order of the pin within the capsule (e.g., 1st, 2nd, 3rd, etc.)
-  position int NOT NULL,
-  -- Timestamp when this pin was added to the capsule
-  added_at timestamptz DEFAULT now()
+  created_at timestamptz DEFAULT now(),
+  -- Geographic location stored as a PostGIS geography point (using SRID 4326 by default)
+  location gis.geography (POINT) NOT NULL,
+  -- Latitude and longitude generated from the location
+  lat DOUBLE PRECISION GENERATED ALWAYS AS (gis.ST_Y (location::gis.geometry)) STORED,
+  long DOUBLE PRECISION GENERATED ALWAYS AS (gis.ST_X (location::gis.geometry)) STORED
 );
 
 -- Table to store user-specific details about pins.
 -- This includes notes, ratings, and whether the user has favorited the pin.
 -- A user can have one record per pin regardless of how many capsules the pin is part of.
 CREATE TABLE IF NOT EXISTS user_pins (
+  -- Unique identifier for the user_pin, generated automatically
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
   -- Foreign key reference to a profile (which may or may not be linked to an auth.user).
   profile_id uuid NOT NULL REFERENCES profiles (id),
   -- Foreign key reference to the pin
@@ -120,8 +115,23 @@ CREATE TABLE IF NOT EXISTS user_pins (
   favorited boolean DEFAULT false,
   -- Timestamp when the record was last updated
   updated_at timestamptz DEFAULT now(),
-  -- Composite primary key ensures a user can only have one record per pin
-  PRIMARY KEY (profile_id, pin_id)
+  -- Enforce uniqueness so one user can only have one record per pin
+  UNIQUE (profile_id, pin_id)
+);
+
+-- Join table that associates capsules with pins.
+-- This table orders the pins in each capsule and allows a pin to be used in multiple capsules.
+CREATE TABLE IF NOT EXISTS capsule_pins (
+  -- Unique identifier for the capsule_pin, generated automatically
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
+  -- Foreign key reference to the capsule; if the capsule is deleted, related entries are automatically removed
+  capsule_id uuid NOT NULL REFERENCES capsules (id) ON DELETE CASCADE,
+  -- Foreign key reference to the pin; if the pin is deleted, related entries are automatically removed
+  user_pin_id uuid NOT NULL REFERENCES user_pins (id) ON DELETE CASCADE,
+  -- Specifies the order of the pin within the capsule (e.g., 1st, 2nd, 3rd, etc.)
+  position int NOT NULL,
+  -- Timestamp when this pin was added to the capsule
+  added_at timestamptz DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS capsule_shares (

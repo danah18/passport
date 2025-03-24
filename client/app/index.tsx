@@ -1,28 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, TextInput, StyleSheet } from 'react-native';
-import * as WebBrowser from 'expo-web-browser';
-import * as AuthSession from 'expo-auth-session';
-import { getSupabaseClient } from '../../utils/supabase';
-import { User } from '@supabase/supabase-js';
-import * as QueryParams from 'expo-auth-session/build/QueryParams';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedText } from '@/components/ThemedText';
-import { Link, router } from 'expo-router';
-import { Button } from "../../components/ui/Button.tsx";
-import { Check } from 'lucide-react';
-import { Input } from '../../components/ui/Input.tsx';
-import { useFocusEffect } from '@react-navigation/native';
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { User } from "@supabase/supabase-js";
+import * as AuthSession from "expo-auth-session";
+import * as QueryParams from "expo-auth-session/build/QueryParams";
+import { router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import { Check } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet } from "react-native";
+import { Button } from "../components/ui/Button.tsx";
+import { Input } from "../components/ui/Input.tsx";
+import { getSupabaseClient } from "../utils/supabase";
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function AccountScreen() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [newUser, setNewUser] = useState(false);
   const [isEditingPhoneNumber, setIsEditingPhoneNumber] = React.useState(false);
   const [isEditingFirstName, setIsEditingFirstName] = React.useState(false);
@@ -33,24 +32,18 @@ export default function AccountScreen() {
 
   const handleNameKeyDown = (e: React.KeyboardEvent, isFirstName: boolean) => {
     if (e.key === "Enter") {
-      if (isFirstName)
-      {
+      if (isFirstName) {
         setIsEditingFirstName(false);
-      }
-      else
-      {
+      } else {
         setIsEditingLastName(false);
       }
     }
   };
 
   const handleNameChange = (newName: string, isFirstName: boolean) => {
-    if (isFirstName)
-    {
+    if (isFirstName) {
       setFirstName(newName);
-    }
-    else
-    {
+    } else {
       setLastName(newName);
     }
   };
@@ -58,6 +51,8 @@ export default function AccountScreen() {
   const handlePhoneNumberKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       setIsEditingPhoneNumber(false);
+      // Sign-in for ease
+      signInWithPhone();
     }
   };
 
@@ -72,7 +67,7 @@ export default function AccountScreen() {
     const fetchUser = async () => {
       const { data, error } = await supabase.auth.getUser();
       if (error) {
-        console.log('Error fetching user:', error);
+        console.log("Error fetching user:", error);
         return;
       }
       setUser(data?.user || null);
@@ -81,15 +76,13 @@ export default function AccountScreen() {
     fetchUser();
 
     // Subscribe to auth state changes.
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user || null);
-        setNewUser(false);
-        setPhone('');
-        setFirstName('');
-        setLastName('');
-      }
-    );
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+      setNewUser(false);
+      setPhone("");
+      setFirstName("");
+      setLastName("");
+    });
 
     return () => {
       listener.subscription.unsubscribe();
@@ -133,21 +126,18 @@ export default function AccountScreen() {
     setLoading(true);
     const supabase = getSupabaseClient();
     try {
-      const redirectUri = AuthSession.makeRedirectUri({ path: 'auth' });
+      const redirectUri = AuthSession.makeRedirectUri({ path: "auth" });
       const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: { redirectTo: redirectUri, skipBrowserRedirect: true },
       });
       if (error) throw error;
-      const result = await WebBrowser.openAuthSessionAsync(
-        data.url,
-        redirectUri
-      );
-      if (result.type === 'success') {
+      const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUri);
+      if (result.type === "success") {
         await createSessionFromUrl(result.url);
       }
     } catch (error) {
-      console.error('Google Sign-In Error:', error);
+      console.error("Google Sign-In Error:", error);
     } finally {
       setLoading(false);
     }
@@ -164,7 +154,7 @@ export default function AccountScreen() {
       });
       if (error) throw error;
     } catch (error) {
-      console.error('Email Sign-In Error:', error);
+      console.error("Email Sign-In Error:", error);
     } finally {
       setLoading(false);
     }
@@ -180,9 +170,9 @@ export default function AccountScreen() {
         password,
       });
       if (error) throw error;
-      console.log('Sign-up successful, please verify your email.');
+      console.log("Sign-up successful, please verify your email.");
     } catch (error) {
-      console.error('Email Sign-Up Error:', error);
+      console.error("Email Sign-Up Error:", error);
     } finally {
       setLoading(false);
     }
@@ -199,7 +189,7 @@ export default function AccountScreen() {
       });
       if (error) throw error;
     } catch (error) {
-      console.error('Phone Sign-In Error:', error);
+      console.error("Phone Sign-In Error:", error);
     } finally {
       setLoading(false);
     }
@@ -213,7 +203,7 @@ export default function AccountScreen() {
 
     const autoCapitalizedFirstName = autoCapitalize(firstName);
     const autoCapitalizedLastName = autoCapitalize(lastName);
-    const fullName = `${autoCapitalizedFirstName} ${autoCapitalizedLastName}`
+    const fullName = `${autoCapitalizedFirstName} ${autoCapitalizedLastName}`;
 
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -224,12 +214,12 @@ export default function AccountScreen() {
             first_name: autoCapitalizedFirstName,
             last_name: autoCapitalizedLastName,
             name: fullName,
-          }
-        }
-      })
+          },
+        },
+      });
       if (error) throw error;
     } catch (error) {
-      console.error('Phone Sign-Up Error:', error);
+      console.error("Phone Sign-Up Error:", error);
     } finally {
       setLoading(false);
     }
@@ -243,38 +233,35 @@ export default function AccountScreen() {
   };
 
   const autoCapitalize = (input: string) => {
-    if (input.length == 0)
-    {
+    if (input.length == 0) {
       return input;
     } else if (input.length == 1) {
       return input.charAt(0).toUpperCase();
     } else if (input.length > 1) {
       return input.charAt(0).toUpperCase() + input.slice(1);
     }
-  }
+  };
 
   return (
     <ThemedView
       style={{
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: "center",
+        alignItems: "center",
         padding: 20,
       }}
     >
       {user ? (
         <>
-          <ThemedText style={{ marginVertical: 20 }}>
-            Welcome, {user.user_metadata.name}!
-          </ThemedText>
+          <ThemedText style={{ marginVertical: 20 }}>Welcome, {user.user_metadata.name}!</ThemedText>
         </>
       ) : (
         <>
           {loading ? (
-            <ActivityIndicator size='large' color='#0000ff' />
+            <ActivityIndicator size="large" color="#0000ff" />
           ) : (
             <>
-              {newUser ? ( 
+              {newUser ? (
                 <>
                   <Input
                     value={firstName}
@@ -285,13 +272,13 @@ export default function AccountScreen() {
                     autoFocus
                     className="text-xs tracking-wide h-6 py-0 px-1"
                     style={{
-                        width: '20%',
-                        height: 40,
-                        borderColor: 'gray',
-                        borderWidth: 1,
-                        borderRadius: 10,
-                        marginTop: 5,
-                        marginBottom: 5
+                      width: "20%",
+                      height: 40,
+                      borderColor: "gray",
+                      borderWidth: 1,
+                      borderRadius: 10,
+                      marginTop: 5,
+                      marginBottom: 5,
                     }}
                   />
 
@@ -304,21 +291,21 @@ export default function AccountScreen() {
                     autoFocus
                     className="text-xs tracking-wide h-6 py-0 px-1"
                     style={{
-                        width: '20%',
-                        height: 40,
-                        borderColor: 'gray',
-                        borderWidth: 1,
-                        borderRadius: 10,
-                        marginTop: 5,
-                        marginBottom: 5
+                      width: "20%",
+                      height: 40,
+                      borderColor: "gray",
+                      borderWidth: 1,
+                      borderRadius: 10,
+                      marginTop: 5,
+                      marginBottom: 5,
                     }}
                   />
-                </>  
-              ) : ( 
+                </>
+              ) : (
                 <></>
               )}
 
-            <Input
+              <Input
                 value={phone}
                 onChange={(e) => handlePhoneNumberChange(e.target.value)}
                 onBlur={() => setIsEditingPhoneNumber(false)}
@@ -327,33 +314,31 @@ export default function AccountScreen() {
                 autoFocus
                 className="text-xs tracking-wide h-6 py-0 px-1"
                 style={{
-                    width: '20%',
-                    height: 40,
-                    borderColor: 'gray',
-                    borderWidth: 1,
-                    borderRadius: 10,
-                    marginTop: 5,
-                    marginBottom: 5
+                  width: "20%",
+                  height: 40,
+                  borderColor: "gray",
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  marginTop: 5,
+                  marginBottom: 5,
                 }}
-            />
+              />
 
-              {newUser ? ( 
+              {newUser ? (
                 <>
-                  <Button 
-                    onClick={signUpWithPhone} 
+                  <Button
+                    onClick={signUpWithPhone}
                     className="mt-2 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-                    <span className="relative flex items-center justify-center text-white">
-                      Sign Up
-                    </span>
+                    <span className="relative flex items-center justify-center text-white">Sign Up</span>
                   </Button>
 
-                  <Button 
-                    onClick={(() => {
-                      setPhone('');
+                  <Button
+                    onClick={() => {
+                      setPhone("");
                       setNewUser(false);
-                    })} 
+                    }}
                     className="mt-2 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
@@ -362,32 +347,28 @@ export default function AccountScreen() {
                     </span>
                   </Button>
                 </>
-              ) : ( 
+              ) : (
                 <>
-                  <Button 
-                    onClick={signInWithPhone} 
+                  <Button
+                    onClick={signInWithPhone}
                     className="mt-2 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-                    <span className="relative flex items-center justify-center text-white">
-                      Sign In
-                    </span>
-                  </Button>               
+                    <span className="relative flex items-center justify-center text-white">Sign In</span>
+                  </Button>
 
-                  <Button 
-                    onClick={(() => {
-                      setPhone('');
+                  <Button
+                    onClick={() => {
+                      setPhone("");
                       setNewUser(true);
-                    })} 
+                    }}
                     className="mt-2 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-                    <span className="relative flex items-center justify-center text-white">
-                      New User?
-                    </span>
+                    <span className="relative flex items-center justify-center text-white">New User?</span>
                   </Button>
                 </>
-              )}  
+              )}
             </>
           )}
         </>
@@ -400,10 +381,10 @@ const styles = StyleSheet.create({
   inputStyle: {
     height: 40,
     width: 250,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
-    color: 'gray'
-  }
+    color: "gray",
+  },
 });

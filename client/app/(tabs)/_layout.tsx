@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Drawer } from 'expo-router/drawer';
-import { getSupabaseClient } from '../../utils/supabase.ts';
-import { router } from 'expo-router';
-import { User } from '@supabase/supabase-js';
+import { User } from "@supabase/supabase-js";
+import { router } from "expo-router";
+import { Drawer } from "expo-router/drawer";
+import React, { useEffect, useState } from "react";
+import { View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Button } from "../../components/ui/Button.tsx";
-import { View } from 'react-native';
+import { getSupabaseClient } from "../../utils/supabase.ts";
 
-// Note from Expo Router Docs: Be careful when using react-native-gesture-handler on the web. 
-// It can increase the JavaScript bundle size significantly. 
+// Note from Expo Router Docs: Be careful when using react-native-gesture-handler on the web.
+// It can increase the JavaScript bundle size significantly.
 // Expo router recommends learning about using platform-specific modules.
 export default function Layout() {
   const [user, setUser] = useState<User | null>(null);
@@ -19,7 +19,7 @@ export default function Layout() {
     const fetchUser = async () => {
       const { data, error } = await supabase.auth.getUser();
       if (error) {
-        console.log('Error fetching user:', error);
+        console.log("Error fetching user:", error);
         return;
       }
       setUser(data?.user || null);
@@ -28,11 +28,9 @@ export default function Layout() {
     fetchUser();
 
     // Subscribe to auth state changes.
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user || null);
-      }
-    );
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+    });
 
     return () => {
       listener.subscription.unsubscribe();
@@ -44,49 +42,39 @@ export default function Layout() {
     const supabase = getSupabaseClient();
     await supabase.auth.signOut();
     setUser(null);
-    router.push("/");
+    router.replace("/");
   };
-  
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Drawer screenOptions={{
-          headerRight: () => (user &&
-            <View style={{marginRight:10}}> 
-              <Button 
-                    onClick={signOut} 
-                    className="mr-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+      <Drawer
+        screenOptions={{
+          headerRight: () =>
+            user && (
+              <View style={{ marginRight: 10 }}>
+                <Button
+                  onClick={signOut}
+                  className="mr-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
                 >
-                    <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-                    <span className="relative flex items-center justify-center text-white">
-                      Log Out
-                    </span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
+                  <span className="relative flex items-center justify-center text-white">Log Out</span>
                 </Button>
-            </View>
-          ),
-        }}>
+              </View>
+            ),
+        }}
+      >
         <Drawer.Screen
-          name="portal" 
+          name="portal"
           options={{
-            drawerLabel: 'Portal',
-            title: '',
+            drawerLabel: "Portal",
+            title: "",
           }}
-        />      
+        />
         <Drawer.Screen
-          name="map" 
+          name="map"
           options={{
-            drawerLabel: 'Map',
-            title: '',
-          }}
-        /> 
-        <Drawer.Screen
-          name="index" // This is the name of the page and must match the url from root
-          options={{
-            drawerLabel: 'Account',
-            title: '',
-            // Hide for now - it is still clickable but somewhat hidden
-            // https://react-navigation.canny.io/feature-requests/p/add-option-to-hide-item-from-a-drawer
-            drawerLabelStyle:  { display: 'none' }
-          
+            drawerLabel: "Map",
+            title: "",
           }}
         />
       </Drawer>
