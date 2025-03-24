@@ -143,31 +143,42 @@ const updateCapsule = async (supabase: SupabaseClient, profileId: string, capsul
 
     const pinId = await createOrFetchPin(recWithPlace);
 
-    await createCapsulePin(supabase, profileId, capsule.id, pinId);
-    await createUserPin(supabase, profileId, pinId, recWithPlace);
+    const userPinId = await createUserPin(supabase, profileId, pinId, recWithPlace);
+    await createCapsulePin(supabase, profileId, capsule.id, userPinId);
   });
 
   return capsule.id;
 };
 
-const createCapsulePin = async (supabase: SupabaseClient, profileId: string, capsuleId: string, pinId: string) => {
+const createCapsulePin = async (supabase: SupabaseClient, profileId: string, capsuleId: string, userPinId: string) => {
   await supabase.from("capsule_pins").insert([
     {
       capsule_id: capsuleId,
-      pin_id: pinId,
+      user_pin_id: userPinId,
       position: 0, // I think this should be removed unless there's a reason we need it or we need a management system for getting list count
     },
   ]);
 };
 
 const createUserPin = async (supabase: SupabaseClient, profileId: string, pinId: string, rec: string) => {
-  await supabase.from("user_pins").insert([
-    {
-      profile_id: profileId,
-      pin_id: pinId,
-      note: "", // TODO: extract any provided notes from rec and add to user pin
-    },
-  ]);
+  const { data, error } = await supabase
+    .from("user_pins")
+    .insert([
+      {
+        profile_id: profileId,
+        pin_id: pinId,
+        note: "", // TODO: extract any provided notes from rec and add to user pin
+      },
+    ])
+    .select("id")
+    .single();
+
+  if (error) {
+    console.error("Error creating user pin:", error);
+    return null;
+  }
+
+  return data.id;
 };
 
 export async function handlePortalSubmission(props: PortalSubmissionHandlerProps) {

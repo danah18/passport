@@ -52,21 +52,39 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
   }, [capsule]);
 
   // Function to fetch pins in view using the bounding box
-  const fetchPinsInView = useCallback(async (min_lat: number, min_long: number, max_lat: number, max_long: number) => {
-    const supabase = getSupabaseClient();
-    // Using the user ID, query capsule_shares table and get capsule_pins list as the group to render
-    const { data, error } = await supabase.rpc("pins_in_view", {
-      min_lat,
-      min_long,
-      max_lat,
-      max_long,
-    });
-    if (error) {
-      console.error("Error fetching pins:", error);
-    } else if (data) {
-      setPins(data as Pin[]);
-    }
-  }, []);
+  const fetchPinsInView = useCallback(
+    async (min_lat: number, min_long: number, max_lat: number, max_long: number) => {
+      const supabase = getSupabaseClient();
+
+      if (capsule) {
+        const { data, error } = await supabase.rpc("capsule_pins_in_view", {
+          capsule_id: capsule.id,
+          min_lat,
+          min_long,
+          max_lat,
+          max_long,
+        });
+        if (error) {
+          console.error("Error fetching pins:", error);
+        } else if (data) {
+          setPins(data as Pin[]);
+        }
+      } else {
+        const { data, error } = await supabase.rpc("pins_in_view", {
+          min_lat,
+          min_long,
+          max_lat,
+          max_long,
+        });
+        if (error) {
+          console.error("Error fetching pins:", error);
+        } else if (data) {
+          setPins(data as Pin[]);
+        }
+      }
+    },
+    [capsule]
+  );
 
   // Update mapBounds when the camera changes
   const handleCameraChange = useCallback((ev: MapCameraChangedEvent) => {
@@ -129,7 +147,7 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
       </Map>
 
       {/* Play around with styling to not overlay on certain Maps components */}
-      {showPanel && <PlaceTab pin={selectedPin} />}
+      {showPanel && <PlaceTab pin={selectedPin} capsule={capsule} />}
     </APIProvider>
   );
 }
