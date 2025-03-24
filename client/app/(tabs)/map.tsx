@@ -41,16 +41,6 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
   const latestBoundsRef = useRef<Bounds | null>(null);
   const capsule: Capsule | null = useCapsule();
 
-  useEffect(() => {
-    // Center the map on the capsule if it exists
-    if (capsule) {
-      setCameraProps({
-        center: { lat: capsule.lat, lng: capsule.long },
-        zoom: 12,
-      });
-    }
-  }, [capsule]);
-
   // Function to fetch pins in view using the bounding box
   const fetchPinsInView = useCallback(
     async (min_lat: number, min_long: number, max_lat: number, max_long: number) => {
@@ -115,15 +105,33 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
   useEffect(() => {
     // Bit awkward, good enough for now
     const mapBounds = latestBoundsRef.current;
-    console.log("Map refresh");
     if (mapBounds) {
       const timeoutId = setTimeout(() => {
+        console.log("Map refresh");
         fetchPinsInView(mapBounds.south, mapBounds.west, mapBounds.north, mapBounds.east);
       }, 1000); // Wait for 1 second before fetching pins
 
       return () => clearTimeout(timeoutId);
     }
   }, [refreshKey, fetchPinsInView]);
+
+  useEffect(() => {
+    // Center the map on the capsule if it exists
+    if (capsule) {
+      console.log("Seeting capsule camera props");
+      setCameraProps({
+        center: { lat: capsule.lat, lng: capsule.long },
+        zoom: 12,
+      });
+
+      // Another timeout for capsule pins race condition on creation
+      const timeoutId = setTimeout(() => {
+        throttledHandleMapIdle();
+      }, 2000);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [capsule, throttledHandleMapIdle]);
 
   return (
     <APIProvider apiKey={mapsKey} onLoad={() => console.log("Maps API has loaded.")}>
