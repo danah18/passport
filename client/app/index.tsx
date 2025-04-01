@@ -5,7 +5,7 @@ import * as AuthSession from "expo-auth-session";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { Check } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet } from "react-native";
 import { Button } from "../components/ui/Button.tsx";
@@ -263,6 +263,38 @@ export default function AccountScreen() {
             <>
               {newUser ? (
                 <>
+                  <ThemedText style={{ fontSize: 25, marginBottom: 5 }}>Create Account</ThemedText>
+                  <ThemedText style={{ fontSize: 15, marginBottom: 10 }}>
+                    Already a user?
+                    <span
+                      onClick={() => {
+                        setPhone("");
+                        setNewUser(false);
+                      }}
+                      style={{ fontSize: 15, marginLeft: 5, cursor: 'pointer', fontStyle: 'italic', color: '#6f94e5' }}>
+                      Sign in here
+                    </span>
+                  </ThemedText>
+                </>) : (
+                <>
+                  <ThemedText style={{ fontSize: 25, marginBottom: 5 }}>Sign In</ThemedText>
+                  <ThemedText style={{ fontSize: 15, marginBottom: 10 }}>
+                    First time here?
+                    <span
+                      onClick={() => {
+                        setPhone("");
+                        setNewUser(true);
+                      }}
+                      style={{ fontSize: 15, marginLeft: 5, cursor: 'pointer', fontStyle: 'italic', color: '#6f94e5' }}>
+                      Create account
+                    </span>
+                  </ThemedText>
+                </>
+                
+              )}
+
+              {newUser ? (
+                <>
                   <Input
                     value={firstName}
                     onChange={(e) => handleNameChange(e.target.value, true)}
@@ -304,7 +336,6 @@ export default function AccountScreen() {
               ) : (
                 <></>
               )}
-
               <Input
                 value={phone}
                 onChange={(e) => handlePhoneNumberChange(e.target.value)}
@@ -328,22 +359,12 @@ export default function AccountScreen() {
                 <>
                   <Button
                     onClick={signUpWithPhone}
-                    className="mt-2 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
-                  >
-                    <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-                    <span className="relative flex items-center justify-center text-white">Sign Up</span>
-                  </Button>
-
-                  <Button
-                    onClick={() => {
-                      setPhone("");
-                      setNewUser(false);
-                    }}
-                    className="mt-2 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+                    className="mt-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
                     <span className="relative flex items-center justify-center text-white">
-                      <Check className="mr-2 h-4 w-4" /> I already have an account
+                      <Check className="mr-2 h-4"/>
+                      Sign Up
                     </span>
                   </Button>
                 </>
@@ -351,21 +372,12 @@ export default function AccountScreen() {
                 <>
                   <Button
                     onClick={signInWithPhone}
-                    className="mt-2 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+                    className="mt-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-                    <span className="relative flex items-center justify-center text-white">Sign In</span>
-                  </Button>
-
-                  <Button
-                    onClick={() => {
-                      setPhone("");
-                      setNewUser(true);
-                    }}
-                    className="mt-2 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
-                  >
-                    <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-                    <span className="relative flex items-center justify-center text-white">New User?</span>
+                    <span className="relative flex items-center justify-center text-white">
+                      <ArrowRight/>
+                    </span>
                   </Button>
                 </>
               )}
