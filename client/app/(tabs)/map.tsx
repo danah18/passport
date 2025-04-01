@@ -28,8 +28,9 @@ interface Bounds {
   west: number;
 }
 
+// leucadia: { lat: 33.069095, lng: -117.303448 },
 const INITIAL_CAMERA = {
-  center: { lat: 33.069095, lng: -117.303448 },
+  center: { lat: 35.6851793, lng: 139.7502192 },
   zoom: 12,
 };
 
@@ -41,6 +42,9 @@ export default function MapScreen() {
   const [cameraProps, setCameraProps] =
     useState<MapCameraProps>(INITIAL_CAMERA);
   const latestBoundsRef = useRef<Bounds | null>(null);
+
+  const { width, height } = Dimensions.get('window');
+  const isMobile = width < 768;
 
   // Function to fetch pins in view using the bounding box
   const fetchPinsInView = useCallback(
@@ -112,7 +116,7 @@ export default function MapScreen() {
       </Map>
 
       {/* Play around with styling to not overlay on certain Maps components */}
-      {showPanel && <PlaceTab pin={selectedPin} />}
+      {showPanel && <PlaceTab pin={selectedPin} isMobile={isMobile}/>}
     </APIProvider>
   );
 }

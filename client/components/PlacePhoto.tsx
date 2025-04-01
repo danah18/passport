@@ -57,30 +57,36 @@ export default function PlacePhoto(props: PlacePhotoProps) {
         console.log(`data: `+ data);
         console.log(`error: `+ error);
 
-        if (error)
-        {
-            if (error.code == 429)
-            {
-                if (index+1 < props.photos.length)
-                {
-                    await getPhotoData(index+1, counter+1);
-                }
-                else
-                {
-                    setPreviewPhoto(defaultPreviewPhotoData);
-                    console.log(error);
-                    return;
-                }
-            }
-        }
-        else
-        {
-            setPreviewPhoto({
-                photoUri: data.photoUri,
-                widthPx: props.photos[index].widthPx,
-                heightPx: props.photos[index].heightPx
-            });
-        }
+        setPreviewPhoto({
+            photoUri: data.photoUri,
+            widthPx: props.photos[index].widthPx,
+            heightPx: props.photos[index].heightPx
+        });
+
+        // if (error)
+        // {
+        //     if (error.code == 429)
+        //     {
+        //         if (index+1 < props.photos.length)
+        //         {
+        //             await getPhotoData(index+1, counter+1);
+        //         }
+        //         else
+        //         {
+        //             setPreviewPhoto(defaultPreviewPhotoData);
+        //             console.log(error);
+        //             return;
+        //         }
+        //     }
+        // }
+        // else
+        // {
+        //     setPreviewPhoto({
+        //         photoUri: data.photoUri,
+        //         widthPx: props.photos[index].widthPx,
+        //         heightPx: props.photos[index].heightPx
+        //     });
+        // }
     }
   };
 

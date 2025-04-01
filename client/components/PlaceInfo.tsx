@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Dimensions, FlatList, StatusBar, View, Text, Button, TouchableOpacity, Linking } from 'react-native';
+import { Dimensions, FlatList, StatusBar, View, Text, Button, TouchableOpacity, Linking, ScrollView } from 'react-native';
 import { getSupabaseClient } from '../utils/supabase.ts';
 import { StarRatingDisplay } from 'react-native-star-rating-widget'; 
 import PlacePhoto from './PlacePhoto.tsx';
@@ -20,16 +20,15 @@ export default function PlaceInfo(props: PlaceInfoProps) {
   const placeData = props.pin.metadata;
 
   return (
-    <View>
-      <PlacePhoto photos={placeData.photos} setDisplayAllPhotos={props.setDisplayAllPhotos}/>
-      <View 
+    <ScrollView>
+      <ScrollView 
         style={{
           opacity: 0.8,
           backgroundColor: 'white',
           borderRadius: '10px',
           marginTop: 5,
           marginBottom: 2,
-          width: width*0.25,
+          width: isMobile? width*.99 :width*0.25,
           marginLeft: 5,
         }}>
         <Text
@@ -77,8 +76,9 @@ export default function PlaceInfo(props: PlaceInfoProps) {
             VIEW IN GOOGLE MAPS
           </Text>
         </TouchableOpacity>
-      </View>
-    </View>
+      </ScrollView>
+     {/* <PlacePhoto photos={placeData.photos} setDisplayAllPhotos={props.setDisplayAllPhotos}/> */}
+    </ScrollView>
   );
 }
 

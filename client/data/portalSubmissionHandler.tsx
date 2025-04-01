@@ -3,6 +3,8 @@ import { TextBlock } from "../components/TextBlockList.tsx";
 import { getSupabaseClient } from "../utils/supabase.ts";
 import { Pin } from "../app/(tabs)/map.tsx";
 import { createOrFetchPin } from "./pinManager.tsx";
+import { GooglePlaceResponse } from "./pins.tsx";
+import { router } from "expo-router";
 
 
 export type PortalSubmissionHandlerProps = {
@@ -134,6 +136,62 @@ const createUserPin = async (supabase: SupabaseClient, profileId: string, pinId:
     }]);
 }
 
+const addNewPins = async (textQuery: string) => {
+    const queries: string[] = textQuery.split(/[\n,]+/);
+
+    queries.forEach(async (query) => {
+        await addNewPin(query + ` tokyo`);
+    })
+}
+
+const addNewPin = async (textQuery: string) => {
+try {
+    console.log(textQuery);
+    const supabase = getSupabaseClient(); // Figure out how to not do this on every call to this method     
+
+    const { data, error } = await supabase.functions.invoke('google-place-text-query', {
+    body: { textQuery: textQuery },
+    });
+
+    if (error) 
+    {
+    throw error;
+    } 
+
+    const googlePlaceResponse = data as GooglePlaceResponse;
+    
+    // Need to account for multiple responses returned, for now we just assume first element is the result
+    if (googlePlaceResponse.places == null || googlePlaceResponse.places.length == 0)
+    {
+    console.log(Error(`No results returned for textQuery: ${textQuery}`));
+    return;
+    }
+
+    const googlePlace = googlePlaceResponse.places[0];
+
+    const google_place_id = googlePlace.id;
+    const location = `SRID=4326;POINT(${googlePlace.location.longitude} ${googlePlace.location.latitude})`;
+    const pin_name = googlePlace.displayName.text;
+    const metadata = {
+        formattedAddress: googlePlace.formattedAddress,
+        rating: googlePlace.rating,
+        userRatingCount: googlePlace.userRatingCount,
+        googleMapsUri: googlePlace.googleMapsUri,
+        displayName: googlePlace.displayName.text,
+        photos: googlePlace.photos,
+    };
+
+    await supabase.from('pins').insert([{ 
+        google_place_id: google_place_id,
+        location: location,
+        pin_name: pin_name,
+        metadata: metadata 
+    }]);
+    } catch (error: any) {
+    console.log('Error', error.message);
+    }
+}
+
 export async function handlePortalSubmission(props: PortalSubmissionHandlerProps) {
     // We need to make a global retrieval fxn instead of getting it each time
     const supabase = getSupabaseClient();
@@ -142,30 +200,36 @@ export async function handlePortalSubmission(props: PortalSubmissionHandlerProps
         console.log('Error fetching user:', error);
         return;
     }
-    
-    if (props.isCuratorMode)
-    {
-        const capsuleId = await createCapsule(supabase, data?.user?.user_metadata?.profile_id, props.place, props.textBlockList[0].recs);
-    }
-    else
-    {
-        props.textBlockList.forEach(async (item) => {
-            const profile = await addNewEphemeralProfile(supabase, item.friendName);
-            if (profile)
-            {
-                console.log("Profile created:" + profile);
-                // TODO: Adding custom columns to profiles table for ephemeral user once Kit’s changes are in (displayName, isEphemeralUser, linkedPhoneNumber)
-                
-                const capsuleId = await createCapsule(supabase, profile.id, props.place, item.recs);
-    
-                console.log("Capsule created:" + capsuleId);
 
-                // Add capsule id to capsule_shares table for original user
-                await supabase.from('capsule_shares').insert([{ 
-                    profile_id: data?.user?.user_metadata?.profile_id,
-                    capsule_id: capsuleId,
-                }]);
-            }
-        })
-    }    
+    props.textBlockList.forEach(async (item) => {
+        addNewPins(item.recs);
+    })
+    
+    router.replace('./map');
+
+    // if (props.isCuratorMode)
+    // {
+    //     const capsuleId = await createCapsule(supabase, data?.user?.user_metadata?.profile_id, props.place, props.textBlockList[0].recs);
+    // }
+    // else
+    // {
+    //     props.textBlockList.forEach(async (item) => {
+    //         const profile = await addNewEphemeralProfile(supabase, item.friendName);
+    //         if (profile)
+    //         {
+    //             console.log("Profile created:" + profile);
+    //             // TODO: Adding custom columns to profiles table for ephemeral user once Kit’s changes are in (displayName, isEphemeralUser, linkedPhoneNumber)
+                
+    //             const capsuleId = await createCapsule(supabase, profile.id, props.place, item.recs);
+    
+    //             console.log("Capsule created:" + capsuleId);
+
+    //             // Add capsule id to capsule_shares table for original user
+    //             await supabase.from('capsule_shares').insert([{ 
+    //                 profile_id: data?.user?.user_metadata?.profile_id,
+    //                 capsule_id: capsuleId,
+    //             }]);
+    //         }
+    //     })
+    //}    
 }

@@ -4,9 +4,11 @@ import { BlurView } from 'expo-blur';
 import PlaceInfo from './PlaceInfo.tsx';
 import PlacePhotoFlatList from './PlacePhotoFlatList.tsx';
 import { Pin } from '../app/(tabs)/map.tsx';
+import { ScrollView } from 'react-native-gesture-handler';
 
 type PlaceTabProps = {
     pin: Pin,
+    isMobile:boolean,
 }
 
 export default function PlaceTab(props: PlaceTabProps) {
@@ -43,6 +45,28 @@ export default function PlaceTab(props: PlaceTabProps) {
       marginLeft: 5,
       padding: 10,
     },
+    desktop: {
+      position: 'absolute',
+      right: 0,
+      top: 0,
+      width: width*0.25,
+      height: height,
+      display: 'flex',
+      flexDirection: 'row',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+      borderRadius: '8px'
+    },
+    mobile: {
+      position: 'absolute',
+      // right: 0,
+      top: height*0.76,
+      width: width,
+      height: height,
+      display: 'flex',
+      flexDirection: 'row',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+      borderRadius: '8px'
+    },
   });
 
   const [displayAllPhotos, setDisplayAllPhotos] = useState(false);
@@ -62,35 +86,6 @@ export default function PlaceTab(props: PlaceTabProps) {
   // } else if (data) {
   //   setPins(data as Pin[]);
   // }
-
-  // Assumption is that we can retrieve users and their recommendations for the specific pin
-  // user1, note from user1; user2, note from user2l user3, note from user3
-  const DATA = [
-    {
-      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      name: 'Michelle Monaghan'
-    },
-    {
-      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      name: 'Aubrey Plaza'
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      name: 'Jennifer Coolidge'
-    },
-    {
-      id: 'a8694a0f-3da1-471f-bd96-145571e29d72',
-      name: 'Jennifer Aniston'
-    },
-    {
-      id: 'f8694a0f-3da1-471f-bd96-145571e29d72',
-      name: 'Alex Pettyfer'
-    },
-    {
-      id: 'g8694a0f-3da1-471f-bd96-145571e29d72',
-      name: 'Jim Carter'
-    },
-  ];
   
   type ItemProps = {
     note: string,
@@ -106,33 +101,15 @@ export default function PlaceTab(props: PlaceTabProps) {
 
   return (
     // Play around with styling to not overlay on certain Maps components
-    <BlurView intensity={20} style={{
-        position: 'absolute',
-        right: 0,
-        top: 0,
-        width: width*0.25,
-        height: height,
-        display: 'flex',
-        flexDirection: 'row',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-        borderRadius: '8px'
-      }}>
+    <BlurView intensity={20} style={isMobile ? styles.mobile : styles.desktop}>
         {displayAllPhotos ? 
           <PlacePhotoFlatList photos={props.pin.metadata.photos} setDisplayAllPhotos={setDisplayAllPhotos}/> :
-          <View>
+          <ScrollView>
             <PlaceInfo pin={props.pin} setDisplayAllPhotos={setDisplayAllPhotos}/>
-            <FlatList
-              data={DATA}
-              renderItem={({item}) => <Item note={item.note} name={item.name} />}
-              keyExtractor={item => item.id}
-            />
-          </View>   
+          </ScrollView>   
         }
     </BlurView>
   );
 }
-
-
-
 
   

@@ -1,4 +1,4 @@
-import { StyleSheet, Image, Platform, View, Button, TextInput, ScrollView } from 'react-native';
+import { StyleSheet, Image, Platform, View, Button, TextInput, ScrollView, Dimensions } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -14,6 +14,7 @@ import { useThemeColor } from '../../hooks/useThemeColor.ts';
 import SplitScreen from '../../components/SplitScreen.tsx';
 import MapScreen from './map.tsx';
 import React from 'react';
+import { router } from 'expo-router';
 
 export default function Portal() {
   const [inputValue, setInputValue] = useState("");
@@ -21,6 +22,9 @@ export default function Portal() {
   const [supabase, setSupabase] = useState<SupabaseClient>();
   const backgroundColor = useThemeColor({}, 'background');
   const [splitScreen, setSplitScreen] = useState(false);
+
+  const { width, height } = Dimensions.get('window');
+  const isMobile = width < 768;
 
   useEffect(() => {
     // TODO: add error handling for if supabase is null as code throughout this
@@ -100,14 +104,16 @@ const textBlockListWithMotion = (
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: backgroundColor }}>
-      {splitScreen ? 
+      {/* {splitScreen ?
         <SplitScreen 
           LeftComponent={textBlockListWithMotion}
           RightComponent={<MapScreen/>}
           setSplitState={setSplitScreen}
         /> : 
         textBlockListWithMotion
-      }
+      } */}
+
+     {splitScreen ? <MapScreen/> : textBlockListWithMotion}
     </ScrollView>
   );
 }
