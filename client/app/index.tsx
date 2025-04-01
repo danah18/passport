@@ -320,7 +320,6 @@ export default function AccountScreen() {
                     onBlur={() => setIsEditingLastName(false)}
                     onKeyDown={(e) => handleNameKeyDown(e, false)}
                     placeholder="Last Name"
-                    autoFocus
                     className="text-xs tracking-wide h-6 py-0 px-1"
                     style={{
                       width: "20%",
