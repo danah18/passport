@@ -22,7 +22,7 @@ export default function AccountScreen() {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [newUser, setNewUser] = useState(true);
+  const [newUser, setNewUser] = useState(false);
   const [isEditingPhoneNumber, setIsEditingPhoneNumber] = React.useState(false);
   const [isEditingFirstName, setIsEditingFirstName] = React.useState(false);
   const [isEditingLastName, setIsEditingLastName] = React.useState(false);
@@ -78,7 +78,7 @@ export default function AccountScreen() {
     // Subscribe to auth state changes.
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user || null);
-      setNewUser(true);
+      setNewUser(false);
       setPhone("");
       setFirstName("");
       setLastName("");
