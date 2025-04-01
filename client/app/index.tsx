@@ -7,7 +7,7 @@ import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { ArrowRight, Check } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { Button } from "../components/ui/Button.tsx";
 import { Input } from "../components/ui/Input.tsx";
 import { getSupabaseClient } from "../utils/supabase";
@@ -22,7 +22,7 @@ export default function AccountScreen() {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [newUser, setNewUser] = useState(false);
+  const [newUser, setNewUser] = useState(true);
   const [isEditingPhoneNumber, setIsEditingPhoneNumber] = React.useState(false);
   const [isEditingFirstName, setIsEditingFirstName] = React.useState(false);
   const [isEditingLastName, setIsEditingLastName] = React.useState(false);
@@ -78,7 +78,7 @@ export default function AccountScreen() {
     // Subscribe to auth state changes.
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user || null);
-      setNewUser(false);
+      setNewUser(true);
       setPhone("");
       setFirstName("");
       setLastName("");
@@ -262,7 +262,7 @@ export default function AccountScreen() {
           ) : (
             <>
               {newUser ? (
-                <>
+                <View style={{ flexDirection: 'column', alignItems: 'center', width: "100%" }}>
                   <ThemedText style={{ fontSize: 25, marginBottom: 5 }}>Create Account</ThemedText>
                   <ThemedText style={{ fontSize: 15, marginBottom: 10 }}>
                     Already a user?
@@ -275,26 +275,7 @@ export default function AccountScreen() {
                       Sign in here
                     </span>
                   </ThemedText>
-                </>) : (
-                <>
-                  <ThemedText style={{ fontSize: 25, marginBottom: 5 }}>Sign In</ThemedText>
-                  <ThemedText style={{ fontSize: 15, marginBottom: 10 }}>
-                    First time here?
-                    <span
-                      onClick={() => {
-                        setPhone("");
-                        setNewUser(true);
-                      }}
-                      style={{ fontSize: 15, marginLeft: 5, cursor: 'pointer', fontStyle: 'italic', color: '#6f94e5' }}>
-                      Create account
-                    </span>
-                  </ThemedText>
-                </>
-                
-              )}
-
-              {newUser ? (
-                <>
+                  
                   <Input
                     value={firstName}
                     onChange={(e) => handleNameChange(e.target.value, true)}
@@ -331,54 +312,82 @@ export default function AccountScreen() {
                       marginBottom: 5,
                     }}
                   />
-                </>
-              ) : (
-                <></>
-              )}
-              <Input
-                value={phone}
-                onChange={(e) => handlePhoneNumberChange(e.target.value)}
-                onBlur={() => setIsEditingPhoneNumber(false)}
-                onKeyDown={handlePhoneNumberKeyDown}
-                placeholder="Phone Number"
-                autoFocus
-                className="text-xs tracking-wide h-6 py-0 px-1"
-                style={{
-                  width: "20%",
-                  height: 40,
-                  borderColor: "gray",
-                  borderWidth: 1,
-                  borderRadius: 10,
-                  marginTop: 5,
-                  marginBottom: 5,
-                }}
-              />
 
-              {newUser ? (
-                <>
+                  <Input
+                    value={phone}
+                    onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                    onBlur={() => setIsEditingPhoneNumber(false)}
+                    onKeyDown={handlePhoneNumberKeyDown}
+                    placeholder="Phone Number"
+                    className="text-xs tracking-wide h-6 py-0 px-1"
+                    style={{
+                      width: "20%",
+                      height: 40,
+                      borderColor: "gray",
+                      borderWidth: 1,
+                      borderRadius: 10,
+                      marginTop: 5,
+                      marginBottom: 5,
+                    }}
+                  />
+
                   <Button
                     onClick={signUpWithPhone}
                     className="mt-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
                     <span className="relative flex items-center justify-center text-white">
-                      <Check className="mr-2 h-4"/>
+                      <Check className="mr-2 h-4" />
                       Sign Up
                     </span>
                   </Button>
-                </>
+                </View>
               ) : (
-                <>
-                  <Button
-                    onClick={signInWithPhone}
-                    className="mt-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
-                  >
-                    <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-                    <span className="relative flex items-center justify-center text-white">
-                      <ArrowRight/>
+                <View style={{ flexDirection: 'column', alignItems: 'center', width:"100%", marginBottom: 150}}>
+                  <ThemedText style={{ fontSize: 25, marginBottom: 5 }}>Sign In</ThemedText>
+                  <ThemedText style={{ fontSize: 15, marginBottom: 5 }}>
+                    First time here?
+                    <span
+                      onClick={() => {
+                        setPhone("");
+                        setNewUser(true);
+                      }}
+                      style={{ fontSize: 15, marginLeft: 5, cursor: 'pointer', fontStyle: 'italic', color: '#6f94e5' }}>
+                      Create account
                     </span>
-                  </Button>
-                </>
+                  </ThemedText>
+                
+                  <View style={{ flexDirection: 'row', alignItems: 'center', width: "20%" }}>
+                    <Input
+                      value={phone}
+                      onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                      onBlur={() => setIsEditingPhoneNumber(false)}
+                      onKeyDown={handlePhoneNumberKeyDown}
+                      autoFocus
+                      placeholder="Phone Number"
+                      className="text-xs tracking-wide h-6 py-0 px-1"
+                      style={{
+                        height: 40,
+                        borderColor: "gray",
+                        borderWidth: 1,
+                        borderRadius: 10,
+                        marginTop: 5,
+                        marginBottom: 5,
+                      }}
+                    />
+
+                    <Button
+                      onClick={signInWithPhone}
+                      className="mb-3 ml-2 mt-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+                    >
+                      <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100">
+                        <span className="mt-3 text-white relative flex items-center justify-center text-white">
+                          <ArrowRight />
+                        </span>
+                      </span>  
+                    </Button>
+                  </View>
+              </View>
               )}
             </>
           )}
