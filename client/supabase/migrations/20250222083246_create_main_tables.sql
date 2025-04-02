@@ -68,8 +68,8 @@ CREATE TABLE IF NOT EXISTS pins (
   location gis.geography (POINT) NOT NULL,
   -- Name of the pin
   pin_name TEXT NOT NULL,
-  -- e.g., "restaurant", "hotel", "cafe"
-  category TEXT,
+  -- e.g., ["restaurant", "hotel", "cafe"]
+  categories JSONB,
   -- Additional data from Google or custom metadata
   metadata JSONB,
   -- Latitude and longitude generated from the location

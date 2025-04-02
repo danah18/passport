@@ -22,7 +22,7 @@ create or replace function pins_in_view (
   google_place_id text,
   location gis.geography,
   pin_name text,
-  category text,
+  categories jsonb,
   metadata jsonb,
   lat double precision,
   long double precision
@@ -34,7 +34,7 @@ set
       google_place_id,
       location,
       pin_name,
-      category,
+      categories,
       metadata,
       lat,
       long
@@ -48,13 +48,14 @@ create or replace function capsule_pins_in_view (
   min_lat float,
   min_long float,
   max_lat float,
-  max_long float
+  max_long float,
+  filter_categories JSONB
 ) returns table (
   id uuid,
   google_place_id text,
   location gis.geography,
   pin_name text,
-  category text,
+  categories jsonb,
   metadata jsonb,
   lat double precision,
   long double precision
@@ -66,7 +67,7 @@ set
       p.google_place_id,
       p.location,
       p.pin_name,
-      p.category,
+      p.categories,
       p.metadata,
       p.lat,
       p.long
@@ -81,14 +82,14 @@ CREATE OR REPLACE FUNCTION add_pin (
   google_place_id text,
   location gis.geography (Point, 4326),
   pin_name text,
-  category text,
+  categories JSONB,
   metadata JSONB
 ) RETURNS uuid AS $$
 DECLARE
     new_id uuid;
 BEGIN
-    INSERT INTO pins (google_place_id, location, pin_name, category, metadata)
-    VALUES (google_place_id, location, pin_name, category, metadata)
+    INSERT INTO pins (google_place_id, location, pin_name, categories, metadata)
+    VALUES (google_place_id, location, pin_name, categories, metadata)
     RETURNING id INTO new_id;
 
     RETURN new_id;
