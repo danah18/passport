@@ -77,6 +77,13 @@ export default function Layout() {
             title: "",
           }}
         />
+        <Drawer.Screen
+          name="screen"
+          options={{
+            drawerLabel: "Screen",
+            title: "",
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   );

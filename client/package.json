@@ -28,6 +28,7 @@
     "@vis.gl/react-google-maps": "^1.5.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "expo": "~52.0.25",
     "expo-auth-session": "~6.0.2",
     "expo-blur": "~14.0.2",
