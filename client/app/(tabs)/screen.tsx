@@ -1,11 +1,13 @@
-import React from "react";
-import { View } from "react-native";
+import React, { useState } from "react";
+import { ScrollView } from "react-native-gesture-handler";
 import Chat from "../../components/chat/Chat.tsx";
 
 export default function Screen() {
+const [googlePlace, setGooglePlace] = useState<google.maps.places.PlaceResult>();
+
 return (
-    <View>
-        <Chat />
-    </View>
+    <ScrollView>
+        <Chat googlePlace={googlePlace} setGooglePlace={setGooglePlace} />
+    </ScrollView>
   );
 }

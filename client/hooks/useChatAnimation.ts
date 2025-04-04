@@ -49,35 +49,35 @@ export function useChatAnimation(initialMessages: MessageType[] = [], name: stri
 
         // TODO, display the enter place callback. Only show message input after they have selected a place
 
-        // Add a reply with typing indicator
-        setTimeout(() => {
-            simulateTyping({
-                id: "2",
-                text: "This is the 2nd message",
-                sender: "other",
-                timestamp: new Date(),
-            }, 2000);
-        }, 2500);
+        // // Add a reply with typing indicator
+        // setTimeout(() => {
+        //     simulateTyping({
+        //         id: "2",
+        //         text: "This is the 2nd message",
+        //         sender: "other",
+        //         timestamp: new Date(),
+        //     }, 2000);
+        // }, 2500);
 
-        // Add another message from user
-        setTimeout(() => {
-            addMessage({
-                id: "3",
-                text: "I'm great! Just checking out this new chat interface.",
-                sender: "user",
-                timestamp: new Date(),
-            });
-        }, 6000);
+        // // Add another message from user
+        // setTimeout(() => {
+        //     addMessage({
+        //         id: "3",
+        //         text: "I'm great! Just checking out this new chat interface.",
+        //         sender: "user",
+        //         timestamp: new Date(),
+        //     });
+        // }, 6000);
 
-        // Add final reply
-        setTimeout(() => {
-            simulateTyping({
-                id: "4",
-                text: "It looks awesome! I love the smooth animations.",
-                sender: "other",
-                timestamp: new Date(),
-            }, 2000);
-        }, 8000);
+        // // Add final reply
+        // setTimeout(() => {
+        //     simulateTyping({
+        //         id: "4",
+        //         text: "It looks awesome! I love the smooth animations.",
+        //         sender: "other",
+        //         timestamp: new Date(),
+        //     }, 2000);
+        // }, 8000);
     };
 
     return {

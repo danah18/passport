@@ -7,16 +7,9 @@ import { AirplaneAnimation } from "../AirplaneAnimation.tsx";
 import { PlaceAutocomplete } from "../PlaceAutocomplete.tsx";
 import { MessageProps } from "./types/chatTypes.tsx";
 
-const MessageBubble: React.FC<MessageProps> = ({ message }) => {
+const MessageBubble: React.FC<MessageProps> = ({ message, handleAutocompletePlace }) => {
     const isUser = message.sender === "user";
     const formattedTime = format(message.timestamp, "h:mm a");
-
-    const handleAutocompletePlace = (place: google.maps.places.PlaceResult) => {
-        //setGooglePlaceAutocomplete(place);
-        console.log(place?.geometry?.location?.lat());
-        console.log(place?.geometry?.location?.lng());
-    };
-
 
     return (
         <div
@@ -39,10 +32,10 @@ const MessageBubble: React.FC<MessageProps> = ({ message }) => {
                         <View style={{ flexDirection: "column" }}>
                             <View style={{ flexDirection: "row" }}>
                                 <AirplaneAnimation />
-                                <Text className="mt-2 ml-1 text-white">{message.text}</Text>
+                                <Text style={{fontSize: 16}} className="mt-2 ml-2 text-white">{message.text}</Text>
                             </View>
 
-                            <View className="mt-2 text-black">
+                            <View className="mt-2 mb-1 text-black" style={{width: "180%"}}>
                                 <APIProvider
                                     apiKey={process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || ""}
                                     solutionChannel="GMP_devsite_samples_v3_rgmautocomplete"

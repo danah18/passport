@@ -5,7 +5,14 @@ import MessageInput from "./MessageInput.tsx";
 import { MessageType } from "./types/chatTypes.tsx";
 import TypingIndicator from "./TypingIndicator.tsx";
 
-const Chat: React.FC = () => {
+type ChatProps = {
+    googlePlace: google.maps.places.PlaceResult | undefined;
+    setGooglePlace: React.Dispatch<React.SetStateAction<google.maps.places.PlaceResult | undefined>>;
+}
+
+const Chat: React.FC<ChatProps> = ({googlePlace, setGooglePlace}) => {
+    console.log("in parent chat, google place is: ", googlePlace);
+
     // TODO: get user name from supabase
     // const supabase = getSupabaseClient();
     // const { data: userData, error: userError } = await supabase.auth.getUser();
@@ -35,6 +42,9 @@ const Chat: React.FC = () => {
     "Danah");
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    // Add a ref to track if we've already added a message for this place
+    const processedPlaceRef = useRef<string | undefined>();
 
     // Scroll to bottom whenever messages change
     const scrollToBottom = () => {
@@ -87,11 +97,34 @@ const Chat: React.FC = () => {
         }, 1000);
     };
 
+    const addMessageOnPlaceNameUpdate = React.useCallback((place: google.maps.places.PlaceResult) => {
+        const newMessage: MessageType = {
+            id: Date.now().toString(),
+            text: `${place.name}? That's awesome! 💫`,
+            sender: "other",
+            timestamp: new Date()
+        };
+
+        addMessage(newMessage);
+    }, [addMessage]);
+
+    // useEffect(() => {
+    //     if (googlePlace && googlePlace.place_id !== processedPlaceRef.current) {
+    //         // Adding a new message causes a re-render, and useEffect runs on each new re=render
+    //         addMessageOnPlaceNameUpdate(googlePlace);
+    //         processedPlaceRef.current = googlePlace.place_id;
+    //     }
+    // }, [googlePlace, addMessageOnPlaceNameUpdate]);
+
+    const handleAutocompletePlace = (place: google.maps.places.PlaceResult) => {
+        addMessageOnPlaceNameUpdate(place);
+    };
+
     return (
         <div className="flex flex-col h-full">
             <div className="flex-1 overflow-y-auto p-4 bg-[hsl(var(--chat-bg))]">
                 {messages.map((message) => (
-                    <MessageBubble key={message.id} message={message} />
+                    <MessageBubble key={message.id} message={message} handleAutocompletePlace={handleAutocompletePlace}/>
                 ))}
 
                 {isTyping && <TypingIndicator />}
