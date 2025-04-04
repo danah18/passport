@@ -42,7 +42,7 @@ export function useChatAnimation(initialMessages: MessageType[] = []) {
             addMessage({
                 id: "1",
                 text: "Hey there! How's it going?",
-                sender: "user",
+                sender: "other",
                 timestamp: new Date(),
             });
         }, 1000);
@@ -51,7 +51,7 @@ export function useChatAnimation(initialMessages: MessageType[] = []) {
         setTimeout(() => {
             simulateTyping({
                 id: "2",
-                text: "Hi! I'm doing well, thanks for asking. How about you?",
+                text: "This is the 2nd message",
                 sender: "other",
                 timestamp: new Date(),
             }, 2000);

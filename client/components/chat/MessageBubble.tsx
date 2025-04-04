@@ -19,7 +19,7 @@ const MessageBubble: React.FC<MessageProps> = ({ message }) => {
                     "max-w-[80%] rounded-2xl px-4 py-2 relative",
                     isUser
                         ? "bg-[hsl(var(--sent-message))] text-white rounded-tr-none animate-slide-in-right"
-                        : "bg-[hsl(var(--received-message))] rounded-tl-none animate-slide-in-left",
+                        : "bg-[hsl(var(--received-message))] text-white rounded-tl-none animate-slide-in-left",
                     message.isNew && (isUser ? "animate-slide-in-right" : "animate-slide-in-left")
                 )}
             >

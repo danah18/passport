@@ -11,7 +11,17 @@ const Chat: React.FC = () => {
         addMessage,
         isTyping,
         startDemoConversation
-    } = useChatAnimation();
+    } = useChatAnimation([{
+        id: Date.now().toString(),
+        text: "hey this is my dummy message",
+        sender: "other",
+        timestamp: new Date()
+    }, {
+        id: Date.now().toString(),
+        text: "the message i wanted to say was this:",
+        sender: "other",
+        timestamp: new Date()
+        }]);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -68,10 +78,6 @@ const Chat: React.FC = () => {
 
     return (
         <div className="flex flex-col h-full">
-            <div className="bg-gray-100 p-3 border-b">
-                <h2 className="text-center font-semibold">Chat Animation Demo</h2>
-            </div>
-
             <div className="flex-1 overflow-y-auto p-4 bg-[hsl(var(--chat-bg))]">
                 {messages.map((message) => (
                     <MessageBubble key={message.id} message={message} />
