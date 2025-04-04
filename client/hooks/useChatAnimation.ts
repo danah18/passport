@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MessageType } from "../components/chat/types/chatTypes.tsx";
 
-export function useChatAnimation(initialMessages: MessageType[] = []) {
+export function useChatAnimation(initialMessages: MessageType[] = [], name: string) {
     const [messages, setMessages] = useState<MessageType[]>(initialMessages);
     const [isTyping, setIsTyping] = useState(false);
 
@@ -41,11 +41,13 @@ export function useChatAnimation(initialMessages: MessageType[] = []) {
         setTimeout(() => {
             addMessage({
                 id: "1",
-                text: "Hey there! How's it going?",
+                text: `Hi ${name}! Where to?`,
                 sender: "other",
                 timestamp: new Date(),
             });
         }, 1000);
+
+        // TODO, display the enter place callback. Only show message input after they have selected a place
 
         // Add a reply with typing indicator
         setTimeout(() => {

@@ -6,6 +6,16 @@ import { MessageType } from "./types/chatTypes.tsx";
 import TypingIndicator from "./TypingIndicator.tsx";
 
 const Chat: React.FC = () => {
+    // TODO: get user name from supabase
+    // const supabase = getSupabaseClient();
+    // const { data: userData, error: userError } = await supabase.auth.getUser();
+    // if (userError) {
+    //     console.log("Error fetching user:", userError);
+    //     return;
+    // }
+    // const profileId = userData?.user?.user_metadata?.profile_id;
+
+
     const {
         messages,
         addMessage,
@@ -21,7 +31,8 @@ const Chat: React.FC = () => {
         text: "the message i wanted to say was this:",
         sender: "other",
         timestamp: new Date()
-        }]);
+        }],
+    "Danah");
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -88,6 +99,7 @@ const Chat: React.FC = () => {
                 <div ref={messagesEndRef} />
             </div>
 
+            {/* hide this behind a state variable of place selected */}
             <MessageInput onSendMessage={handleSendMessage} />
         </div>
     );
