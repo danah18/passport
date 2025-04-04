@@ -11,7 +11,6 @@ type ChatProps = {
 }
 
 const Chat: React.FC<ChatProps> = ({googlePlace, setGooglePlace}) => {
-    console.log("in parent chat, google place is: ", googlePlace);
 
     // TODO: get user name from supabase
     // const supabase = getSupabaseClient();
@@ -98,6 +97,7 @@ const Chat: React.FC<ChatProps> = ({googlePlace, setGooglePlace}) => {
     };
 
     const addMessageOnPlaceNameUpdate = React.useCallback((place: google.maps.places.PlaceResult) => {
+        // adding a new message will do a re-render -- I think need to check against the message list first
         const newMessage: MessageType = {
             id: Date.now().toString(),
             text: `${place.name}? That's awesome! 💫`,
@@ -105,16 +105,18 @@ const Chat: React.FC<ChatProps> = ({googlePlace, setGooglePlace}) => {
             timestamp: new Date()
         };
 
-        addMessage(newMessage);
+        if (messages.length < 2)
+        {
+            addMessage(newMessage);
+        }
+        else if (messages.length >= 2)
+        {
+            if (messages[1].text.includes(place?.name || "default-place-search-string"))
+            {
+                addMessage(newMessage);
+            }
+        }        
     }, [addMessage]);
-
-    // useEffect(() => {
-    //     if (googlePlace && googlePlace.place_id !== processedPlaceRef.current) {
-    //         // Adding a new message causes a re-render, and useEffect runs on each new re=render
-    //         addMessageOnPlaceNameUpdate(googlePlace);
-    //         processedPlaceRef.current = googlePlace.place_id;
-    //     }
-    // }, [googlePlace, addMessageOnPlaceNameUpdate]);
 
     const handleAutocompletePlace = (place: google.maps.places.PlaceResult) => {
         addMessageOnPlaceNameUpdate(place);
