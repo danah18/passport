@@ -41,7 +41,7 @@ export function useChatAnimation(initialMessages: MessageType[] = [], name: stri
         setTimeout(() => {
             addMessage({
                 id: "1",
-                text: `Hi ${name}! Where to?`,
+                text: `Amazing! Where do you normally get your recommendations from?`,
                 sender: "other",
                 timestamp: new Date(),
             });

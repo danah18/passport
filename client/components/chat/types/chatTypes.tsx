@@ -8,5 +8,4 @@ export interface MessageType {
 
 export interface MessageProps {
     message: MessageType;
-    handleAutocompletePlace: (place: google.maps.places.PlaceResult) => void;
 }

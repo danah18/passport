@@ -1,13 +1,9 @@
-import { APIProvider } from "@vis.gl/react-google-maps";
 import { format } from "date-fns";
 import React from "react";
-import { Text, View } from "react-native";
 import { cn } from "../../utils/libUtils.tsx";
-import { AirplaneAnimation } from "../AirplaneAnimation.tsx";
-import { PlaceAutocomplete } from "../PlaceAutocomplete.tsx";
 import { MessageProps } from "./types/chatTypes.tsx";
 
-const MessageBubble: React.FC<MessageProps> = ({ message, handleAutocompletePlace }) => {
+const MessageBubble: React.FC<MessageProps> = ({ message }) => {
     const isUser = message.sender === "user";
     const formattedTime = format(message.timestamp, "h:mm a");
 
@@ -27,37 +23,8 @@ const MessageBubble: React.FC<MessageProps> = ({ message, handleAutocompletePlac
                     message.isNew && (isUser ? "animate-slide-in-right" : "animate-slide-in-left")
                 )}
             >
-                {message.id == "1" ?
-                    (
-                        <View style={{ flexDirection: "column" }}>
-                            <View style={{ flexDirection: "row" }}>
-                                <AirplaneAnimation />
-                                <Text style={{fontSize: 16}} className="mt-2 ml-2 text-white">{message.text}</Text>
-                            </View>
-
-                            <View className="mt-2 mb-1 text-black" style={{width: "180%"}}>
-                                <APIProvider
-                                    apiKey={process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || ""}
-                                    solutionChannel="GMP_devsite_samples_v3_rgmautocomplete"
-                                >
-                                    <PlaceAutocomplete
-                                        onPlaceSelect={(place) => handleAutocompletePlace(place as google.maps.places.PlaceResult)}
-                                    />
-                                </APIProvider>
-                            </View>
-                            
-                        </View>
-                    
-                    
-                ) : <p>{message.text}</p> 
-                }
-
-                {message.id == "2" && 
-                    <View style={{ flexDirection: "row" }}>
-                        
-                    </View>
-                }
-
+                <p>{message.text}</p> 
+                
                 <div
                     className={cn(
                         "text-xs mt-1",

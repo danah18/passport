@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useChatAnimation } from "../../hooks/useChatAnimation.ts";
 import MessageBubble from "./MessageBubble.tsx";
 import MessageInput from "./MessageInput.tsx";
+import OpeningMessageBubble from "./OpeningMessageBubble.tsx";
 import { MessageType } from "./types/chatTypes.tsx";
 import TypingIndicator from "./TypingIndicator.tsx";
 
@@ -95,38 +96,23 @@ const Chat: React.FC<ChatProps> = ({googlePlace, setGooglePlace}) => {
             // useChatAnimation().simulateTyping(responseMessage); 
         }, 1000);
     };
-
-    const addMessageOnPlaceNameUpdate = React.useCallback((place: google.maps.places.PlaceResult) => {
-        // adding a new message will do a re-render -- I think need to check against the message list first
-        const newMessage: MessageType = {
-            id: Date.now().toString(),
-            text: `${place.name}? That's awesome! 💫`,
-            sender: "other",
-            timestamp: new Date()
-        };
-
-        if (messages.length < 2)
-        {
-            addMessage(newMessage);
-        }
-        else if (messages.length >= 2)
-        {
-            if (messages[1].text.includes(place?.name || "default-place-search-string"))
-            {
-                addMessage(newMessage);
-            }
-        }        
-    }, [addMessage]);
-
-    const handleAutocompletePlace = (place: google.maps.places.PlaceResult) => {
-        addMessageOnPlaceNameUpdate(place);
-    };
+    
+    // TODO: retrieve from supabase.auth.user
+    const name = 'User';
+    const openingMessage = React.useMemo(() => ({
+        id: "1",
+        text: `Hi ${name}! Where to?`,
+        sender: "other",
+        timestamp: new Date(),
+    } as MessageType), [name]);
 
     return (
         <div className="flex flex-col h-full">
             <div className="flex-1 overflow-y-auto p-4 bg-[hsl(var(--chat-bg))]">
+                <OpeningMessageBubble key={openingMessage.id} message={openingMessage}/>
+                
                 {messages.map((message) => (
-                    <MessageBubble key={message.id} message={message} handleAutocompletePlace={handleAutocompletePlace}/>
+                    <MessageBubble key={message.id} message={message}/>
                 ))}
 
                 {isTyping && <TypingIndicator />}
