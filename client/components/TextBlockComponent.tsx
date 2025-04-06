@@ -102,7 +102,7 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
                     onKeyDown={handleTitleKeyDown}
                     placeholder=" Who are these recs from?"
                     autoFocus
-                    className="text-xs tracking-wide h-6 py-0 px-1"
+                    className="text-black text-xs tracking-wide h-6 py-0 px-1"
                 />
             }
             </View>
@@ -114,7 +114,7 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
               onFocus={onFocus}
               onKeyDown={handleKeyDown}
               placeholder="Paste list of recs here..."
-              className="text-input min-h-[200px] resize-y border-0 bg-background/60 focus:ring-0 focus-visible:ring-offset-0 rounded-lg"
+              className="!text-black text-input min-h-[200px] resize-y border-0 bg-white focus:ring-0 focus-visible:ring-offset-0 rounded-lg"
             />
 
             <View className="group flex-row items-center justify-between w-full mt-1">

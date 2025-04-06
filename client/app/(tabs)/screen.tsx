@@ -8,6 +8,7 @@ const [googlePlace, setGooglePlace] = useState<google.maps.places.PlaceResult>()
 return (
     <ScrollView>
         <Chat googlePlace={googlePlace} setGooglePlace={setGooglePlace} />
+    
     </ScrollView>
   );
 }
