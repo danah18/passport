@@ -33,6 +33,13 @@ interface MapScreenProps {
 }
 
 export default function MapScreen({ refreshKey }: MapScreenProps) {
+  if (refreshKey === undefined)
+  {
+    refreshKey = 0;
+    console.log("in map screen, refresh key is: ", refreshKey);
+  }
+
+
   const mapsKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || "";
   const [pins, setPins] = useState<Pin[]>([]);
   const [showPanel, setShowPanel] = useState(false);

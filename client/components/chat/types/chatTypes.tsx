@@ -9,3 +9,10 @@ export interface MessageType {
 export interface MessageProps {
     message: MessageType;
 }
+
+export interface OpeningMessageProps {
+    message: MessageType;
+    setSplitState: React.Dispatch<React.SetStateAction<boolean>>;
+    onCapsuleAdded: () => void;
+    onCapsuleUpdated: () => void;
+}

@@ -78,9 +78,9 @@ export default function Layout() {
           }}
         />
         <Drawer.Screen
-          name="screen"
+          name="duplicatePortal"
           options={{
-            drawerLabel: "Screen",
+            drawerLabel: "Duplicate Portal",
             title: "",
           }}
         />

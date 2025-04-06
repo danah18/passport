@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MessageType } from "../components/chat/types/chatTypes.tsx";
 
-export function useChatAnimation(initialMessages: MessageType[] = [], name: string) {
+export function useChatAnimation(initialMessages: MessageType[] = []) {
     const [messages, setMessages] = useState<MessageType[]>(initialMessages);
     const [isTyping, setIsTyping] = useState(false);
 

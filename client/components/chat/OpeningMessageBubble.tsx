@@ -6,9 +6,9 @@ import { cn } from "../../utils/libUtils.tsx";
 import { AirplaneAnimation } from "../AirplaneAnimation.tsx";
 import { PlaceAutocomplete } from "../PlaceAutocomplete.tsx";
 import TextBlockListForChat from "../TextBlockListForChat.tsx";
-import { MessageProps } from "./types/chatTypes.tsx";
+import { OpeningMessageProps } from "./types/chatTypes.tsx";
 
-const OpeningMessageBubble: React.FC<MessageProps> = ({ message }) => {
+const OpeningMessageBubble: React.FC<OpeningMessageProps> = ({ message, onCapsuleAdded, onCapsuleUpdated, setSplitState }) => {
     const isUser = message.sender === "user";
     const formattedTime = format(message.timestamp, "h:mm a");
 
@@ -22,8 +22,10 @@ const OpeningMessageBubble: React.FC<MessageProps> = ({ message }) => {
 
     const textBlockListWithMotion = (
         <TextBlockListForChat
-            onCapsuleUpdated={() => {}}
-            onCapsuleAdded={() => {}}
+            place={place ?? null}
+            onCapsuleUpdated={onCapsuleUpdated}
+            onCapsuleAdded={onCapsuleAdded}
+            setSplitState={setSplitState}
         />
     );
 
@@ -74,8 +76,7 @@ const OpeningMessageBubble: React.FC<MessageProps> = ({ message }) => {
                 {place && 
 
                     <View
-                        className={cn("mt-2"
-                        )}
+                        className={cn("mt-2")}
                     >
                         {/* Add on view styling animation here */}
                         <p>{`Amazing! Now, add the recs you received for ${place.name}: `}</p>
@@ -91,7 +92,6 @@ const OpeningMessageBubble: React.FC<MessageProps> = ({ message }) => {
                         </View>
                     </View>
             }
-
             </View>
         </View>
     );

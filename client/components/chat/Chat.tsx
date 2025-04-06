@@ -1,45 +1,26 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useChatAnimation } from "../../hooks/useChatAnimation.ts";
+import { getSupabaseClient } from "../../utils/supabase.ts";
 import MessageBubble from "./MessageBubble.tsx";
 import OpeningMessageBubble from "./OpeningMessageBubble.tsx";
 import { MessageType } from "./types/chatTypes.tsx";
 import TypingIndicator from "./TypingIndicator.tsx";
 
 type ChatProps = {
-    googlePlace: google.maps.places.PlaceResult | undefined;
-    setGooglePlace: React.Dispatch<React.SetStateAction<google.maps.places.PlaceResult | undefined>>;
+    setSplitState: React.Dispatch<React.SetStateAction<boolean>>;
+    onCapsuleAdded: () => void;
+    onCapsuleUpdated: () => void;
 }
 
-const Chat: React.FC<ChatProps> = ({googlePlace, setGooglePlace}) => {
-
-    // TODO: get user name from supabase
-    // const supabase = getSupabaseClient();
-    // const { data: userData, error: userError } = await supabase.auth.getUser();
-    // if (userError) {
-    //     console.log("Error fetching user:", userError);
-    //     return;
-    // }
-    // const profileId = userData?.user?.user_metadata?.profile_id;
-
-
+const Chat: React.FC<ChatProps> = ({onCapsuleAdded, onCapsuleUpdated, setSplitState}) => {
     const {
         messages,
         addMessage,
         isTyping,
         startDemoConversation
-    } = useChatAnimation([{
-        id: Date.now().toString(),
-        text: "hey this is my dummy message",
-        sender: "other",
-        timestamp: new Date()
-    }, {
-        id: Date.now().toString(),
-        text: "the message i wanted to say was this:",
-        sender: "other",
-        timestamp: new Date()
-        }],
-    "Danah");
+    } = useChatAnimation([]);
 
+    const [username, setUsername] = useState<string>();
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Add a ref to track if we've already added a message for this place
@@ -96,19 +77,42 @@ const Chat: React.FC<ChatProps> = ({googlePlace, setGooglePlace}) => {
         }, 1000);
     };
     
-    // TODO: retrieve from supabase.auth.user
-    const name = 'User';
+    useEffect(() => {
+        const supabase = getSupabaseClient();
+
+        const fetchUser = async () => {
+            const { data, error } = await supabase.auth.getUser();
+            if (error) {
+                console.log("Error fetching user:", error);
+                return;
+            }
+
+            setUsername(data?.user.user_metadata.first_name || "");
+        };
+
+        fetchUser();
+
+        // Subscribe to auth state changes.
+        const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUsername(session?.user.user_metadata.first_name || "");
+        });
+
+        return () => {
+            listener.subscription.unsubscribe();
+        };
+    }, []);
+
     const openingMessage = React.useMemo(() => ({
         id: "1",
-        text: `Hi ${name}! Where to?`,
+        text: `Hi ${username}! Where to?`,
         sender: "other",
         timestamp: new Date(),
-    } as MessageType), [name]);
+    } as MessageType), [username]);
 
     return (
         <div className="flex flex-col h-full">
             <div className="flex-1 overflow-y-auto p-4 bg-[hsl(var(--chat-bg))]">
-                <OpeningMessageBubble key={openingMessage.id} message={openingMessage}/>
+                <OpeningMessageBubble key={openingMessage.id} message={openingMessage} onCapsuleAdded={onCapsuleAdded} onCapsuleUpdated={onCapsuleUpdated} setSplitState={setSplitState}/>
                 
                 {messages.map((message) => (
                     <MessageBubble key={message.id} message={message}/>

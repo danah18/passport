@@ -1,8 +1,10 @@
+import { router } from "expo-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowDown, Check, Plus } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { useCapsule } from "../app/(tabs)/portal.tsx";
+import { handlePortalSubmission } from "../data/portalSubmissionHandler.tsx";
 import TextBlockComponent from "./TextBlockComponent.tsx";
 import { Button } from "./ui/Button.tsx";
 
@@ -13,8 +15,10 @@ export interface TextBlock {
 }
 
 type TextBlockListProps = {
+    place: google.maps.places.PlaceResult | null;
     onCapsuleAdded: () => void;
     onCapsuleUpdated: () => void;
+    setSplitState: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const TextBlockListForChat = (props: TextBlockListProps) => {
@@ -91,12 +95,12 @@ const TextBlockListForChat = (props: TextBlockListProps) => {
         }
 
         try {
-            // await handlePortalSubmission({
-            //     capsule: capsule,
-            //     textBlockList: textBlocks,
-            //     place: googlePlaceAutocomplete!,
-            //     isCuratorMode: isCuratorMode,
-            // });
+            await handlePortalSubmission({
+                capsule: capsule,
+                textBlockList: textBlocks,
+                place: props.place!,
+                isCuratorMode: false,
+            });
         } catch (error) {
             throw error;
         }
@@ -110,6 +114,8 @@ const TextBlockListForChat = (props: TextBlockListProps) => {
             props.onCapsuleAdded();
         }
         props.onCapsuleUpdated();
+
+        router.replace('./map');
     };
 
     return (
@@ -139,7 +145,7 @@ const TextBlockListForChat = (props: TextBlockListProps) => {
                             />
                         </motion.div>
                     ))}
-                        <div ref={endOfPageRef} />
+                    <div ref={endOfPageRef} />
                 </AnimatePresence>
             </View>
             <Button
