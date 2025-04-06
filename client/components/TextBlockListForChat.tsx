@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Plus } from "lucide-react";
+import { ArrowDown, Check, Plus } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { useCapsule } from "../app/(tabs)/portal.tsx";
@@ -113,9 +113,10 @@ const TextBlockListForChat = (props: TextBlockListProps) => {
     };
 
     return (
-        <View className="min-h-screen flex flex-col">
-            <View className="container max-w-4xl mx-auto px-4 py-8 flex-grow">
-                <AnimatePresence>
+    <>
+        <View className="flex flex-row justify-center">
+            <View className="flex flex-row mt-3 overflow-y-hidden">
+                <AnimatePresence> 
                     {textBlocks.map((block, index) => (
                         <motion.div
                             key={block.id}
@@ -123,7 +124,7 @@ const TextBlockListForChat = (props: TextBlockListProps) => {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ duration: 0.3 }}
-                            className="mb-6"
+                            className="min-w-[300px] flex-shrink-0 mx-2 mb-2"
                         >
                             <TextBlockComponent
                                 text={block.recs}
@@ -138,38 +139,48 @@ const TextBlockListForChat = (props: TextBlockListProps) => {
                             />
                         </motion.div>
                     ))}
+                        <div ref={endOfPageRef} />
                 </AnimatePresence>
-
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="flex justify-center mt-8"
-                >
-                    <Button
-                        onClick={addNewBlock}
-                        className="mr-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
-                    >
-                        <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-                        <span className="relative flex items-center justify-center text-white">
-                            <Plus className="mr-2 h-4 w-4" /> Add New List
-                        </span>
-                    </Button>
-
-                    <Button
-                        onClick={saveTextBlocks}
-                        className="group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
-                    >
-                        <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-                        <span className="relative flex items-center justify-center text-white">
-                            <Check className="mr-2 h-4 w-4" /> Submit
-                        </span>
-                    </Button>
-                </motion.div>
-
-                <div ref={endOfPageRef} />
             </View>
+            <Button
+                onClick={addNewBlock}
+                style={{ marginTop: '10%' }}
+                className="group relative overflow-hidden rounded-full px-4 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+            >
+                <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
+                    <span className="relative flex items-center justify-center text-white">
+                    <Plus className="h-4 w-4"/>
+                </span>
+            </Button>
         </View>
+
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="flex justify-center mt-4"
+        >
+            <Button
+                    onClick={saveTextBlocks}
+                className="mr-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+            >
+                <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
+                <span className="relative flex items-center justify-center text-white">
+                    <ArrowDown className="mr-2 h-4 w-4" /> Skip for Now
+                </span>
+            </Button>
+
+            <Button
+                onClick={saveTextBlocks}
+                className="group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+            >
+                <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
+                <span className="relative flex items-center justify-center text-white">
+                    <Check className="mr-2 h-4 w-4" /> Done
+                </span>
+            </Button>
+        </motion.div>
+    </>
     );
 };
 

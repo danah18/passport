@@ -114,11 +114,11 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
               onFocus={onFocus}
               onKeyDown={handleKeyDown}
               placeholder="Paste list of recs here..."
-              className="text-input min-h-[120px] resize-y border-0 bg-background/60 focus:ring-0 focus-visible:ring-offset-0 rounded-lg"
+              className="text-input min-h-[200px] resize-y border-0 bg-background/60 focus:ring-0 focus-visible:ring-offset-0 rounded-lg"
             />
 
             <View className="group flex-row items-center justify-between w-full mt-1">
-              <View className="opacity-0 transition-opacity duration-200 group-hover:opacity-100 flex">
+              <View className="duration-200 flex">
                 <Button
                   size="icon"
                   variant="ghost"

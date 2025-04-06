@@ -37,16 +37,6 @@ export function useChatAnimation(initialMessages: MessageType[] = [], name: stri
         // Clear any existing messages
         setMessages([]);
 
-        // Add initial sent message
-        setTimeout(() => {
-            addMessage({
-                id: "1",
-                text: `Amazing! Where do you normally get your recommendations from?`,
-                sender: "other",
-                timestamp: new Date(),
-            });
-        }, 1000);
-
         // TODO, display the enter place callback. Only show message input after they have selected a place
 
         // // Add a reply with typing indicator

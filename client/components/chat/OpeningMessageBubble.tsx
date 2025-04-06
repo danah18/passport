@@ -1,6 +1,5 @@
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { format } from "date-fns";
-import { motion } from "framer-motion";
 import React from "react";
 import { Text, View } from "react-native";
 import { cn } from "../../utils/libUtils.tsx";
@@ -22,16 +21,10 @@ const OpeningMessageBubble: React.FC<MessageProps> = ({ message }) => {
     }, [setPlace]);
 
     const textBlockListWithMotion = (
-        <View className="min-h-screen flex flex-col">
-            <View className="container max-w-4xl mx-auto px-4 py-8 flex-grow">
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }}>
-                    <TextBlockListForChat
-                        onCapsuleUpdated={() => {}}
-                        onCapsuleAdded={() => {}}
-                    />
-                </motion.div>
-            </View>
-        </View>
+        <TextBlockListForChat
+            onCapsuleUpdated={() => {}}
+            onCapsuleAdded={() => {}}
+        />
     );
 
     return (
@@ -43,7 +36,7 @@ const OpeningMessageBubble: React.FC<MessageProps> = ({ message }) => {
         >
             <View
                 className={cn(
-                    "max-w-[80%] rounded-2xl px-4 py-2 relative",
+                    "max-w-[90%] rounded-2xl px-4 py-2 relative",
                     isUser
                         ? "bg-[hsl(var(--sent-message))] text-white rounded-tr-none animate-slide-in-right"
                         : "bg-[hsl(var(--received-message))] text-white rounded-tl-none animate-slide-in-left",
@@ -85,7 +78,7 @@ const OpeningMessageBubble: React.FC<MessageProps> = ({ message }) => {
                         )}
                     >
                         {/* Add on view styling animation here */}
-                        <p>{`Amazing! Did you receive any recs for ${place.name}? 💫`}</p>
+                        <p>{`Amazing! Now, add the recs you received for ${place.name}: `}</p>
                         {textBlockListWithMotion}
 
                         <View

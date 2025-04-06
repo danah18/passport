@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useChatAnimation } from "../../hooks/useChatAnimation.ts";
 import MessageBubble from "./MessageBubble.tsx";
-import MessageInput from "./MessageInput.tsx";
 import OpeningMessageBubble from "./OpeningMessageBubble.tsx";
 import { MessageType } from "./types/chatTypes.tsx";
 import TypingIndicator from "./TypingIndicator.tsx";
@@ -121,7 +120,7 @@ const Chat: React.FC<ChatProps> = ({googlePlace, setGooglePlace}) => {
             </div>
 
             {/* hide this behind a state variable of place selected */}
-            <MessageInput onSendMessage={handleSendMessage} />
+            {/* <MessageInput onSendMessage={handleSendMessage} /> */}
         </div>
     );
 };
