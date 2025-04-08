@@ -48,16 +48,18 @@ export default function PlaceInfo(props: PlaceInfoProps) {
         >
           {placeData.displayName}
         </Text>
-        <Text
-          style={{
-            marginLeft: 5,
-            marginBottom: 5,
-          }}
-        >
-          {`${placeData.rating}`}
-          <StarRatingDisplay rating={placeData.rating} starSize={20} style={{}} />
-          {`(${placeData.userRatingCount})`}
-        </Text>
+        {placeData.rating && (
+          <Text
+            style={{
+              marginLeft: 5,
+              marginBottom: 5,
+            }}
+          >
+            {`${placeData.rating}`}
+            <StarRatingDisplay rating={placeData.rating} starSize={20} style={{}} />
+            {`(${placeData.userRatingCount})`}
+          </Text>
+        )}
         <Text
           style={{
             marginLeft: 5,
