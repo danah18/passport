@@ -34,7 +34,7 @@ export default function AccountScreen() {
 
   const showToast = (message: string) => {
     message = message.split(':')[1].trimStart();
-    const endIndex: number = message?.length + 1;
+    const endIndex: number = message?.length;
     const errorMessage = message[0].toUpperCase() + message.slice(1,endIndex);
 
     if (Platform.OS === 'web') {

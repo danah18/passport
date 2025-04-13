@@ -2,6 +2,7 @@ import PlaceTab from "@/components/PlaceTab";
 import { APIProvider, Map, MapCameraChangedEvent, MapCameraProps } from "@vis.gl/react-google-maps";
 import throttle from "lodash/throttle";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import FilterBar from "../../components/FilterBar.tsx";
 import CustomMarker from "../../components/map/CustomMarker";
 import { GooglePlace } from "../../data/pins.tsx";
 import { Capsule } from "../../data/portalSubmissionHandler";
@@ -153,6 +154,7 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
 
   return (
     <APIProvider apiKey={mapsKey} onLoad={() => console.log("Maps API has loaded.")}>
+      <FilterBar />
       <Map
         {...cameraProps}
         mapId="eb63bf065864f46b"
