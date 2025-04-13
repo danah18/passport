@@ -49,6 +49,13 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
     async (min_lat: number, min_long: number, max_lat: number, max_long: number) => {
       const supabase = getSupabaseClient();
 
+      const categories = [
+        "museum",
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ];
+
       if (capsule) {
         const { data, error } = await supabase.rpc("capsule_pins_in_view", {
           _capsule_id: capsule.id,
@@ -56,6 +63,7 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
           min_long,
           max_lat,
           max_long,
+          filter_categories: categories,
         });
         if (error) {
           console.error("Error fetching pins:", error);
