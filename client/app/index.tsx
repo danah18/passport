@@ -7,10 +7,12 @@ import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { ArrowRight, Check } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import { Button } from "../components/ui/Button.tsx";
-import { Input } from "../components/ui/Input.tsx";
-import { getSupabaseClient } from "../utils/supabase";
+import * as ReactHotToast from 'react-hot-toast';
+import { ActivityIndicator, Platform, StyleSheet, Text, View } from "react-native";
+import Toast from 'react-native-toast-message'; // Fixed import statement
+import { Button } from "../components/ui/Button"; // Removed .tsx extension
+import { Input } from "../components/ui/Input"; // Removed .tsx extension
+import { getSupabaseClient } from "../utils/supabase"; // Ensure the correct file extension is used if needed
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -29,6 +31,21 @@ export default function AccountScreen() {
 
   // We use a default password with phone sign-in for now to avoid setting up OTP verification for the time being
   const defaultPassword = "5uP@WuJO2$Z3lK";
+
+  const showToast = (message: string) => {
+    message = message.split(':')[1].trimStart();
+    const endIndex: number = message?.length + 1;
+    const errorMessage = message[0].toUpperCase() + message.slice(1,endIndex);
+
+    if (Platform.OS === 'web') {
+      ReactHotToast.toast.error(errorMessage);
+    } else {
+      Toast.default.show({
+        type: 'error',
+        text1: errorMessage,
+      });
+    }
+  };
 
   const handleNameKeyDown = (e: React.KeyboardEvent, isFirstName: boolean) => {
     if (e.key === "Enter") {
@@ -190,6 +207,7 @@ export default function AccountScreen() {
       if (error) throw error;
     } catch (error) {
       console.error("Phone Sign-In Error:", error);
+      showToast(`${error}`);
     } finally {
       setLoading(false);
     }
@@ -220,6 +238,7 @@ export default function AccountScreen() {
       if (error) throw error;
     } catch (error) {
       console.error("Phone Sign-Up Error:", error);
+      showToast(`${error}`);
     } finally {
       setLoading(false);
     }
@@ -251,6 +270,13 @@ export default function AccountScreen() {
         padding: 20,
       }}
     >
+      {/* TODO: handling for mobile <Toast /> missing */}
+      {Platform.OS === 'web' &&
+        <ReactHotToast.Toaster
+          position="top-center"
+          reverseOrder={false}
+        />}
+      
       {user ? (
         <>
           <ThemedText style={{ marginVertical: 20 }}>Welcome, {user.user_metadata.name}!</ThemedText>
