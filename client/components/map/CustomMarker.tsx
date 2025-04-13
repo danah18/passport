@@ -19,7 +19,7 @@ type CustomMarkerProps = {
 
 const categoryIconMap: Record<string, string> = {
   bar: "🍺",
-  restaurant: "🍴",
+  restaurant: "🍽️",
   cafe: "☕",
   hotel: "🏨",
   park: "🌳",
@@ -68,9 +68,9 @@ const CustomMarker: React.FC<CustomMarkerProps> = ({
       }}
     >
       <Pin
-        background={isSelected ? "#ff0000" : "#0f9d58"}
+        background={isSelected ? "#0f9d58" : "#EA4335"}
         glyphColor="#ffffff"
-        borderColor={isHovered ? "#000" : "#006425"}
+        borderColor={isSelected ? "#0d7341" : "#A02B23"}
       >
         {getIcon()}
       </Pin>
