@@ -151,12 +151,9 @@ const TextBlockListForChat = (props: TextBlockListProps) => {
             <Button
                 onClick={addNewBlock}
                 style={{ marginTop: '10%' }}
-                className="group relative overflow-hidden rounded-full px-4 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+                className="relative overflow-hidden rounded-full px-4 py-2 shadow-md transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white flex items-center justify-center"
             >
-                <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-                    <span className="relative flex items-center justify-center text-white">
-                    <Plus className="h-4 w-4"/>
-                </span>
+                <Plus className="h-4 w-4" />
             </Button>
         </View>
 
@@ -167,23 +164,20 @@ const TextBlockListForChat = (props: TextBlockListProps) => {
             className="flex justify-center mt-4"
         >
             <Button
-                    onClick={saveTextBlocks}
-                className="mr-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+                onClick={saveTextBlocks}
+                className="mr-3 relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white flex items-center justify-center"
             >
-                <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-                <span className="relative flex items-center justify-center text-white">
-                    <ArrowDown className="mr-2 h-4 w-4" /> Skip for Now
-                </span>
+                <ArrowDown className="mr-2 h-4 w-4" />
+                Skip for Now
             </Button>
+
 
             <Button
                 onClick={saveTextBlocks}
-                className="group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+                className="relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white flex items-center justify-center"
             >
-                <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-                <span className="relative flex items-center justify-center text-white">
-                    <Check className="mr-2 h-4 w-4" /> Done
-                </span>
+                <Check className="mr-2 h-4 w-4" />
+                Done
             </Button>
         </motion.div>
     </>

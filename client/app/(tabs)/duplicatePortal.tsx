@@ -5,7 +5,6 @@ import Chat from "../../components/chat/Chat.tsx";
 import { Capsule } from "../../data/portalSubmissionHandler";
 import { useThemeColor } from "../../hooks/useThemeColor.ts";
 import { getSupabaseClient } from "../../utils/supabase.ts";
-import MapScreen from "./map.tsx";
 
 // Create a context to store the capsule data
 const CapsuleContext = createContext(null);
@@ -55,16 +54,13 @@ export default function DuplicatePortal() {
   return (
     <CapsuleContext.Provider value={capsule}>
       <ScrollView style={{ flex: 1, backgroundColor: backgroundColor }}>
-        {!splitScreen ? (
-          <MapScreen refreshKey={refreshKey} />
-        ) : (
-            <ScrollView>
-              <Chat
-                setSplitState={setSplitScreen}
-                onCapsuleAdded={() => fetchCapsule()}
-                onCapsuleUpdated={() => setRefreshKey((prevKey) => prevKey + 1)} />
-            </ScrollView>
-        )}
+       
+        <ScrollView>
+          <Chat
+            setSplitState={setSplitScreen}
+            onCapsuleAdded={() => fetchCapsule()}
+            onCapsuleUpdated={() => setRefreshKey((prevKey) => prevKey + 1)} />
+        </ScrollView>
       </ScrollView>
     </CapsuleContext.Provider>
   );
