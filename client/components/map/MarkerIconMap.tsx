@@ -1,4 +1,5 @@
 export const MarkerIconMap: Record<string, string> = {
+    by_friend: "👥",
     bar: "🍸",
     restaurant: "🍽️",
     cafe: "☕",
@@ -9,5 +10,5 @@ export const MarkerIconMap: Record<string, string> = {
     museum: "🏛️",
     library: "📚",
     landmark: "🏰",
-    tourist_attraction: "📸",
+    tourist_attraction: "📸",  
 };

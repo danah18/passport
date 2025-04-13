@@ -32,9 +32,11 @@ const INITIAL_CAMERA = {
 
 interface MapScreenProps {
   refreshKey: number;
+  selectedCategory: string;
+  setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function MapScreen({ refreshKey }: MapScreenProps) {
+export default function MapScreen({ refreshKey, selectedCategory, setSelectedCategory }: MapScreenProps) {
   if (refreshKey === undefined)
   {
     refreshKey = 0;
@@ -63,6 +65,9 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
         "point_of_interest",
         "establishment"
       ];
+
+      // if category is selected, use that as the default override on what pins are displayed
+      // if no category selected, behave as normal
 
       if (capsule) {
         const { data, error } = await supabase.rpc("capsule_pins_in_view", {
@@ -154,7 +159,7 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
 
   return (
     <APIProvider apiKey={mapsKey} onLoad={() => console.log("Maps API has loaded.")}>
-      <FilterBar />
+      <FilterBar selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory}/>
       <Map
         {...cameraProps}
         mapId="eb63bf065864f46b"
