@@ -76,13 +76,6 @@ export default function Layout() {
             title: "",
           }}
         />
-        <Drawer.Screen
-          name="duplicatePortal"
-          options={{
-            drawerLabel: "Duplicate Portal",
-            title: "",
-          }}
-        />
       </Drawer>
     </GestureHandlerRootView>
   );
