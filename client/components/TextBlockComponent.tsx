@@ -1,12 +1,12 @@
-import React, { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Trash2, Pencil } from "lucide-react";
+import { Trash2 } from "lucide-react";
+import React, { useEffect, useRef } from "react";
+import { Text, View } from "react-native";
+import { useThemeColor } from "../hooks/useThemeColor.ts";
 import { Button } from "./ui/Button.tsx";
-import { Textarea } from "./ui/Textarea.tsx";
 import { Card, CardContent } from "./ui/Card.tsx";
 import { Input } from "./ui/Input.tsx";
-import { useThemeColor } from "../hooks/useThemeColor.ts";
-import { View, Text } from "react-native";
+import { Textarea } from "./ui/Textarea.tsx";
 
 interface TextBlockComponentProps {
   text: string;
@@ -100,9 +100,9 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
                     onChange={(e) => onTitleChange(index, e.target.value)}
                     onBlur={() => setIsEditingTitle(false)}
                     onKeyDown={handleTitleKeyDown}
-                    placeholder=" Name of friend who sent you list"
+                    placeholder=" Who are these recs from?"
                     autoFocus
-                    className="text-xs tracking-wide h-6 py-0 px-1"
+                    className="text-black text-xs tracking-wide h-6 py-0 px-1"
                 />
             }
             </View>
@@ -114,11 +114,11 @@ const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
               onFocus={onFocus}
               onKeyDown={handleKeyDown}
               placeholder="Paste list of recs here..."
-              className="text-input min-h-[120px] resize-y border-0 bg-background/60 focus:ring-0 focus-visible:ring-offset-0 rounded-lg"
+              className="!text-black text-input min-h-[200px] resize-y border-0 bg-white focus:ring-0 focus-visible:ring-offset-0 rounded-lg"
             />
 
             <View className="group flex-row items-center justify-between w-full mt-1">
-              <View className="opacity-0 transition-opacity duration-200 group-hover:opacity-100 flex">
+              <View className="duration-200 flex">
                 <Button
                   size="icon"
                   variant="ghost"

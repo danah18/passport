@@ -54,10 +54,9 @@ export default function Layout() {
               <View style={{ marginRight: 10 }}>
                 <Button
                   onClick={signOut}
-                  className="mr-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+                  className="mr-3 relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white flex items-center justify-center"
                 >
-                  <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-                  <span className="relative flex items-center justify-center text-white">Log Out</span>
+                  Log Out
                 </Button>
               </View>
             ),
@@ -74,6 +73,13 @@ export default function Layout() {
           name="map"
           options={{
             drawerLabel: "Map",
+            title: "",
+          }}
+        />
+        <Drawer.Screen
+          name="duplicatePortal"
+          options={{
+            drawerLabel: "Duplicate Portal",
             title: "",
           }}
         />

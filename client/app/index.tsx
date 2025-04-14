@@ -7,10 +7,12 @@ import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { ArrowRight, Check } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
-import { Button } from "../components/ui/Button.tsx";
-import { Input } from "../components/ui/Input.tsx";
-import { getSupabaseClient } from "../utils/supabase";
+import * as ReactHotToast from 'react-hot-toast';
+import { ActivityIndicator, Platform, StyleSheet, Text, View } from "react-native";
+import Toast from 'react-native-toast-message'; // Fixed import statement
+import { Button } from "../components/ui/Button"; // Removed .tsx extension
+import { Input } from "../components/ui/Input"; // Removed .tsx extension
+import { getSupabaseClient } from "../utils/supabase"; // Ensure the correct file extension is used if needed
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -29,6 +31,21 @@ export default function AccountScreen() {
 
   // We use a default password with phone sign-in for now to avoid setting up OTP verification for the time being
   const defaultPassword = "5uP@WuJO2$Z3lK";
+
+  const showToast = (message: string) => {
+    message = message.split(':')[1].trimStart();
+    const endIndex: number = message?.length;
+    const errorMessage = message[0].toUpperCase() + message.slice(1,endIndex);
+
+    if (Platform.OS === 'web') {
+      ReactHotToast.toast.error(errorMessage);
+    } else {
+      Toast.default.show({
+        type: 'error',
+        text1: errorMessage,
+      });
+    }
+  };
 
   const handleNameKeyDown = (e: React.KeyboardEvent, isFirstName: boolean) => {
     if (e.key === "Enter") {
@@ -190,6 +207,7 @@ export default function AccountScreen() {
       if (error) throw error;
     } catch (error) {
       console.error("Phone Sign-In Error:", error);
+      showToast(`${error}`);
     } finally {
       setLoading(false);
     }
@@ -220,6 +238,7 @@ export default function AccountScreen() {
       if (error) throw error;
     } catch (error) {
       console.error("Phone Sign-Up Error:", error);
+      showToast(`${error}`);
     } finally {
       setLoading(false);
     }
@@ -251,6 +270,13 @@ export default function AccountScreen() {
         padding: 20,
       }}
     >
+      {/* TODO: handling for mobile <Toast /> missing */}
+      {Platform.OS === 'web' &&
+        <ReactHotToast.Toaster
+          position="top-center"
+          reverseOrder={false}
+        />}
+      
       {user ? (
         <>
           <ThemedText style={{ marginVertical: 20 }}>Welcome, {user.user_metadata.name}!</ThemedText>
@@ -266,14 +292,14 @@ export default function AccountScreen() {
                   <ThemedText style={{ fontSize: 25, marginBottom: 5 }}>Create Account</ThemedText>
                   <ThemedText style={{ fontSize: 15, marginBottom: 10 }}>
                     Already a user?
-                    <span
-                      onClick={() => {
+                    <Text
+                      onPress={() => {
                         setPhone("");
                         setNewUser(false);
                       }}
-                      style={{ fontSize: 15, marginLeft: 5, cursor: 'pointer', fontStyle: 'italic', color: '#6f94e5' }}>
+                      style={{ fontSize: 15, cursor: 'pointer', marginLeft: 5, fontStyle: 'italic', color: '#6f94e5' }}>
                       Sign in here
-                    </span>
+                    </Text>
                   </ThemedText>
                   
                   <Input
@@ -330,31 +356,28 @@ export default function AccountScreen() {
                       marginBottom: 5,
                     }}
                   />
-
                   <Button
                     onClick={signUpWithPhone}
-                    className="mt-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+                    className="mt-3 relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white flex items-center justify-center"
                   >
-                    <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100"></span>
-                    <span className="relative flex items-center justify-center text-white">
-                      <Check className="mr-2 h-4" />
-                      Sign Up
-                    </span>
+                    <Check className="mr-2 h-4" />
+                    Sign Up
                   </Button>
+
                 </View>
               ) : (
                 <View style={{ flexDirection: 'column', alignItems: 'center', width:"100%", marginBottom: 150}}>
                   <ThemedText style={{ fontSize: 25, marginBottom: 5 }}>Sign In</ThemedText>
                   <ThemedText style={{ fontSize: 15, marginBottom: 5 }}>
                     First time here?
-                    <span
-                      onClick={() => {
+                    <Text
+                      onPress={() => {
                         setPhone("");
                         setNewUser(true);
                       }}
                       style={{ fontSize: 15, marginLeft: 5, cursor: 'pointer', fontStyle: 'italic', color: '#6f94e5' }}>
                       Create account
-                    </span>
+                    </Text>
                   </ThemedText>
                 
                   <View style={{ flexDirection: 'row', alignItems: 'center', width: "20%" }}>
@@ -378,13 +401,9 @@ export default function AccountScreen() {
 
                     <Button
                       onClick={signInWithPhone}
-                      className="mb-3 ml-2 mt-3 group relative overflow-hidden rounded-full px-6 py-2 shadow-md transition-all duration-300 hover:shadow-lg"
+                      className="mb-3 ml-3 mt-3 relative overflow-hidden rounded-full px-5 py-2 shadow-md transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white flex items-center justify-center"
                     >
-                      <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 opacity-90 transition-opacity group-hover:opacity-100">
-                        <span className="mt-3 text-white relative flex items-center justify-center text-white">
-                          <ArrowRight />
-                        </span>
-                      </span>  
+                      <ArrowRight />
                     </Button>
                   </View>
               </View>

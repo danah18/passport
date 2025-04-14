@@ -1,0 +1,68 @@
+import { AdvancedMarker, AdvancedMarkerAnchorPoint, Pin } from "@vis.gl/react-google-maps";
+import React from "react";
+import { GooglePlace } from "../../data/pins";
+import { MarkerIconMap } from "./MarkerIconMap.tsx";
+
+type CustomMarkerProps = {
+  pin: {
+    google_place_id: string;
+    pin_name: string;
+    categories: string[];
+    metadata: GooglePlace;
+    lat: number;
+    long: number;
+  };
+  onClick: () => void;
+  hoveredMarkerId: string | null;
+  setHoveredMarkerId: (id: string | null) => void;
+  selectedMarkerId: string | null;
+};
+
+const CustomMarker: React.FC<CustomMarkerProps> = ({
+  pin,
+  onClick,
+  hoveredMarkerId,
+  setHoveredMarkerId,
+  selectedMarkerId,
+}) => {
+  const isHovered = hoveredMarkerId === pin.google_place_id;
+  const isSelected = selectedMarkerId === pin.google_place_id;
+
+  const getIcon = () => {
+    if (!pin.categories || pin.categories.length === 0) {
+      return "";
+    }
+
+    for (const category of pin.categories) {
+      if (MarkerIconMap[category]) {
+        return MarkerIconMap[category];
+      }
+    }
+    return "";
+  };
+
+  return (
+    <AdvancedMarker
+      position={{ lat: pin.lat, lng: pin.long }}
+      onClick={onClick}
+      onMouseEnter={() => setHoveredMarkerId(pin.google_place_id)}
+      onMouseLeave={() => setHoveredMarkerId(null)}
+      zIndex={isHovered || isSelected ? 1000 : 1}
+      style={{
+        transform: isHovered ? "scale(1.3)" : "scale(1)",
+        transition: "all 200ms ease-in-out",
+        transformOrigin: AdvancedMarkerAnchorPoint["BOTTOM"].join(" "),
+      }}
+    >
+      <Pin
+        background={isSelected ? "#0f9d58" : "#EA4335"}
+        glyphColor="#ffffff"
+        borderColor={isSelected ? "#0d7341" : "#A02B23"}
+      >
+        {getIcon()}
+      </Pin>
+    </AdvancedMarker>
+  );
+};
+
+export default CustomMarker;

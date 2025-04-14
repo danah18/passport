@@ -23,6 +23,7 @@ export default function Portal() {
   const [splitScreen, setSplitScreen] = useState(false);
   const [capsule, setCapsule] = useState<Capsule>(null);
   const [refreshKey, setRefreshKey] = useState(0); // Add a state variable to track changes
+  // const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
     // TODO: add error handling for if supabase is null as code throughout this
