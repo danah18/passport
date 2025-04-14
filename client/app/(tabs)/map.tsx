@@ -2,6 +2,7 @@ import PlaceTab from "@/components/PlaceTab";
 import { APIProvider, Map, MapCameraChangedEvent, MapCameraProps } from "@vis.gl/react-google-maps";
 import throttle from "lodash/throttle";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import FilterBar from "../../components/FilterBar.tsx";
 import CustomMarker from "../../components/map/CustomMarker";
 import { GooglePlace } from "../../data/pins.tsx";
 import { Capsule } from "../../data/portalSubmissionHandler";
@@ -34,15 +35,16 @@ interface MapScreenProps {
 }
 
 export default function MapScreen({ refreshKey }: MapScreenProps) {
+
   if (refreshKey === undefined)
   {
     refreshKey = 0;
     console.log("in map screen, refresh key is: ", refreshKey);
   }
 
-
   const mapsKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || "";
   const [pins, setPins] = useState<Pin[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [hoverId, setHoverId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showPanel, setShowPanel] = useState(false);
@@ -53,15 +55,8 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
 
   // Function to fetch pins in view using the bounding box
   const fetchPinsInView = useCallback(
-    async (min_lat: number, min_long: number, max_lat: number, max_long: number) => {
+    async (min_lat: number, min_long: number, max_lat: number, max_long: number, selectedCategory: string) => {
       const supabase = getSupabaseClient();
-
-      const categories = [
-        "museum",
-        "tourist_attraction",
-        "point_of_interest",
-        "establishment"
-      ];
 
       if (capsule) {
         const { data, error } = await supabase.rpc("capsule_pins_in_view", {
@@ -70,7 +65,7 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
           min_long,
           max_lat,
           max_long,
-          filter_categories: categories,
+          filter_categories: selectedCategory === "" ? [] : [selectedCategory],
         });
         if (error) {
           console.error("Error fetching pins:", error);
@@ -83,6 +78,7 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
           min_long,
           max_lat,
           max_long,
+          filter_categories: selectedCategory === "" ? [] : [selectedCategory],
         });
         if (error) {
           console.error("Error fetching pins:", error);
@@ -106,7 +102,7 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
       const mapBounds = latestBoundsRef.current;
       console.log("Map idle:", mapBounds);
       if (mapBounds) {
-        fetchPinsInView(mapBounds.south, mapBounds.west, mapBounds.north, mapBounds.east);
+        fetchPinsInView(mapBounds.south, mapBounds.west, mapBounds.north, mapBounds.east, selectedCategory);
       }
     }, 500), // Wait for 0.5 seconds before fetching pins, resizing page triggers too many
     [fetchPinsInView]
@@ -126,12 +122,12 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
     if (mapBounds) {
       const timeoutId = setTimeout(() => {
         console.log("Map refresh");
-        fetchPinsInView(mapBounds.south, mapBounds.west, mapBounds.north, mapBounds.east);
+        fetchPinsInView(mapBounds.south, mapBounds.west, mapBounds.north, mapBounds.east, selectedCategory);
       }, 1000); // Wait for 1 second before fetching pins
 
       return () => clearTimeout(timeoutId);
     }
-  }, [refreshKey, fetchPinsInView]);
+  }, [refreshKey, fetchPinsInView, selectedCategory]);
 
   useEffect(() => {
     // Center the map on the capsule if it exists
@@ -153,6 +149,7 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
 
   return (
     <APIProvider apiKey={mapsKey} onLoad={() => console.log("Maps API has loaded.")}>
+      <FilterBar selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory}/>
       <Map
         {...cameraProps}
         mapId="eb63bf065864f46b"

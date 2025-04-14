@@ -15,4 +15,5 @@ export interface OpeningMessageProps {
     setSplitState: React.Dispatch<React.SetStateAction<boolean>>;
     onCapsuleAdded: () => void;
     onCapsuleUpdated: () => void;
+    setSetShowMessageInput: React.Dispatch<React.SetStateAction<boolean>>;
 }

@@ -53,14 +53,11 @@ export default function DuplicatePortal() {
 
     return (
         <CapsuleContext.Provider value={capsule}>
-            <ScrollView style={{ flex: 1, backgroundColor: backgroundColor }}>
-
-                <ScrollView>
-                    <Chat
-                        setSplitState={setSplitScreen}
-                        onCapsuleAdded={() => fetchCapsule()}
-                        onCapsuleUpdated={() => setRefreshKey((prevKey) => prevKey + 1)} />
-                </ScrollView>
+            <ScrollView style={{ flex: 1, backgroundColor: backgroundColor, flexGrow: 1, width:'100%' }}>
+                <Chat
+                    setSplitState={setSplitScreen}
+                    onCapsuleAdded={() => fetchCapsule()}
+                    onCapsuleUpdated={() => setRefreshKey((prevKey) => prevKey + 1)} />
             </ScrollView>
         </CapsuleContext.Provider>
     );

@@ -1,6 +1,7 @@
 import { AdvancedMarker, AdvancedMarkerAnchorPoint, Pin } from "@vis.gl/react-google-maps";
 import React from "react";
 import { GooglePlace } from "../../data/pins";
+import { MarkerIconMap } from "./MarkerIconMap.tsx";
 
 type CustomMarkerProps = {
   pin: {
@@ -15,20 +16,6 @@ type CustomMarkerProps = {
   hoveredMarkerId: string | null;
   setHoveredMarkerId: (id: string | null) => void;
   selectedMarkerId: string | null;
-};
-
-const categoryIconMap: Record<string, string> = {
-  bar: "🍺",
-  restaurant: "🍴",
-  cafe: "☕",
-  hotel: "🏨",
-  park: "🌳",
-  shopping_mall: "🛍️",
-  supermarket: "🛒",
-  museum: "🏛️",
-  library: "📚",
-  landmark: "🏰",
-  tourist_attraction: "📸",
 };
 
 const CustomMarker: React.FC<CustomMarkerProps> = ({
@@ -47,8 +34,8 @@ const CustomMarker: React.FC<CustomMarkerProps> = ({
     }
 
     for (const category of pin.categories) {
-      if (categoryIconMap[category]) {
-        return categoryIconMap[category];
+      if (MarkerIconMap[category]) {
+        return MarkerIconMap[category];
       }
     }
     return "";
@@ -68,9 +55,9 @@ const CustomMarker: React.FC<CustomMarkerProps> = ({
       }}
     >
       <Pin
-        background={isSelected ? "#ff0000" : "#0f9d58"}
+        background={isSelected ? "#0f9d58" : "#EA4335"}
         glyphColor="#ffffff"
-        borderColor={isHovered ? "#000" : "#006425"}
+        borderColor={isSelected ? "#0d7341" : "#A02B23"}
       >
         {getIcon()}
       </Pin>

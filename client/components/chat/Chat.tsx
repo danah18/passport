@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
+import { View } from "react-native";
 import { useChatAnimation } from "../../hooks/useChatAnimation.ts";
 import { getSupabaseClient } from "../../utils/supabase.ts";
 import MessageBubble from "./MessageBubble.tsx";
+import MessageInput from "./MessageInput.tsx";
 import OpeningMessageBubble from "./OpeningMessageBubble.tsx";
 import { MessageType } from "./types/chatTypes.tsx";
 import TypingIndicator from "./TypingIndicator.tsx";
@@ -21,6 +23,7 @@ const Chat: React.FC<ChatProps> = ({onCapsuleAdded, onCapsuleUpdated, setSplitSt
     } = useChatAnimation([]);
 
     const [username, setUsername] = useState<string>();
+    const [showMessageInput, setShowMessageInput] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Add a ref to track if we've already added a message for this place
@@ -110,9 +113,10 @@ const Chat: React.FC<ChatProps> = ({onCapsuleAdded, onCapsuleUpdated, setSplitSt
     } as MessageType), [username]);
 
     return (
-        <div className="flex flex-col h-full">
-            <div className="flex-1 overflow-y-auto p-4 bg-[hsl(var(--chat-bg))]">
-                <OpeningMessageBubble key={openingMessage.id} message={openingMessage} onCapsuleAdded={onCapsuleAdded} onCapsuleUpdated={onCapsuleUpdated} setSplitState={setSplitState}/>
+        <View className="flex flex-col">
+            <View className="flex-1 overflow-y-auto p-4 bg-[hsl(var(--chat-bg))]">
+                <OpeningMessageBubble 
+                    key={openingMessage.id} message={openingMessage} onCapsuleAdded={onCapsuleAdded} onCapsuleUpdated={onCapsuleUpdated} setSplitState={setSplitState} setSetShowMessageInput={setShowMessageInput}/>
                 
                 {messages.map((message) => (
                     <MessageBubble key={message.id} message={message}/>
@@ -120,12 +124,12 @@ const Chat: React.FC<ChatProps> = ({onCapsuleAdded, onCapsuleUpdated, setSplitSt
 
                 {isTyping && <TypingIndicator />}
 
-                <div ref={messagesEndRef} />
-            </div>
+                <View ref={messagesEndRef} />
 
-            {/* hide this behind a state variable of place selected */}
-            {/* <MessageInput onSendMessage={handleSendMessage} /> */}
-        </div>
+                {showMessageInput && 
+                    <MessageInput onSendMessage={handleSendMessage} />}
+            </View>            
+        </View>
     );
 };
 

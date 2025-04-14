@@ -8,7 +8,7 @@ import { PlaceAutocomplete } from "../PlaceAutocomplete.tsx";
 import TextBlockListForChat from "../TextBlockListForChat.tsx";
 import { OpeningMessageProps } from "./types/chatTypes.tsx";
 
-const OpeningMessageBubble: React.FC<OpeningMessageProps> = ({ message, onCapsuleAdded, onCapsuleUpdated, setSplitState }) => {
+const OpeningMessageBubble: React.FC<OpeningMessageProps> = ({ message, onCapsuleAdded, onCapsuleUpdated, setSplitState, setSetShowMessageInput }) => {
     const isUser = message.sender === "user";
     const formattedTime = format(message.timestamp, "h:mm a");
 
@@ -17,6 +17,7 @@ const OpeningMessageBubble: React.FC<OpeningMessageProps> = ({ message, onCapsul
     const handlePlaceSelect = React.useCallback((place: google.maps.places.PlaceResult | null) => {
         if (place) {
             setPlace(place);
+            setSetShowMessageInput(true);
         }
     }, [setPlace]);
 
@@ -79,8 +80,8 @@ const OpeningMessageBubble: React.FC<OpeningMessageProps> = ({ message, onCapsul
                         className={cn("mt-2")}
                     >
                         {/* Add on view styling animation here */}
-                        <p>{`Amazing! Now, add the recs you received for ${place.name}: `}</p>
-                        {textBlockListWithMotion}
+                        <p>{`Amazing! List any people you know who have been to ${place.name}: `}</p>
+                        {/* {textBlockListWithMotion} */}
 
                         <View
                             className={cn(
