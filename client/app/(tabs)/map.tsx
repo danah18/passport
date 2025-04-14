@@ -56,18 +56,8 @@ export default function MapScreen({ refreshKey, selectedCategory, setSelectedCat
 
   // Function to fetch pins in view using the bounding box
   const fetchPinsInView = useCallback(
-    async (min_lat: number, min_long: number, max_lat: number, max_long: number) => {
+    async (min_lat: number, min_long: number, max_lat: number, max_long: number, selectedCategory: string) => {
       const supabase = getSupabaseClient();
-
-      const categories = [
-        "museum",
-        "tourist_attraction",
-        "point_of_interest",
-        "establishment"
-      ];
-
-      // if category is selected, use that as the default override on what pins are displayed
-      // if no category selected, behave as normal
 
       if (capsule) {
         const { data, error } = await supabase.rpc("capsule_pins_in_view", {
@@ -76,7 +66,7 @@ export default function MapScreen({ refreshKey, selectedCategory, setSelectedCat
           min_long,
           max_lat,
           max_long,
-          filter_categories: categories,
+          filter_categories: selectedCategory === "" ? [] : [selectedCategory],
         });
         if (error) {
           console.error("Error fetching pins:", error);
@@ -89,6 +79,7 @@ export default function MapScreen({ refreshKey, selectedCategory, setSelectedCat
           min_long,
           max_lat,
           max_long,
+          filter_categories: selectedCategory === "" ? [] : [selectedCategory],
         });
         if (error) {
           console.error("Error fetching pins:", error);
@@ -112,7 +103,7 @@ export default function MapScreen({ refreshKey, selectedCategory, setSelectedCat
       const mapBounds = latestBoundsRef.current;
       console.log("Map idle:", mapBounds);
       if (mapBounds) {
-        fetchPinsInView(mapBounds.south, mapBounds.west, mapBounds.north, mapBounds.east);
+        fetchPinsInView(mapBounds.south, mapBounds.west, mapBounds.north, mapBounds.east, selectedCategory);
       }
     }, 500), // Wait for 0.5 seconds before fetching pins, resizing page triggers too many
     [fetchPinsInView]
@@ -132,12 +123,12 @@ export default function MapScreen({ refreshKey, selectedCategory, setSelectedCat
     if (mapBounds) {
       const timeoutId = setTimeout(() => {
         console.log("Map refresh");
-        fetchPinsInView(mapBounds.south, mapBounds.west, mapBounds.north, mapBounds.east);
+        fetchPinsInView(mapBounds.south, mapBounds.west, mapBounds.north, mapBounds.east, selectedCategory);
       }, 1000); // Wait for 1 second before fetching pins
 
       return () => clearTimeout(timeoutId);
     }
-  }, [refreshKey, fetchPinsInView]);
+  }, [refreshKey, fetchPinsInView, selectedCategory]);
 
   useEffect(() => {
     // Center the map on the capsule if it exists

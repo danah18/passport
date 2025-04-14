@@ -16,7 +16,8 @@ create or replace function pins_in_view (
   min_lat float,
   min_long float,
   max_lat float,
-  max_long float
+  max_long float,
+  filter_categories JSONB default '[]'
 ) returns table (
   id uuid,
   google_place_id text,
@@ -40,6 +41,9 @@ set
       long
 	from public.pins
 	where location operator(gis.&&) gis.ST_SetSRID(gis.ST_MakeBox2D(gis.ST_Point(min_long, min_lat), gis.ST_Point(max_long, max_lat)), 4326)
+  and (jsonb_array_length(filter_categories) = 0  -- if no filters, return all
+    or categories ?| array(select jsonb_array_elements_text(filter_categories)) -- else match any of the provided categories
+  )        
 $$;
 
 -- Returns all capsule pins in view
@@ -49,7 +53,7 @@ create or replace function capsule_pins_in_view (
   min_long float,
   max_lat float,
   max_long float,
-  filter_categories JSONB
+  filter_categories JSONB default '[]'
 ) returns table (
   id uuid,
   google_place_id text,
@@ -76,6 +80,9 @@ set
     join public.capsule_pins cp on up.id = cp.user_pin_id
     where cp.capsule_id = _capsule_id
       and p.location operator(gis.&&) gis.ST_SetSRID(gis.ST_MakeBox2D(gis.ST_Point(min_long, min_lat), gis.ST_Point(max_long, max_lat)), 4326)
+      and (jsonb_array_length(filter_categories) = 0  -- if no filters, return all
+        or categories ?| array(select jsonb_array_elements_text(filter_categories)) -- else match any of the provided categories
+      )  
 $$;
 
 CREATE OR REPLACE FUNCTION add_pin (

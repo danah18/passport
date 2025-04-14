@@ -84,15 +84,11 @@ export default function FilterBar(props: FilterBarProps) {
     }
 
     function isSelected(label: string): boolean {
-        return props.selectedCategory === label;
+        return props.selectedCategory === categoryFromLabel(label);
     }
 
     function getMarker(label: string): string {
         const category = categoryFromLabel(label);
-
-        console.log("label:", label);
-        console.log(`category:`, category);
-
         return MarkerIconMap[category];    
     }
 
@@ -113,9 +109,20 @@ export default function FilterBar(props: FilterBarProps) {
 
     // The setSelectedCategory prop is undefined if you navigate to the map screen directly
     // Need to fix callback picking
-    function onCategoryPress(category: string) {
-      props.setSelectedCategory(category);
-      console.log(props.setSelectedCategory);
+    function onCategoryPress(label: string) {
+      const category = categoryFromLabel(label);
+
+      // Acts as an unclick of filter selection
+      if (category === props.selectedCategory)
+      {
+        props.setSelectedCategory("");
+      }
+      else
+      {
+        props.setSelectedCategory(category);
+      }
+
+      console.log("selectedCategory: ", props.selectedCategory);
       console.log(`${category} pressed!`)
     }
 
