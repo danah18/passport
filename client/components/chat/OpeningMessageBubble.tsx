@@ -74,8 +74,25 @@ const OpeningMessageBubble: React.FC<OpeningMessageProps> = ({ message, onCapsul
                     {formattedTime}
                 </View>
 
-                {place && 
+                {place && <View
+                    className={cn("mt-2")}
+                >
+                    {/* Add on view styling animation here */}
+                    <p>{`Exciting! Any specific spots you want to see in ${place.name}?`}</p>
+                    {/* {textBlockListWithMotion} */}
 
+                    <View
+                        className={cn(
+                            "text-xs mt-1",
+                            isUser ? "text-blue-100" : "text-gray-500"
+                        )}
+                    >
+                        {/* Add handling for pin creation + split screen view */}
+                        {formattedTime}
+                    </View>
+                </View>}
+
+                {place && false &&
                     <View
                         className={cn("mt-2")}
                     >
@@ -92,7 +109,7 @@ const OpeningMessageBubble: React.FC<OpeningMessageProps> = ({ message, onCapsul
                             {formattedTime}
                         </View>
                     </View>
-            }
+                }
             </View>
         </View>
     );
