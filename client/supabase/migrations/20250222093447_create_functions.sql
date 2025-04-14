@@ -76,6 +76,11 @@ set
     join public.capsule_pins cp on up.id = cp.user_pin_id
     where cp.capsule_id = _capsule_id
       and p.location operator(gis.&&) gis.ST_SetSRID(gis.ST_MakeBox2D(gis.ST_Point(min_long, min_lat), gis.ST_Point(max_long, max_lat)), 4326)
+      and (
+        filter_categories is null -- If filter_categories is null, include all pins
+        or jsonb_array_length(filter_categories) = 0 -- If filter_categories is empty, include all pins
+        or p.categories ?| array(select jsonb_array_elements_text(filter_categories)) -- Match any category
+      )
 $$;
 
 CREATE OR REPLACE FUNCTION add_pin (
