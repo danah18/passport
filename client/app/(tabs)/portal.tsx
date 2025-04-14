@@ -23,7 +23,7 @@ export default function Portal() {
   const [splitScreen, setSplitScreen] = useState(false);
   const [capsule, setCapsule] = useState<Capsule>(null);
   const [refreshKey, setRefreshKey] = useState(0); // Add a state variable to track changes
-  const [selectedCategory, setSelectedCategory] = useState("");
+  // const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
     // TODO: add error handling for if supabase is null as code throughout this
@@ -132,7 +132,7 @@ export default function Portal() {
         {splitScreen ? (
           <SplitScreen
             LeftComponent={textBlockListWithMotion}
-            RightComponent={<MapScreen refreshKey={refreshKey} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />}
+            RightComponent={<MapScreen refreshKey={refreshKey} />}
             setSplitState={setSplitScreen}
           />
         ) : (

@@ -32,20 +32,19 @@ const INITIAL_CAMERA = {
 
 interface MapScreenProps {
   refreshKey: number;
-  selectedCategory: string;
-  setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function MapScreen({ refreshKey, selectedCategory, setSelectedCategory }: MapScreenProps) {
+export default function MapScreen({ refreshKey }: MapScreenProps) {
+
   if (refreshKey === undefined)
   {
     refreshKey = 0;
     console.log("in map screen, refresh key is: ", refreshKey);
   }
 
-
   const mapsKey = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY || "";
   const [pins, setPins] = useState<Pin[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [hoverId, setHoverId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showPanel, setShowPanel] = useState(false);
