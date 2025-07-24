@@ -2,6 +2,7 @@ import PlaceTab from "@/components/PlaceTab";
 import { APIProvider, Map, MapCameraChangedEvent, MapCameraProps } from "@vis.gl/react-google-maps";
 import throttle from "lodash/throttle";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { View } from "react-native";
 import FilterBar from "../../components/FilterBar.tsx";
 import CustomMarker from "../../components/map/CustomMarker";
 import { GooglePlace } from "../../data/pins.tsx";
@@ -149,7 +150,11 @@ export default function MapScreen({ refreshKey }: MapScreenProps) {
 
   return (
     <APIProvider apiKey={mapsKey} onLoad={() => console.log("Maps API has loaded.")}>
-      <FilterBar selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory}/>
+
+      <View style={{ width: "100%" }}>
+        <FilterBar selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
+      </View>
+      
       <Map
         {...cameraProps}
         mapId="eb63bf065864f46b"

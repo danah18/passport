@@ -18,7 +18,6 @@ export default function FilterBar(props: FilterBarProps) {
             flexDirection: 'row',
             gap: 12,
             backgroundColor: '#fafafa',
-            flexShrink: 0
         },
         button: {
             flexDirection: 'row',
@@ -93,7 +92,7 @@ export default function FilterBar(props: FilterBarProps) {
     }
 
     const categories = [
-        { label: 'By Friend'},
+        //{ label: 'By Friend'},
         { label: 'Restaurants'},
         { label: 'Hotels' },
         { label: 'Cafes' },

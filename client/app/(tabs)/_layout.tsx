@@ -72,7 +72,7 @@ export default function Layout() {
         <Drawer.Screen
           name="map"
           options={{
-            drawerLabel: "Map",
+            drawerLabel: "",
             title: "",
           }}
         />

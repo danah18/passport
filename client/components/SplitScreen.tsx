@@ -1,8 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
-import { MoveLeft, MoveRight } from "lucide-react";
-import { TouchableOpacity } from "react-native";
-import { router } from "expo-router";
+import React from "react";
+import { Dimensions, StyleSheet, View } from "react-native";
 
 interface SplitScreenProps {
     LeftComponent: React.JSX.Element;
@@ -20,7 +17,7 @@ const SplitScreen = (props: SplitScreenProps) => {
       </View>
       
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
             onPress={() => {router.replace('./map')}}>
             <MoveLeft style={{ marginRight: 8, color: 'white'}}/>
         </TouchableOpacity>
@@ -28,7 +25,7 @@ const SplitScreen = (props: SplitScreenProps) => {
         <TouchableOpacity
             onPress={()=>{props.setSplitState(false)}}>
             <MoveRight style={{ marginTop: height*.83, marginRight: 8, color: 'white'}}/>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <View style={styles.rightPane}>
